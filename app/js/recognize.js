@@ -36,20 +36,32 @@
      · deepseek-v4.1-flash —— 效果最好、5~10 秒/页。缺点：配额独立，偶尔整模型限流。
      · space-bunny —— 准确度接近，倍率最便宜；但慢，题多的页 160s+（客户端时限已改为
        「空闲 2 分钟 + 绝对 10 分钟」双门槛，慢页只要还在出字就不会被掐）。
-     · minimax-m3 —— 快（23s/页）；题特别多的页（24 题口算）输出会截断导致 JSON 解析失败。
+     · minimax-m3.1-flash —— 2026-10-26 取代原来的 minimax-m3（那是 x0.25 的思考档）。
+       新的 flash 档按模型目录是 x0.08（与 space-bunny 同价），官方描述「原生多模态、
+       擅长 office/agentic/编程，推理速度优异」；**本链路尚未实测**。老 m3 的毛病是
+       题特别多的页（24 题口算）输出截断导致 JSON 解析失败，新模型有没有修好还不知道，
+       真遇到就先切回 deepseek-v4.1-flash。
      · glm-5.3-flash（深度思考，曾在 240s 时限下超时）/ glm-4.6v（不支持本链路参数）实测不可用，不列。 */
   var MODELS = [
     { id: "deepseek-v4.1-flash", label: "Deepseek-V4.1-Flash", tag: "推荐",
       desc: "效果最好，一页 5~10 秒；偶尔整体限流" },
     { id: "space-bunny", label: "Space-Bunny", tag: "省钱",
       desc: "准确度接近、倍率最低；题多的页较慢" },
-    { id: "minimax-m3", label: "MiniMax-M3", tag: "快",
-      desc: "一页约 23 秒；题特别多的页可能失败" },
+    { id: "minimax-m3.1-flash", label: "MiniMax-M3.1-Flash", tag: "快",
+      desc: "倍率最低（x0.08）、推理快；大题量页尚未实测" },
   ];
   var MODEL_KEY = "reco_model";
+  /* 存的 id 如果已经不在清单里（模型改名 / 下架，例如 2026-10-26 的 minimax-m3 → m3.1-flash），
+     必须回落默认并清掉旧值 —— paper.html 是直接拿 currentModel() 当 model 传给模型调用的，
+     沿用旧 id 会直接报「模型不存在」，而不是乖乖用默认。 */
   function currentModel() {
-    try { return localStorage.getItem(MODEL_KEY) || MODEL_DEFAULT; }
-    catch (e) { return MODEL_DEFAULT; }
+    var v = "";
+    try { v = localStorage.getItem(MODEL_KEY) || ""; } catch (e) { v = ""; }
+    if (MODELS.every(function (m) { return m.id !== v; })) {
+      if (v) setModel(MODEL_DEFAULT);        // 清掉失效的旧值，别留在本机反复踩
+      return MODEL_DEFAULT;
+    }
+    return v;
   }
   function setModel(id) {
     try { localStorage.setItem(MODEL_KEY, id); } catch (e) { /* 隐私模式存不了就用默认 */ }
