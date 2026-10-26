@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的组卷 · 试卷题库</title>
+<link rel="stylesheet" href="css/app.css?v=20261026c">
+<link rel="stylesheet" href="css/katex.css">
+</head>
+<body>
+<div id="topbar" class="topbar"></div>
+
+<div class="wrap">
+  <div id="page" data-nav="customs" style="display:none">
+    <h1 class="page">我的组卷</h1>
+    <p class="lead">这些是你在「组卷」里挑题排出来的卷子，不属于上传的照片卷。<b>挑题和排版都在同一页完成</b> ——「编辑试卷」进去就能一边加题一边拖排版，改完点一次保存。</p>
+
+    <div class="toolbar">
+      <span class="chip plain" id="c-count"></span>
+      <div class="spacer"></div>
+      <a class="btn" href="compose.html">+ 组一份新卷</a>
+    </div>
+
+    <div class="msg err" id="msg"></div>
+    <div class="grid" id="list"></div>
+    <div class="empty" id="empty" style="display:none">
+      <div class="big"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></div>
+      <div>还没有组过卷。从题库里挑题排一份吧。</div>
+      <div style="margin-top:18px"><a class="btn" href="compose.html">开始组卷</a></div>
+    </div>
+  </div>
+
+  <div class="wrap narrow" id="login-host" style="padding:0"></div>
+</div>
+
+<script src="js/vendor/workbuddy-cloud-sdk.js"></script>
+<script src="js/config.js?v=20261026c"></script>
+<script src="js/local-demo.js?v=20261026c"></script>
+<script src="js/vendor/katex.min.js"></script>
+<script src="js/vendor/auto-render.min.js"></script>
+<script src="js/render.js?v=20261026c"></script>
+<script src="js/cloud.js?v=20261026c"></script>
+<script src="js/ui.js?v=20261026c"></script>
+<script>
+(function () {
+  "use strict";
+
+  var rows = [];
+
+  function showMsg(t) {
+    var m = document.getElementById("msg");
+    m.textContent = t || "";
+    m.className = "msg err" + (t ? " show" : "");
+  }
+
+  function layoutNote(c) {
+    var lay = c.layout;
+    if (!lay || !lay.sections || !lay.sections.length) return "按题型智能排版";
+    return "手动排版 · " + lay.sections.length + " 个板块";
+  }
+
+  function cardHtml(c) {
+    var ids = c.question_ids || [];
+    return '<div class="ccard">'
+      + '<div class="r1"><span class="chip done">自建卷</span>'
+      + '<span class="date" style="margin-left:auto">' + ids.length + " 题</span>"
+      /* 右上角打印 icon：进卷面（print.html?custom=N）看排版成品 / 打印 */
+      + '<a class="cprint" href="print.html?custom=' + c.id + '" title="打印 / 卷面" aria-label="打印 / 卷面">'
+      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"'
+      + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/>'
+      + '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>'
+      + '<rect x="6" y="14" width="12" height="7"/></svg></a>'
+      + "</div>"
+      + '<div class="title">' + Render.esc(c.title || "未命名试卷") + "</div>"
+      + '<div class="meta">' + Render.esc(UI.fmtDate(String(c.updated_at || "").slice(0, 10))) + " 更新 · "
+      + layoutNote(c) + "</div>"
+      + '<div class="cops">'
+      + '<a class="btn sm" href="compose.html?id=' + c.id + '">编辑试卷</a>'
+      + '<button class="btn danger sm end" data-del="' + c.id + '">删除</button>'
+      + "</div></div>";
+  }
+
+  function render() {
+    document.getElementById("empty").style.display = rows.length ? "none" : "block";
+    document.getElementById("c-count").textContent = rows.length ? rows.length + " 份" : "";
+    document.getElementById("list").innerHTML = rows.map(cardHtml).join("");
+  }
+
+  function load() {
+    return CloudAPI.listCustomPapers().then(function (r) {
+      rows = r || [];
+      render();
+    }).catch(function (e) { showMsg(e.message || "读取组卷失败"); });
+  }
+
+  document.getElementById("list").addEventListener("click", function (ev) {
+    var b = ev.target.closest("[data-del]");
+    if (!b) return;
+    UI.confirm({
+      title: "删除这份组卷", okText: "删除", danger: true,
+      text: "只删掉这份组卷，题库里的题目和原卷照片都不受影响。",
+    }).then(function (ok) {
+      if (!ok) return;
+      CloudAPI.deleteCustomPaper(b.dataset.del)
+        .then(function () { UI.toast("已删除"); return load(); })
+        .catch(function (e) { UI.toast(e.message || "删除失败"); });
+    });
+  });
+
+  UI.initLightbox();
+
+  CloudAPI.handleWechatCallback().then(function () {
+    return UI.requireLogin(document.getElementById("page"), function () {
+      document.getElementById("page").style.display = "block";
+      load();
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的试卷 · 试卷题库</title>
+<link rel="stylesheet" href="css/app.css?v=20261026c">
+<link rel="stylesheet" href="css/katex.css">
+</head>
+<body>
+<div id="topbar" class="topbar"></div>
+
+<div class="wrap">
+  <div id="page" data-nav="papers" style="display:none">
+    <h1 class="page">我的试卷</h1>
+    <p class="lead">这里是你上传过的试卷。上传完会<b>自动识别</b>，识别完成就会列出逐题的结构化结果。</p>
+
+    <div class="toolbar">
+      <div class="filters" id="filters">
+        <button data-f="all" class="on">全部</button>
+        <button data-f="pending">未完成</button>
+        <button data-f="done">已完成</button>
+      </div>
+      <div class="spacer"></div>
+      <a class="btn" href="upload.html">上传新试卷</a>
+    </div>
+
+    <div class="msg err" id="list-msg"></div>
+    <div class="grid" id="list"></div>
+    <div class="empty" id="empty" style="display:none">
+      <div class="big"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div>
+      <div>还没有试卷。点上方的「上传新试卷」把试卷照片传上来吧。</div>
+      <div style="margin-top:18px">
+        <button class="btn sec" id="btn-demo">先载入 5 份示例卷看看（135 题）</button>
+        <div class="hint" style="margin-top:8px" id="demo-tip">
+          示例卷是内置的演示数据，只写进你自己的题库，不影响别人；不需要可以整卷删除。
+        </div>
+      </div>
+    </div>
+
+    <div class="repo-line">
+      <a class="repo-gh" href="https://github.com/nicoaigc/juan" target="_blank" rel="noopener"
+         title="开源地址：github.com/nicoaigc/juan —— 建议自行部署，不限次数"
+         aria-label="在 GitHub 查看开源代码（建议自行部署，不限次数）"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.73.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.55v-1.94c-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z"/></svg></a>
+      <div class="repo-tip">想不限次数使用？建议自行部署体验</div>
+    </div>
+  </div>
+
+  <div class="wrap narrow" id="login-host" style="padding:0"></div>
+</div>
+
+<script src="js/vendor/workbuddy-cloud-sdk.js"></script>
+<script src="js/config.js?v=20261026c"></script>
+<script src="js/local-demo.js?v=20261026c"></script>
+<script src="js/vendor/katex.min.js"></script>
+<script src="js/vendor/auto-render.min.js"></script>
+<script src="js/render.js?v=20261026c"></script>
+<script src="js/cloud.js?v=20261026c"></script>
+<script src="js/ui.js?v=20261026c"></script>
+<script src="js/qtype.js?v=20261026c"></script>
+<script>
+(function () {
+  "use strict";
+
+  var STATUS = {
+    pending:    ["待识别", "pending"],
+    processing: ["识别中", "processing"],
+    done:       ["已完成", "done"],
+    failed:     ["识别失败", "failed"],
+  };
+  var all = [], filter = "all";
+
+  function statusChip(s) {
+    var v = STATUS[s] || [s || "未知", "plain"];
+    return '<span class="chip ' + v[1] + '">' + Render.esc(v[0]) + "</span>";
+  }
+
+  function showMsg(t) {
+    var m = document.getElementById("list-msg");
+    m.textContent = t || "";
+    m.className = "msg err" + (t ? " show" : "");
+  }
+
+  /* 题型分布：桶 -> 着色类 + 图例名。桶和顺序都取自 Sheet/QType 的通用口径
+     （板块名优先、模型题型兜底），这样首页的分组跟组卷台、卷面排版是同一份答案。 */
+  var DIST_LABEL = {
+    choice: "选择", fill: "填空", compare: "比大小", calc: "计算", judge: "判断",
+    solve: "应用题", geometry: "几何", proof: "证明", other: "其他",
+  };
+  var DIST_COLOR = {
+    choice: "dc-choice", fill: "dc-fill", compare: "dc-compare", calc: "dc-calc", judge: "dc-judge",
+    solve: "dc-solve", geometry: "dc-geo", proof: "dc-geo", other: "dc-other",
+  };
+  var DIST_BUCKETS = QType.TYPE_SECTION.map(function (d) {
+    return [d[0], DIST_LABEL[d[0]] || d[1], DIST_COLOR[d[0]] || "dc-other"];
+  });
+
+  function distHtml(p) {
+    /* 2026-10-07：彩色比例条与下面的图例完全重复（条只表达比例），去掉条只留图例一行 */
+    var c = p._dist;
+    if (!c || !c.total) return "";
+    var legend = "";
+    DIST_BUCKETS.forEach(function (b) {
+      var n = c.by[b[0]] || 0;
+      if (!n) return;
+      legend += '<span><i class="' + b[2] + '"></i>' + b[1] + " " + n + "</span>";
+    });
+    if (!legend) return "";
+    return '<div class="dist-legend">' + legend + "</div>";
+  }
+
+  /* 卡片缩略图用第一张原图的签名地址（缩略图即原图，靠 CSS 裁顶部）。 */
+  function cardHtml(p, firstUrl) {
+    var thumb = firstUrl
+      ? '<img src="' + Render.esc(firstUrl) + '" alt="原图" loading="lazy">'
+      : '<span class="na">无原图</span>';
+    var cnt = p.question_count ? p.question_count + " 题" : (p.page_count ? p.page_count + " 张照片" : "—");
+    return '<a class="pcard" href="paper.html?id=' + p.id + '">'
+      + '<div class="thumb">' + thumb + "</div>"
+      + '<div class="body">'
+      + '<div class="r1">' + statusChip(p.status)
+      + '<span class="date">' + Render.esc(UI.fmtDate(p.paper_date)) + "</span>"
+      + '<span class="date" style="margin-left:auto">' + Render.esc(cnt) + "</span></div>"
+      + '<div class="title">' + Render.esc(p.title || "未命名试卷") + "</div>"
+      + '<div class="meta">' + Render.esc(p.grade || "") + (p.grade ? " · " : "") + Render.esc(p.subject || "数学") + "</div>"
+      + (p.status_note ? '<div class="dist">' + Render.esc(p.status_note) + "</div>" : "")
+      + distHtml(p)
+      + "</div></a>";
+  }
+
+  function render() {
+    var box = document.getElementById("list");
+    var show = all.filter(function (p) {
+      if (filter === "pending") return p.status === "pending" || p.status === "processing" || p.status === "failed";
+      if (filter === "done") return p.status === "done";
+      return true;
+    });
+    document.getElementById("empty").style.display = show.length ? "none" : "block";
+    box.innerHTML = show.map(function (p) { return cardHtml(p, p._thumb || ""); }).join("");
+  }
+
+  function load() {
+    return CloudAPI.listPapers().then(function (rows) {
+      all = rows || [];
+      render();
+      // 缩略图地址逐张签（失败就不显示图，不影响卡片）
+      all.forEach(function (p) {
+        CloudAPI.listFiles(p.id).then(function (fs) {
+          if (!fs || !fs.length) return;
+          CloudAPI.signedUrl(fs[0].storage_path).then(function (u) {
+            p._thumb = u;
+            render();
+          }).catch(function () {});
+        }).catch(function () {});
+      });
+      // 题型分布逐卷统计（卷数是个人的量级，逐卷拉一次可接受）
+      all.forEach(function (p) {
+        CloudAPI.listQuestions(p.id).then(function (qs) {
+          var by = {}, total = 0;
+          (qs || []).forEach(function (q) {
+            /* 分桶走全站唯一口径（板块名优先），别再直读 q.qtype —— 那会把"用竖式计算"算进解答题 */
+            var k = QType.bucketOf(q);
+            by[k] = (by[k] || 0) + 1;
+            total++;
+          });
+          p._dist = { by: by, total: total };
+          render();
+        }).catch(function () {});
+      });
+    }).catch(function (e) { showMsg(e.message || "读取试卷失败"); });
+  }
+
+  document.getElementById("filters").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-f]");
+    if (!b) return;
+    filter = b.dataset.f;
+    [].forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("on", x === b); });
+    render();
+  });
+
+  /* 载入内置示例卷：走应用自己的会话写入（owner_id 由 DEFAULT auth.uid() 决定），
+     所以只会进当前用户自己的题库。 */
+  document.getElementById("empty").addEventListener("click", function (ev) {
+    if (ev.target.id !== "btn-demo") return;
+    var btn = ev.target, tip = document.getElementById("demo-tip");
+    btn.disabled = true;
+    fetch("assets/demo-library.json").then(function (r) {
+      if (!r.ok) throw new Error("示例题库文件读取失败");
+      return r.json();
+    }).then(function (d) {
+      var papers = d.papers || [];
+      return papers.reduce(function (chain, p, i) {
+        return chain.then(function () {
+          tip.textContent = "正在载入 " + (i + 1) + "/" + papers.length + "：" + p.title;
+          return CloudAPI.createPaper({
+            title: p.title, paper_date: p.paper_date, subject: p.subject, grade: p.grade,
+            status: p.status || "done", status_note: p.status_note || "示例卷（内置）",
+            page_count: (p.files || []).length, question_count: (p.questions || []).length,
+          }).then(function (np) {
+            return CloudAPI.addFiles((p.files || []).map(function (f) {
+              return { paper_id: np.id, page_no: f.page_no, filename: f.filename,
+                       storage_path: f.storage_path, width: f.width, height: f.height, size_bytes: f.size_bytes };
+            })).then(function () {
+              return CloudAPI.addQuestions((p.questions || []).map(function (q) {
+                return { paper_id: np.id, seq: q.seq, qno: q.qno, printed_no: q.printed_no,
+                         section: q.section, qtype: q.qtype, stem: q.stem, options: q.options,
+                         source: q.source, confidence: q.confidence };
+              }));
+            });
+          });
+        });
+      }, Promise.resolve());
+    }).then(function () {
+      UI.toast("示例卷载入完成");
+      return load();
+    }).catch(function (e) {
+      btn.disabled = false;
+      tip.textContent = "载入失败：" + (e.message || "未知错误");
+      UI.toast("载入失败");
+    });
+  });
+
+  UI.initLightbox();
+
+  // 微信扫码回调必须最先跑（登录跳回来时 URL 带 code），而且要在任何守卫之前
+  CloudAPI.handleWechatCallback().then(function (r) {
+    if (r && r.error) UI.toast("微信登录未完成：" + (r.error.message || ""));
+    return UI.requireLogin(document.getElementById("page"), function () {
+      document.getElementById("page").style.display = "block";
+      load();
+    });
+  });
+})();
+</script>
+</body>
+</html>

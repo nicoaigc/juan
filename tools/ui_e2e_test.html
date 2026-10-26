@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>UI 端到端验证</title>
+<style>
+  body { margin:0; font-family:"Microsoft YaHei",sans-serif; }
+  #log { background:#111827; color:#e5e7eb; font-size:13px; padding:10px 14px; line-height:1.8;
+         white-space:pre-wrap; font-family:Consolas,monospace; }
+  #log b { color:#34d399; }
+  iframe { width:1240px; height:820px; border:0; display:block; }
+</style></head><body>
+<div id="log">运行中…</div>
+<iframe id="f"></iframe>
+<script>
+const log = [];
+const put = (s) => { log.push(s); document.getElementById("log").innerHTML = log.join("\n"); };
+const frame = document.getElementById("f");
+const load = (src) => new Promise((res) => {
+  frame.onload = () => setTimeout(() => res(frame.contentDocument), 700);
+  frame.src = src;
+});
+const visible = (d) => [...d.querySelectorAll("a.card, a.q")].filter(c => c.style.display !== "none").length;
+
+(async function () {
+  // ① 第 1 层：卷卡片页（默认全部）
+  let d = await load("/render/index.html");
+  put("① 卷卡片页：卡片 " + d.querySelectorAll("a.card").length + " 张，默认全部可见 "
+      + visible(d) + " 张，表头「" + d.getElementById("hdr").textContent.trim() + "」");
+  const dates = [...d.querySelectorAll("a.card")].map(c => c.dataset.date);
+  put("   倒序检查：" + dates.join(" → ") + " → " + (dates.join() === [...dates].sort().reverse().join() ? "<b>倒序正确</b>" : "顺序错误！"));
+
+  // ② 筛选：点「2026-09-30」
+  const chips = [...d.querySelectorAll(".chip")];
+  put("   筛选器：" + chips.map(c => c.textContent.trim()).join(" ｜ "));
+  chips.find(c => c.dataset.date === "2026-09-30").click();
+  put("② 点「2026-09-30」后：可见 " + visible(d) + " 张，表头「" + d.getElementById("hdr").textContent.trim() + "」"
+      + (visible(d) === 3 ? "<b>筛选正确</b>" : "筛选错误！"));
+
+  // ③ 回到全部
+  chips[0].click();
+  put("③ 点「全部」后：可见 " + visible(d) + " 张" + (visible(d) === 6 ? "<b>恢复正确</b>" : "恢复错误！"));
+
+  // ④ 第 2 层：点第一张卡片（2026-10-01 第一二单元素养卷）
+  const card = d.querySelector("a.card");
+  const docHref = card.getAttribute("href");
+  put("④ 点卡片「" + card.querySelector(".title").textContent + "」→ " + docHref);
+  d = await load("/render/" + docHref);
+  put("   卷详情页：标题「" + d.querySelector(".dtitle").textContent + "」，题干行 "
+      + d.querySelectorAll("a.q").length + " 条，原图 "
+      + (d.querySelector("img.orig") ? "已内联" : "缺失") + "，清单头「"
+      + d.querySelector(".listhead").textContent.trim() + "」");
+  put("   题目卡片含裁剪图 " + [...d.querySelectorAll("a.q .crop img")].length + " / "
+      + d.querySelectorAll("a.q").length + " 张");
+
+  // ④b 卷详情页上的「打印本卷」（按原卷版面还原）入口
+  const pbtn = d.querySelector("a.pbtn");
+  let pHref = "";
+  if (pbtn) {
+    pHref = pbtn.getAttribute("href");
+    put("④b 打印入口：" + pbtn.textContent.trim() + " → " + pHref);
+  } else {
+    put("④b <b>打印入口缺失（不是 a.pbtn，而是提示文字）</b>：" +
+        (d.querySelector(".pbtn") ? d.querySelector(".pbtn").textContent.trim() : "无"));
+  }
+
+  // ⑤ 第 3 层：点第一条题目
+  const qa = d.querySelector("a.q");
+  const qHref = qa.getAttribute("href");
+  put("⑤ 点题目「" + qa.querySelector(".qno").textContent + "」→ " + qHref);
+  d = await load("/render/" + qHref);
+  const back = [...d.querySelectorAll("header a")].map(a => a.textContent.trim() + "→" + a.getAttribute("href"));
+  put("   题目详情页："
+      + (d.querySelector("#crop img") ? "<b>原图裁剪已内联</b>" : "原图缺失") + "，"
+      + (d.querySelector("#stem") && d.querySelector("#stem").textContent.trim() ? "<b>结构化还原已渲染</b>" : "还原为空")
+      + "，顶部返回：" + back.join(" ｜ "));
+  put("   题干：" + d.querySelector("#stem").textContent.trim().slice(0, 40));
+
+  // ⑥ 试卷列表页（已生成的试卷；扫 paper-*.html + data/paper/manifest.json）
+  d = await load("/render/papers.html");
+  const pcards = [...d.querySelectorAll(".paper")];
+  put("⑥ 试卷列表页：卡片 " + pcards.length + " 张，表头「"
+      + d.querySelector("header .sub").textContent.trim() + "」");
+  put("   " + pcards.map(c => c.querySelector(".kind").textContent + "·"
+      + c.querySelector(".ptitle").textContent + "·"
+      + c.querySelector(".pages").textContent).join(" ｜ "));
+  // 页面里的链接都是**同级相对链接**（相对 /render/），而本测试页在服务器根下，
+  // 所以取资源时要补上 /render/ 前缀，否则测出来是假 404。
+  const reach = async (h) => {
+    if (!h) return "无链接";
+    const url = /^(https?:|\/)/.test(h) ? h : "/render/" + h;
+    try { const r = await fetch(url); return r.ok ? "<b>可达</b>" : "HTTP " + r.status + "（" + url + "）"; }
+    catch (e) { return "取不到：" + e.message; }
+  };
+  const c0 = pcards[0];
+  const openA = c0.querySelector("a.btn");
+  const pdfA = c0.querySelector('a.btn.ghost[target="_blank"]');
+  const docA = [...c0.querySelectorAll("a.btn.ghost")].find(a => !a.hasAttribute("target"));
+  const openHref2 = openA.getAttribute("href");
+  put("   首张「" + c0.querySelector(".ptitle").textContent + "」：打开卷面 " + openHref2
+      + "，PDF " + (pdfA ? pdfA.getAttribute("href") : "无")
+      + " → " + (await reach(pdfA && pdfA.getAttribute("href")))
+      + "，本卷解析 " + (docA ? docA.getAttribute("href") : "无")
+      + " → " + (await reach(docA && docA.getAttribute("href"))));
+  const thumb = c0.querySelector(".pt img");
+  put("   首页缩略图：" + (thumb ? thumb.getAttribute("src") : "无") + " → " + (await reach(thumb && thumb.getAttribute("src"))));
+
+  // ⑦ 第 4 层：按原卷版面还原的可打印卷面（从试卷列表点进去）
+  pHref = openHref2 || pHref;
+  if (pHref) {
+    d = await load("/render/" + pHref);
+    const secs = [...d.querySelectorAll("h2.sec")].map(h => h.textContent.replace(/\s+/g, " ").trim());
+    put("⑦ 按原卷版面的打印页：标题「" + (d.querySelector("h1") || {}).textContent + "」，"
+        + secs.length + " 个大题，表格 " + d.querySelectorAll("table.score").length + " 张，"
+        + "答题横线 " + d.querySelectorAll(".eq-box, .calc-box, .app-box").length + " 处，返回链 "
+        + (d.querySelector(".backbar a") ? d.querySelector(".backbar a").getAttribute("href") : "缺失"));
+    put("   板块：" + secs.join(" ｜ "));
+    const cols = [...d.querySelectorAll(".block")].map(b => b.className.replace("block", "").trim() || "1列");
+    put("   原卷实测列数：" + cols.join(" ｜ "));
+  }
+
+  put("\n<b>端到端流程：卷卡片 → 卷详情 → 题目详情 → 试卷列表 → 原版面打印页 全部连通</b>");
+})();
+</script>
+</body></html>

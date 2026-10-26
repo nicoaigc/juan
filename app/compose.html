@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>组卷 · 试卷题库</title>
+<link rel="stylesheet" href="css/app.css?v=20261026c">
+<link rel="stylesheet" href="css/katex.css">
+</head>
+<body>
+<div id="topbar" class="topbar"></div>
+
+<div class="wrap wide">
+  <div id="page" data-nav="customs" style="display:none">
+    <div class="phead" style="display:block">
+      <div class="r1">
+        <div style="flex:1;min-width:0">
+          <h1 class="title" id="c-head">组卷</h1>
+          <div class="meta" id="c-meta">左边挑题、右边就是卷面 —— 挑中的题按题型自动落到卷面上，排版直接在卷面上拖。</div>
+        </div>
+        <span class="lay-dirty" id="c-dirty" style="display:none">未保存</span>
+        <!-- 2026-10-07：这里的「打印 / PDF」「保存试卷」两个按钮撤掉了 —— 排版工具条里已有
+             「保存试卷」「打印预览」，一页两套保存按钮容易点混（用户要求只留下面那套）。 -->
+      </div>
+      <div class="r2">
+        <a class="back" href="customs.html">&larr; 我的组卷</a>
+        <button class="btn sec sm btn-bank" id="btn-bank">题库</button>
+        <span class="spacer"></span>
+        <span class="hint" id="save-hint"></span>
+      </div>
+    </div>
+    <div class="msg err" id="msg"></div>
+
+    <div class="studio" id="studio">
+      <aside class="bank card" id="bank"><div class="pad">
+        <label class="fl" for="c-title">卷名</label>
+        <input type="text" class="inp" id="c-title" maxlength="60" placeholder="例如：第三单元总复习（自选组卷）">
+
+        <div class="cbar" style="margin-top:14px">
+          <input type="text" class="inp" id="f-q" placeholder="搜索题干关键词，如“估算”“长方形”">
+        </div>
+        <div class="cbar">
+          <span id="f-paper" style="flex:1 1 45%"></span>
+          <span id="f-type" style="flex:1 1 45%"></span>
+        </div>
+        <div class="hint" id="pool-count"></div>
+        <div class="pool" id="pool"><div class="plist" id="plist"></div></div>
+      </div></aside>
+
+      <div class="paper-col">
+        <div class="lay-panel no-print" id="lay" style="display:none"></div>
+        <div class="canvas" id="canvas"><div id="sheets"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap narrow" id="login-host" style="padding:0"></div>
+</div>
+
+<script src="js/vendor/workbuddy-cloud-sdk.js"></script>
+<script src="js/config.js?v=20261026c"></script>
+<script src="js/local-demo.js?v=20261026c"></script>
+<script src="js/vendor/katex.min.js"></script>
+<script src="js/vendor/auto-render.min.js"></script>
+<script src="js/render.js?v=20261026c"></script>
+<script src="js/qtype.js?v=20261026c"></script>
+<script src="js/sheet.js?v=20261026c"></script>
+<script src="js/cloud.js?v=20261026c"></script>
+<script src="js/ui.js?v=20261026c"></script>
+<script src="js/sheet-edit.js?v=20261026c"></script>
+<script>
+(function () {
+  "use strict";
+
+  var TYPE_LABEL = Sheet.TYPE_TITLE;
+
+  var allQ = [], papers = [], paperById = {};
+  var picked = [];                  // 这份卷的题目 id（加入顺序；有排版时以卷面顺序为准）
+  var editingId = UI.qs("id");      // 有值 = 编辑一份已存在的组卷
+  var SE = null;                    // 排版控制器（卷面就是编辑画布）
+  var sheetCtx = null;
+
+  function showMsg(t) {
+    var m = document.getElementById("msg");
+    m.textContent = t || "";
+    m.className = "msg err" + (t ? " show" : "");
+  }
+
+  /* 题型一律走 Sheet.bucketOf —— 它先认卷面印的板块名（"2. 用竖式计算" → 计算题），
+     再退回识别存的 type。只按 type 分的话，竖式/递等式会被打成"解答题"混进应用题里。 */
+  function typeOf(q) { return TYPE_LABEL[Sheet.bucketOf(q)] || "其他"; }
+
+  function qById(id) {
+    for (var i = 0; i < allQ.length; i++) if (allQ[i].id === Number(id)) return allQ[i];
+    return null;
+  }
+
+  function paperTitle(pid) {
+    var p = paperById[String(pid)];
+    return p ? (p.title || "未命名试卷") : "";
+  }
+
+  function titleValue() { return document.getElementById("c-title").value.trim(); }
+
+  /* 题干摘要：走 stemPreview（保留 \(..\) 让公式也渲染出来），转义后再点亮 [?]。
+     ⚠️ 只点亮公式**外面**的 [?] —— 公式里的插 <span> 会打断 KaTeX（原样露 \(..\)，截图中见过） */
+  function stemSummary(q, n) {
+    var s = Render.esc(Render.stemPreview(q, n || 96));
+    return s.replace(/\\\([\s\S]*?\\\)|\[\?\]/g, function (m) {
+      return m === "[?]" ? '<span class="qmark">[?]</span>' : m;
+    });
+  }
+
+  /* ---------------------------------------------------------------- 左栏：题库
+     题量大时**按页渲染**：一次只画 POOL_PAGE 条，池子滚到底自动续（再点那行「继续加载」也行）。
+     题库上千题时全量渲染要 150ms + 3.6 万个 DOM 节点，而且每次点「加入」都重画一遍 ——
+     所以点「加入」只改那一行（refreshItemRow），不重建整个列表。 */
+  var fPaper = "", fType = "";
+  var POOL_PAGE = 80;
+  var poolList = [], poolShown = 0;
+
+  function filtered() {
+    var kw = document.getElementById("f-q").value.trim().toLowerCase();
+    return allQ.filter(function (q) {
+      if (fPaper && String(q.paper_id) !== fPaper) return false;
+      if (fType && Sheet.bucketOf(q) !== fType) return false;
+      if (kw && Render.stemPreview(q, 400).toLowerCase().indexOf(kw) < 0) return false;
+      return true;
+    });
+  }
+
+  function poolItem(q) {
+    var on = picked.indexOf(q.id) >= 0;
+    var man = q.source && q.source.qtype_manual;
+    return '<div class="pitem' + (on ? " on" : "") + '" data-id="' + q.id + '">'
+      + '<div class="pi-main">'
+      + '<div class="pi-top"><button type="button" class="chip type tchip" data-taid="' + q.id + '"'
+      + ' title="题型（点一下可手动打标，改的是题库本身）">'
+      + Render.esc(typeOf(q) + (man ? " ·手" : "")) + "</button>"
+      + '<span class="pi-src">' + Render.esc(paperTitle(q.paper_id)) + "</span></div>"
+      + '<a class="pi-stem" href="question.html?id=' + q.id + '" title="点开题目详情 —— 可编辑题干 / 选项 / 插图">'
+      + stemSummary(q, 96) + "</a>"
+      + "</div>"
+      + '<button class="btn ' + (on ? "sec" : "") + ' sm pi-add" data-add="' + q.id + '"'
+      + ' title="' + (on ? "点一下从这份卷子里移出" : "加进这份卷子") + '">'
+      + (on ? "已加入" : "加入") + "</button>"
+      + "</div>";
+  }
+
+  function moreHtml() {
+    var left = poolList.length - poolShown;
+    if (left <= 0) return "";
+    return '<div class="pool-more" id="pool-more">已显示 ' + poolShown + " / " + poolList.length
+      + " 题 · 点这里或继续下滑加载更多（还有 " + left + " 题）</div>";
+  }
+
+  function updatePoolCount() {
+    var el = document.getElementById("pool-count");
+    if (!allQ.length) { el.textContent = ""; return; }
+    el.textContent = "共 " + poolList.length + " 题"
+      + (poolList.length === allQ.length ? "" : "（题库共 " + allQ.length + " 题）")
+      + (picked.length ? " · 已选 " + picked.length + " 题" : "");
+  }
+
+  /* 把下一批题目接到列表尾部 —— 不重画已有节点，KaTeX 也就只对新那批跑一次 */
+  function appendPool(n) {
+    var list = document.getElementById("plist");
+    if (!list || poolShown >= poolList.length) return false;
+    var from = poolShown;
+    poolShown = Math.min(poolShown + (n || POOL_PAGE), poolList.length);
+    var html = poolList.slice(from, poolShown).map(poolItem).join("");
+    var box = document.createElement("div");
+    box.innerHTML = html;
+    var more = document.getElementById("pool-more");
+    var nodes = [].slice.call(box.childNodes);
+    nodes.forEach(function (nd) { list.insertBefore(nd, more); });
+    if (more) more.outerHTML = moreHtml();            // 更新剩余数量 / 没了就摘掉
+    Render.typeset(box);
+    return true;
+  }
+
+  function paintPool() {
+    var list = document.getElementById("plist");
+    poolShown = Math.min(POOL_PAGE, poolList.length);
+    list.innerHTML = poolList.slice(0, poolShown).map(poolItem).join("") + moreHtml();
+    Render.typeset(list);
+    autoFill();
+  }
+
+  /* 池子没滚动条时看不见「继续加载」—— 主动补到能滚（或补完）为止，免得用户以为没题了 */
+  function autoFill() {
+    var pool = document.getElementById("pool");
+    for (var i = 0; i < 20 && poolShown < poolList.length
+         && pool.scrollHeight <= pool.clientHeight + 8; i++) appendPool();
+  }
+
+  function renderPool() {
+    poolList = filtered();
+    var box = document.getElementById("plist");
+    updatePoolCount();
+    if (!allQ.length) {
+      box.innerHTML = '<div class="hint" style="padding:18px 0">题库还是空的。先'
+        + '<a href="upload.html">上传试卷照片</a>并识别，识别出的题目会自动进题库。</div>';
+      return;
+    }
+    if (!poolList.length) {
+      box.innerHTML = '<div class="hint" style="padding:18px 0">没有符合条件的题目，换个关键词或筛选条件看看。</div>';
+      return;
+    }
+    paintPool();
+  }
+
+  /* 只刷新某一行（点「加入 / 已加入」、卷面上 × 移出一题）—— 重建整张列表太贵 */
+  function refreshItemRow(id) {
+    var q = qById(id);
+    var el = document.querySelector('#plist .pitem[data-id="' + Number(id) + '"]');
+    if (!q || !el) { updatePoolCount(); return; }
+    var box = document.createElement("div");
+    box.innerHTML = poolItem(q);
+    var node = box.firstChild;
+    el.parentNode.replaceChild(node, el);
+    Render.typeset(node);
+    updatePoolCount();
+  }
+
+  function renderStats(secs) {
+    var h = document.getElementById("save-hint");
+    if (!h) return;
+    var all = picked.map(qById).filter(Boolean);
+    var cnt = {};
+    all.forEach(function (q) { var t = typeOf(q); cnt[t] = (cnt[t] || 0) + 1; });
+    var dist = Object.keys(cnt)
+      .sort(function (a, b) { return cnt[b] - cnt[a] || (a < b ? -1 : 1); })
+      .map(function (k) { return k + " " + cnt[k]; }).join(" · ");
+    h.textContent = all.length
+      ? (all.length + " 题 · " + dist
+         + (secs && secs.length > 1 ? " · " + secs.length + " 个板块" : ""))
+      : "";
+  }
+
+  function fillFilters() {
+    UI.select(document.getElementById("f-paper"), [{ value: "", label: "全部来源卷" }].concat(
+      papers.map(function (p) {
+        return { value: String(p.id), label: p.title || "未命名试卷" };
+      })), { small: true, keepId: true, onChange: function (v) { fPaper = v; renderPool(); } });
+
+    var used = {};
+    allQ.forEach(function (q) { used[Sheet.bucketOf(q)] = 1; });
+    var keys = Object.keys(used).sort(function (a, b) {
+      return Sheet.typeIndex(a) - Sheet.typeIndex(b);
+    });
+    UI.select(document.getElementById("f-type"), [{ value: "", label: "全部题型" }].concat(
+      keys.map(function (k) {
+        return { value: k, label: TYPE_LABEL[k] || k };
+      })), { small: true, keepId: true, onChange: function (v) { fType = v; renderPool(); } });
+  }
+
+  /* ---------------------------------------------------------------- 选题 */
+  function add(id) {
+    if (picked.indexOf(id) >= 0) return;
+    picked.push(id);
+    SE.addQuestion(qById(id));
+    SE.markDirty();
+    SE.draw();
+    refreshItemRow(id);
+  }
+
+  function remove(id) {
+    if (picked.indexOf(id) < 0) return;
+    picked = picked.filter(function (x) { return x !== id; });
+    SE.removeQuestion(id);          // 内部会重画卷面 + 打「未保存」
+    refreshItemRow(id);
+  }
+
+  function toggle(id) {
+    if (picked.indexOf(id) >= 0) remove(id); else add(id);
+  }
+
+  /* ---------------------------------------------------------------- 题型打标（题库级）
+     跟排版态卷面上的题型小标（SE 那层，存 layout.types）是两层：这里改的是题库本身
+     （写进题目的 source.qtype_manual，全站生效 —— 首页统计 / 筛选 / 照片卷都跟着变）。
+     priority：手动打标 > 卷面板块名 > 模型题型（qtype.js bucketOf）。 */
+  function setBankType(id, tag) {
+    var q = qById(id);
+    if (!q) return;
+    var src = Object.assign({}, q.source || {});
+    if (tag) src.qtype_manual = tag; else delete src.qtype_manual;
+    CloudAPI.updateQuestion(id, { source: src }).then(function (row) {
+      for (var i = 0; i < allQ.length; i++) if (Number(allQ[i].id) === Number(id)) { allQ[i] = row; break; }
+      renderPool();                                  // 筛选/小标都可能变，重画当前页
+      if (picked.indexOf(Number(id)) >= 0) SE.draw(); // 已排进卷面：自动板块跟着挪（手动排版不动，那层有卷面小标管）
+    }).catch(function (e) {
+      UI.toast("打标没保存上：" + (e.message || e));
+    });
+  }
+
+  function tagType(id, anchor) {
+    var q = qById(id);
+    if (!q) return;
+    var man = q.source && q.source.qtype_manual;
+    UI.typePicker(anchor, Sheet.bucketOf(q), man, function (t) {
+      if (t === null && !man) return;                // 没打过标却点「恢复自动」= 什么都不用做
+      setBankType(id, t);
+    });
+  }
+
+  /* ---------------------------------------------------------------- 卷面自适应
+     卷面是真实 A4 宽度（210mm≈794px）。窄屏放不下就整块等比缩小 —— 只缩显示，
+     数据与打印一概不受影响（打印页仍是 1:1）。 */
+  function fitSheet() {
+    var canvas = document.getElementById("canvas");
+    var inner = document.getElementById("sheets");
+    if (!canvas || !inner) return;
+    var nat = inner.offsetWidth || 794;            // transform 不影响布局宽高，量到的是真实宽度
+    var avail = canvas.clientWidth;
+    var z = avail > 0 ? Math.min(1, avail / nat) : 1;
+    inner.style.transformOrigin = "0 0";
+    inner.style.transform = z < 0.999 ? "scale(" + z.toFixed(4) + ")" : "";
+    canvas.style.height = z < 0.999 ? Math.round(inner.offsetHeight * z + 2) + "px" : "";
+  }
+
+  window.addEventListener("resize", fitSheet);
+  /* 图片（题内插图）是后加载的，卷面高度会变 —— 盯住它，缩放后的容器高度跟着重算。
+     注意 fitSheet 只改 #canvas 的高度、不改 #sheets，所以不会自激。 */
+  if (window.ResizeObserver) {
+    new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById("sheets"));
+  }
+
+  /* ---------------------------------------------------------------- 排版控制器 */
+  function makeEditor() {
+    SE = SheetEd.create({
+      host: "#sheets",
+      bar: "#lay",
+      tag: "排版",
+      hint: "左栏「加入」挑题（题库题多时先列 80 题，往下滑自动加载更多）；卷面上拖动题目卡片换位、标题点开即改、1/2/3/4 切列数、# 开关这一块的小题号；"
+          + "带图的题拖图片右缘的小手柄调图片大小（双击回默认）、图右下角的「说明 ✕」移掉图片下面"
+          + "那行小字（再点一下恢复）；题目右上角 × 把它移出这份卷子。"
+          + "「打印预览」随时看按 A4 分页的成品效果。",
+      labels: { save: "保存试卷" },
+      alwaysEdit: true,
+      canRemove: true,
+      emptyText: "把题目拖到这里",
+      buttons: ["numbering", "reset", "save", "preview"],
+      title: titleValue,
+      ctx: function () { return sheetCtx; },
+      onDraw: function (secs) {
+        if (!secs.length) {
+          document.getElementById("sheets").className = "";
+          document.getElementById("sheets").innerHTML = '<div class="canvas-empty">'
+            + "左栏点「加入」把题目挑过来 —— 挑中的题会按题型自动落到卷面上，然后就能在卷面上拖动排版。"
+            + "</div>";
+        }
+        fitSheet();
+        renderStats(secs);
+      },
+      onAction: function (act) {
+        if (act === "save") return save();
+        if (act === "reset") return resetLayout();
+      },
+      /* 卷面上点 × 移出一题：题库里的题不受影响，只是从这份卷子里摘掉 */
+      onRemoveQuestion: function (id) {
+        picked = picked.filter(function (x) { return Number(x) !== Number(id); });
+        refreshItemRow(id);
+      },
+      onDirtyChange: function (d) {
+        document.getElementById("c-dirty").style.display = d ? "" : "none";
+      },
+    });
+  }
+
+  /* 恢复智能排版：只清内存里的板块，**留到点「保存试卷」时才落库** ——
+     这一页只有一个保存按钮，免得两个按钮互相覆盖。 */
+  function resetLayout() {
+    SE.clearManual();
+    SE.markDirty();
+    SE.draw();
+    UI.toast("已恢复智能排版（记得保存）");
+  }
+
+  /* ---------------------------------------------------------------- 保存 */
+  function saveIds() {
+    var snap = SE.snapshot();
+    if (snap.sections) {
+      var out = [];
+      snap.sections.forEach(function (s) { out = out.concat(s.ids); });
+      if (out.length) return out;
+    }
+    return picked.slice();
+  }
+
+  function save() {
+    var title = titleValue();
+    if (!title) {
+      showMsg("请先填写卷名");
+      document.getElementById("c-title").focus();
+      return Promise.resolve(null);
+    }
+    if (!picked.length) { showMsg("还没有选题，至少在左栏加入一道题"); return Promise.resolve(null); }
+    /* 保存按钮就是排版工具条里那颗「保存试卷」（lay-save）—— 页头那套已撤，别再找 btn-save */
+    var btn = document.getElementById("lay-save");
+    if (btn) btn.disabled = true;
+    showMsg("");
+    /* 题目顺序 + 排版 + 题号方案**一起**存：这一页改完点一次就够了 */
+    var row = { title: title, question_ids: saveIds(), layout: SE.snapshot() };
+    var job = editingId
+      ? CloudAPI.updateCustomPaper(editingId, row)
+      : CloudAPI.createCustomPaper(row);
+    return job.then(function (p) {
+      if (btn) btn.disabled = false;
+      SE.setDirty(false);
+      if (!editingId) adoptSaved(p.id);
+      UI.toast("已保存");
+      return p;
+    }).catch(function (e) {
+      if (btn) btn.disabled = false;
+      showMsg(e.message || "保存失败");
+      return null;
+    });
+  }
+
+  /* 第一次保存之后留在本页继续编辑（刷新 / 收藏都还在这一份上），不再跳走 */
+  function adoptSaved(id) {
+    editingId = id;
+    try { history.replaceState(null, "", "compose.html?id=" + id); } catch (e) { /* file:// 下忽略 */ }
+    document.getElementById("c-head").textContent = "编辑试卷";
+    document.getElementById("c-meta").textContent = "改动点「保存试卷」覆盖这份组卷；出卷用「我的组卷」卡片右上角的打印图标。";
+    document.title = (titleValue() || "自建卷") + " · 编辑";
+  }
+
+  /* ---------------------------------------------------------------- 加载 */
+  function load() {
+    return Promise.all([CloudAPI.listAllQuestions(), CloudAPI.listPapers(), CloudAPI.listAllFiles()])
+      .then(function (r) {
+        allQ = (r[0] || []).map(function (q) { q.id = Number(q.id); return q; });
+        papers = (r[1] || []).map(function (p) { p.id = Number(p.id); return p; });
+        papers.forEach(function (p) { paperById[String(p.id)] = p; });
+        var files = r[2] || [];
+        fillFilters();
+        makeEditor();
+        return UI.buildImageMap(files).then(function (map) {
+          sheetCtx = UI.ctxFor(map || {}, files);
+        });
+      })
+      .then(function () {
+        if (!editingId) { SE.draw(); renderPool(); return; }
+        return CloudAPI.getCustomPaper(editingId).then(function (c) {
+          if (!c) { showMsg("找不到这份自建卷（可能已删除）"); SE.draw(); renderPool(); return; }
+          document.getElementById("c-title").value = c.title || "";
+          picked = (c.question_ids || []).map(Number).filter(function (id) { return !!qById(id); });
+          SE.setQuestions(picked.map(qById));
+          SE.setNo(c.layout && c.layout.numbering);
+          SE.setTypes(c.layout && c.layout.types);
+          SE.setFigW(c.layout && c.layout.figs);
+          SE.setCaps(c.layout && c.layout.caps);
+          SE.setManual((c.layout && c.layout.sections && c.layout.sections.length)
+            ? c.layout.sections.map(function (s) {
+                return { title: Sheet.stripSecNo(s.title), type: s.type || "", cols: Sheet.clampCols(s.cols),
+                         smallNo: (s.smallNo === true || s.smallNo === false) ? s.smallNo : undefined,
+                         ids: (s.ids || []).map(Number) };
+              })
+            : null);
+          document.getElementById("c-head").textContent = "编辑试卷";
+          document.getElementById("c-meta").textContent = "改动点「保存试卷」覆盖这份组卷；要出卷就点「打印 / PDF」。";
+          document.title = (c.title || "自建卷") + " · 编辑";
+          SE.draw();
+          renderPool();
+        });
+      });
+  }
+
+  /* ---------------------------------------------------------------- 事件 */
+  document.getElementById("pool").addEventListener("click", function (ev) {
+    if (ev.target.closest("#pool-more")) { appendPool(); return; }
+    var t = ev.target.closest("[data-taid]");
+    if (t) { tagType(Number(t.dataset.taid), t); return; }   // 题型打标，别往下走
+    var b = ev.target.closest("[data-add]");
+    if (b) toggle(Number(b.dataset.add));
+  });
+
+  /* 池子滚到底（差 200px 算到底）就把下一批接上 —— 题多的时候不用手点 */
+  document.getElementById("pool").addEventListener("scroll", function () {
+    var p = document.getElementById("pool");
+    if (p.scrollTop + p.clientHeight >= p.scrollHeight - 200) appendPool();
+  }, { passive: true });
+
+  /* 搜索框防抖：题库上千题时，每敲一个字都全量重筛会顿 —— 停 150ms 再算 */
+  var fqTimer = null;
+  document.getElementById("f-q").addEventListener("input", function () {
+    if (fqTimer) clearTimeout(fqTimer);
+    fqTimer = setTimeout(function () { fqTimer = null; renderPool(); }, 150);
+  });
+
+  /* 卷名即卷头：改一个字卷面上就跟着变；清空就把卷头收掉（要重画）。
+     卷头行数变了会顶动整卷，所以顺手重算一次分页。 */
+  document.getElementById("c-title").addEventListener("input", function () {
+    var t = titleValue();
+    var head = document.querySelector("#sheets .paper-head .t");
+    if (t && head) {
+      var box = head.parentNode;
+      var h0 = box.offsetHeight;
+      head.textContent = t;
+      if (box.offsetHeight !== h0) Sheet.paginate(document.getElementById("sheets"));
+    } else {
+      SE.draw();
+    }
+    SE.markDirty();
+  });
+
+  /* 页头的「保存试卷 / 打印 PDF」按钮已撤（2026-10-07），保存走排版工具条的「保存试卷」
+     （sheet-edit.js 里 id=lay-save，点它由 onAction("save") 进 save()），不再单独绑。 */
+
+  document.getElementById("btn-bank").addEventListener("click", function () {
+    document.getElementById("studio").classList.toggle("bank-hide");
+  });
+
+  CloudAPI.handleWechatCallback().then(function () {
+    return UI.requireLogin(document.getElementById("page"), function () {
+      document.getElementById("page").style.display = "block";
+      load().catch(function (e) { showMsg(e.message || "加载失败"); });
+    });
+  });
+})();
+</script>
+</body>
+</html>

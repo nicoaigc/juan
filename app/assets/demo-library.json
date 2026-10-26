@@ -1,0 +1,4707 @@
+{
+ "papers": [
+  {
+   "title": "乘法练习卷2",
+   "paper_date": "2026-09-30",
+   "subject": "数学",
+   "grade": null,
+   "status": "done",
+   "status_note": "示例卷（内置）",
+   "files": [
+    {
+     "page_no": 1,
+     "filename": "2026-09-30-乘法练习卷2.png",
+     "storage_path": "local:assets/benchmark/demo-01-1.png",
+     "width": 2304,
+     "height": 3001,
+     "size_bytes": 935095
+    }
+   ],
+   "questions": [
+    {
+     "seq": 1,
+     "qno": 1,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "8\\times8+7="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       591,
+       663,
+       812,
+       710
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 2,
+     "qno": 2,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "70\\times4="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       993,
+       643,
+       1171,
+       692
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 3,
+     "qno": 3,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "3\\times24="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1363,
+       628,
+       1544,
+       682
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 4,
+     "qno": 4,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "31\\times8="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1737,
+       620,
+       1913,
+       667
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 5,
+     "qno": 5,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "4\\times7+3="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       586,
+       744,
+       807,
+       793
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 6,
+     "qno": 6,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "9\\times200="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       989,
+       726,
+       1193,
+       777
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 7,
+     "qno": 7,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "15\\times6="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1361,
+       717,
+       1541,
+       772
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 8,
+     "qno": 8,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "70\\times0\\times3="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1735,
+       701,
+       1983,
+       753
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 9,
+     "qno": 9,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "6\\times9+6="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       582,
+       828,
+       802,
+       878
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 10,
+     "qno": 10,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "360\\times2="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       985,
+       814,
+       1191,
+       865
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 11,
+     "qno": 11,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "600\\times5="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1358,
+       806,
+       1563,
+       862
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 12,
+     "qno": 12,
+     "printed_no": null,
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "4\\times300-30="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1730,
+       791,
+       2031,
+       841
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 13,
+     "qno": 13,
+     "printed_no": null,
+     "section": "2. 用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "5\\times580="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       572,
+       1003,
+       769,
+       1050
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 14,
+     "qno": 14,
+     "printed_no": null,
+     "section": "2. 用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "609\\times6="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1155,
+       995,
+       1359,
+       1044
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 15,
+     "qno": 15,
+     "printed_no": null,
+     "section": "2. 用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "759\\times8="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1752,
+       969,
+       1958,
+       1019
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 16,
+     "qno": 16,
+     "printed_no": null,
+     "section": "3. 计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "1570-\\text{[?]}\\times314"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       544,
+       1442,
+       847,
+       1492
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 17,
+     "qno": 17,
+     "printed_no": null,
+     "section": "3. 计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "763\\times8+99"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1138,
+       1436,
+       1396,
+       1489
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 18,
+     "qno": 18,
+     "printed_no": null,
+     "section": "3. 计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "1000-109\\times7"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1736,
+       1426,
+       2047,
+       1480
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 19,
+     "qno": 19,
+     "printed_no": null,
+     "section": "4. 在○里填入“>”“<”或“=”",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "102\\times3\\ \\bigcirc\\ 500"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       501,
+       1921,
+       847,
+       2020
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 20,
+     "qno": 20,
+     "printed_no": null,
+     "section": "4. 在○里填入“>”“<”或“=”",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "170\\times4\\ \\bigcirc\\ 680"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1113,
+       1923,
+       1462,
+       2024
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 21,
+     "qno": 21,
+     "printed_no": null,
+     "section": "4. 在○里填入“>”“<”或“=”",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "180\\times6\\ \\bigcirc\\ 1000"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1721,
+       1926,
+       2092,
+       2027
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 22,
+     "qno": 22,
+     "printed_no": null,
+     "section": "4. 在○里填入“>”“<”或“=”",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "250\\times4\\ \\bigcirc\\ 5\\times240"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       491,
+       2046,
+       916,
+       2146
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 23,
+     "qno": 23,
+     "printed_no": null,
+     "section": "4. 在○里填入“>”“<”或“=”",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "430\\times3\\ \\bigcirc\\ 403\\times7"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1105,
+       2051,
+       1533,
+       2153
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 24,
+     "qno": 24,
+     "printed_no": null,
+     "section": "4. 在○里填入“>”“<”或“=”",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "360\\times5\\ \\bigcirc\\ 350\\times6"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       1716,
+       2054,
+       2134,
+       2154
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 25,
+     "qno": 25,
+     "printed_no": "（1）",
+     "section": "5. 填空",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "text",
+       "v": "三位数□24×4 的积是三位数，□里最大能填（　　）；积是四位数，□里最小能填（　　）。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       549,
+       2417,
+       2189,
+       2575
+      ],
+      "printed_no": "（1）"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 26,
+     "qno": 26,
+     "printed_no": "（2）",
+     "section": "5. 填空",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "text",
+       "v": "一位数乘四位数，积可能是（　　）位数，也可能是（　　）位数。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       544,
+       2604,
+       1909,
+       2677
+      ],
+      "printed_no": "（2）",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面印刷序号，题面完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 27,
+     "qno": 27,
+     "printed_no": "（3）",
+     "section": "5. 填空",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "text",
+       "v": "最大的一位数与最大的三位数的和是（　　），积是（　　）。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-乘法练习卷2.png",
+      "page": 1,
+      "bbox": [
+       538,
+       2699,
+       1830,
+       2773
+      ],
+      "printed_no": "（3）",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面印刷序号，题面完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    }
+   ]
+  },
+  {
+   "title": "小学练习页",
+   "paper_date": "2026-09-30",
+   "subject": "数学",
+   "grade": null,
+   "status": "done",
+   "status_note": "示例卷（内置）",
+   "files": [
+    {
+     "page_no": 1,
+     "filename": "2026-09-30-小学练习页.jpg",
+     "storage_path": "local:assets/benchmark/demo-02-1.jpg",
+     "width": 1440,
+     "height": 1920,
+     "size_bytes": 267483
+    }
+   ],
+   "questions": [
+    {
+     "seq": 1,
+     "qno": 1,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "2\\times3\\times10="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       185,
+       245,
+       520,
+       310
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 2,
+     "qno": 2,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "70\\times9="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       560,
+       245,
+       915,
+       310
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 3,
+     "qno": 3,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "400\\times9="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       965,
+       245,
+       1315,
+       310
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 4,
+     "qno": 4,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "6\\times0\\times5="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       185,
+       306,
+       520,
+       372
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整 （2026-10-05 再放大复核印刷题面：`6×0×5=`，与识别一致。M1 阶段记的「学生终值与标准答案一致却标红 ✗」经复核是**误认**——本题行尾没有红笔判定，右侧那条红斜线属于上一行（400×9）。）"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 5,
+     "qno": 5,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "9\\times2\\div3="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       560,
+       306,
+       915,
+       372
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整 （2026-10-05 再放大复核印刷题面：`9×2÷3=`，与识别一致。M1 阶段记的「末位模糊 243/248」指的是**学生手写作答**，与印刷题干无关。）"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 6,
+     "qno": 6,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "4\\times8+8="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       965,
+       306,
+       1315,
+       372
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整 （2026-10-05 再放大复核印刷题面：`4×8+8=`，与识别一致。M1 阶段记的「终值百位被覆盖」指的是学生作答/邻题手写笔迹，与印刷题干无关。）"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 7,
+     "qno": 7,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "7\\times4+5="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       185,
+       368,
+       520,
+       432
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 8,
+     "qno": 8,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "48\\div6\\div2="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       560,
+       368,
+       915,
+       432
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 9,
+     "qno": 9,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "72\\div9\\div4="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       965,
+       368,
+       1315,
+       432
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 10,
+     "qno": 10,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "8+2\\times7="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       185,
+       428,
+       520,
+       505
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 11,
+     "qno": 11,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "400\\div80="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       560,
+       428,
+       915,
+       505
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 12,
+     "qno": 12,
+     "printed_no": null,
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "50\\times30="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       965,
+       428,
+       1315,
+       505
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 13,
+     "qno": 13,
+     "printed_no": null,
+     "section": "二、用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "9070-2304="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       185,
+       560,
+       520,
+       785
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 14,
+     "qno": 14,
+     "printed_no": null,
+     "section": "二、用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "6\\times55="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       560,
+       560,
+       915,
+       785
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 15,
+     "qno": 15,
+     "printed_no": null,
+     "section": "二、用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "5\\times809="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       965,
+       560,
+       1315,
+       785
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 16,
+     "qno": 16,
+     "printed_no": null,
+     "section": "二、用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "754\\times9="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       185,
+       800,
+       520,
+       1020
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 17,
+     "qno": 17,
+     "printed_no": null,
+     "section": "二、用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "7\\times240="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       560,
+       800,
+       915,
+       1020
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 18,
+     "qno": 18,
+     "printed_no": null,
+     "section": "二、用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "6200\\times4="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       965,
+       800,
+       1315,
+       1020
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 19,
+     "qno": 19,
+     "printed_no": null,
+     "section": "三、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "254+27-54"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       185,
+       1076,
+       520,
+       1292
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 20,
+     "qno": 20,
+     "printed_no": null,
+     "section": "三、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "976-81+19"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       560,
+       1076,
+       915,
+       1292
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 21,
+     "qno": 21,
+     "printed_no": null,
+     "section": "三、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "543-219-281"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       965,
+       1076,
+       1315,
+       1292
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 22,
+     "qno": 22,
+     "printed_no": null,
+     "section": "三、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "43+57\\times9"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       185,
+       1284,
+       520,
+       1480
+      ]
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 23,
+     "qno": 23,
+     "printed_no": null,
+     "section": "三、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "108\\times7-108\\times5"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       560,
+       1284,
+       915,
+       1480
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 24,
+     "qno": 24,
+     "printed_no": null,
+     "section": "三、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "81\\div9\\times810"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       965,
+       1284,
+       1315,
+       1480
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 25,
+     "qno": 25,
+     "printed_no": null,
+     "section": "卷面草稿",
+     "qtype": "other",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "57\\times9="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-小学练习页.jpg",
+      "page": 1,
+      "bbox": [
+       125,
+       1450,
+       340,
+       1725
+      ],
+      "crop_reviewed": true,
+      "review_note": "手写卷：边沿墨迹为学生笔迹越界，印刷题面已逐张放大核对完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    }
+   ]
+  },
+  {
+   "title": "选择与应用题",
+   "paper_date": "2026-09-30",
+   "subject": "数学",
+   "grade": null,
+   "status": "done",
+   "status_note": "示例卷（内置）",
+   "files": [
+    {
+     "page_no": 1,
+     "filename": "2026-09-30-选择与应用题.jpg",
+     "storage_path": "local:assets/benchmark/demo-03-1.jpg",
+     "width": 1427,
+     "height": 1920,
+     "size_bytes": 166755
+    }
+   ],
+   "questions": [
+    {
+     "seq": 1,
+     "qno": 1,
+     "printed_no": "(1)",
+     "section": "6. 选择",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "79×6,第一个乘数十位上的 7 乘第二个乘数 6,结果是(　　)。"
+      }
+     ],
+     "options": [
+      {
+       "t": "text",
+       "v": "42"
+      },
+      {
+       "t": "text",
+       "v": "420"
+      },
+      {
+       "t": "text",
+       "v": "4200"
+      },
+      {
+       "t": "text",
+       "v": "不确定"
+      }
+     ],
+     "source": {
+      "file": "2026-09-30-选择与应用题.jpg",
+      "page": 1,
+      "bbox": [
+       290,
+       362,
+       1310,
+       463
+      ],
+      "printed_no": "(1)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号（(1)/(2)），题面完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": 0.97,
+      "figure": null
+     }
+    },
+    {
+     "seq": 2,
+     "qno": 2,
+     "printed_no": "(2)",
+     "section": "6. 选择",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "下面乘积最接近 1000 的算式是(　　)。"
+      }
+     ],
+     "options": [
+      {
+       "t": "latex",
+       "v": "300\\times3"
+      },
+      {
+       "t": "latex",
+       "v": "330\\times3"
+      },
+      {
+       "t": "latex",
+       "v": "333\\times3"
+      },
+      {
+       "t": "latex",
+       "v": "501\\times2"
+      }
+     ],
+     "source": {
+      "file": "2026-09-30-选择与应用题.jpg",
+      "page": 1,
+      "bbox": [
+       286,
+       479,
+       1306,
+       579
+      ],
+      "printed_no": "(2)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号（(1)/(2)），题面完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": 0.97,
+      "figure": null
+     }
+    },
+    {
+     "seq": 3,
+     "qno": 3,
+     "printed_no": "(1)",
+     "section": "7. 应用题",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "暑假里,小海去游泳馆游泳,他游了 3 个来回,一共游了多少米?"
+      },
+      {
+       "t": "figure",
+       "state": "crop",
+       "src": "q-20260930-055-fig1.jpg",
+       "bbox": [
+        978,
+        711,
+        1335,
+        963
+       ],
+       "expr": null,
+       "geometry": null,
+       "confidence": 0.95,
+       "caption": "图：游泳池泳道示意图，泳道长 50 米"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-选择与应用题.jpg",
+      "page": 1,
+      "bbox": [
+       277,
+       653,
+       1345,
+       963
+      ],
+      "printed_no": "(1)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号（(1)/(2)），题面完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": 0.95
+     }
+    },
+    {
+     "seq": 4,
+     "qno": 4,
+     "printed_no": "(2)",
+     "section": "7. 应用题",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "有 6 箱货物,每箱货物重 285 千克,请你用估算的方法判断货运电梯能否一次性运输这些货物?"
+      },
+      {
+       "t": "figure",
+       "state": "crop",
+       "src": "q-20260930-056-fig1.jpg",
+       "bbox": [
+        1069,
+        1096,
+        1329,
+        1336
+       ],
+       "expr": null,
+       "geometry": null,
+       "confidence": 0.95,
+       "caption": "图：货运电梯标牌，最大载质量 2000 kg"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-09-30-选择与应用题.jpg",
+      "page": 1,
+      "bbox": [
+       252,
+       974,
+       1340,
+       1336
+      ],
+      "printed_no": "(2)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号（(1)/(2)），题面完整"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": 0.95
+     }
+    }
+   ]
+  },
+  {
+   "title": "第2单元练习卷（静安名校）",
+   "paper_date": "2026-10-01",
+   "subject": "数学",
+   "grade": null,
+   "status": "done",
+   "status_note": "示例卷（内置）",
+   "files": [
+    {
+     "page_no": 1,
+     "filename": "2026-10-01-第2单元练习卷-p1.jpg",
+     "storage_path": "local:assets/benchmark/demo-04-1.jpg",
+     "width": 1440,
+     "height": 1920,
+     "size_bytes": 266914
+    },
+    {
+     "page_no": 2,
+     "filename": "2026-10-01-第2单元练习卷-p2.jpg",
+     "storage_path": "local:assets/benchmark/demo-04-2.jpg",
+     "width": 1440,
+     "height": 1920,
+     "size_bytes": 267395
+    },
+    {
+     "page_no": 3,
+     "filename": "2026-10-01-第2单元练习卷-p3.jpg",
+     "storage_path": "local:assets/benchmark/demo-04-3.jpg",
+     "width": 1440,
+     "height": 1920,
+     "size_bytes": 239034
+    },
+    {
+     "page_no": 4,
+     "filename": "2026-10-01-第2单元练习卷-p4.jpg",
+     "storage_path": "local:assets/benchmark/demo-04-4.jpg",
+     "width": 1440,
+     "height": 1920,
+     "size_bytes": 240569
+    }
+   ],
+   "questions": [
+    {
+     "seq": 1,
+     "qno": 1,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "4\\times40="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       190,
+       286,
+       355,
+       326
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 2,
+     "qno": 2,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "600+300="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       575,
+       291,
+       750,
+       326
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 3,
+     "qno": 3,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "4\\times2\\times5="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       952,
+       298,
+       1117,
+       326
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 4,
+     "qno": 4,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "10\\times0\\times8="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       193,
+       348,
+       370,
+       388
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 5,
+     "qno": 5,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "6\\times90="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       575,
+       351,
+       691,
+       388
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 6,
+     "qno": 6,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "200-130="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       953,
+       360,
+       1111,
+       388
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 7,
+     "qno": 7,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "180-80\\times2="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       195,
+       408,
+       414,
+       450
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 8,
+     "qno": 8,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "text",
+       "v": "（　　）×4=360"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       576,
+       411,
+       800,
+       450
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.95,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 9,
+     "qno": 9,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "72\\div8\\div3="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       954,
+       418,
+       1111,
+       450
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 10,
+     "qno": 10,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "text",
+       "v": "50×（　　）=350"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       195,
+       470,
+       463,
+       512
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.95,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 11,
+     "qno": 11,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "4\\times70-30="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       574,
+       472,
+       820,
+       512
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 12,
+     "qno": 12,
+     "printed_no": "",
+     "section": "一、算一算",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "text",
+       "v": "5×80=20×（　　）"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       953,
+       478,
+       1213,
+       512
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "填空括号「（　）」是卷面印刷的空括号，括号内算式（如 90 / 3 / 20）是学生笔迹，未转写；题面无小题号，窗口即内容首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.95,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 13,
+     "qno": 13,
+     "printed_no": "",
+     "section": "二、用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "768\\times9="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       196,
+       597,
+       389,
+       648
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "竖式题只印一行算式，下方学生的竖式过程（笔迹）按「不为包住笔迹而撑大框」未纳入；题面无小题号",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 14,
+     "qno": 14,
+     "printed_no": "",
+     "section": "二、用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "8\\times750="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       575,
+       588,
+       792,
+       646
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "竖式题只印一行算式，下方学生的竖式过程（笔迹）按「不为包住笔迹而撑大框」未纳入；题面无小题号",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 15,
+     "qno": 15,
+     "printed_no": "",
+     "section": "二、用竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "3056\\times8="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       951,
+       604,
+       1177,
+       650
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "竖式题只印一行算式，下方学生的竖式过程（笔迹）按「不为包住笔迹而撑大框」未纳入；题面无小题号",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 16,
+     "qno": 16,
+     "printed_no": "",
+     "section": "三、在○里填入“>”“<”或“=”",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "38\\times6\\ \\bigcirc\\ 38\\times8"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       163,
+       1078,
+       464,
+       1138
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "比大小的○是卷面印刷空圈（学生已在圈内填了 > 或 <，属笔迹、未转写），整个表达式走 latex 片段照实写 \\bigcirc；题面无小题号",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 17,
+     "qno": 17,
+     "printed_no": "",
+     "section": "三、在○里填入“>”“<”或“=”",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "14\\times7\\ \\bigcirc\\ 17\\times4"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       737,
+       1071,
+       972,
+       1130
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "比大小的○是卷面印刷空圈（学生已在圈内填了 > 或 <，属笔迹、未转写），整个表达式走 latex 片段照实写 \\bigcirc；题面无小题号",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 18,
+     "qno": 18,
+     "printed_no": "",
+     "section": "三、在○里填入“>”“<”或“=”",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "27\\times3\\ \\bigcirc\\ 23\\times7"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       160,
+       1152,
+       440,
+       1216
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "比大小的○是卷面印刷空圈（学生已在圈内填了 > 或 <，属笔迹、未转写），整个表达式走 latex 片段照实写 \\bigcirc；题面无小题号",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 19,
+     "qno": 19,
+     "printed_no": "",
+     "section": "三、在○里填入“>”“<”或“=”",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "81\\times3\\ \\bigcirc\\ 42\\times9"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       624,
+       1148,
+       976,
+       1214
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "比大小的○是卷面印刷空圈（学生已在圈内填了 > 或 <，属笔迹、未转写），整个表达式走 latex 片段照实写 \\bigcirc；题面无小题号",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 20,
+     "qno": 20,
+     "printed_no": "",
+     "section": "三、在○里填入“>”“<”或“=”",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "19\\times5\\ \\bigcirc\\ 15\\times9"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       160,
+       1240,
+       438,
+       1302
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "比大小的○是卷面印刷空圈（学生已在圈内填了 > 或 <，属笔迹、未转写），整个表达式走 latex 片段照实写 \\bigcirc；题面无小题号",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 21,
+     "qno": 21,
+     "printed_no": "",
+     "section": "三、在○里填入“>”“<”或“=”",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "45\\times3\\ \\bigcirc\\ 43\\times5"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       627,
+       1230,
+       985,
+       1296
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "比大小的○是卷面印刷空圈（学生已在圈内填了 > 或 <，属笔迹、未转写），整个表达式走 latex 片段照实写 \\bigcirc；题面无小题号",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 22,
+     "qno": 22,
+     "printed_no": "",
+     "section": "四、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "822+276+178+634"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       156,
+       1385,
+       500,
+       1447
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "递等式题只印算式本身（无小题号），下方学生作答笔迹未纳入框内",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 23,
+     "qno": 23,
+     "printed_no": "",
+     "section": "四、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "750+250\\times6"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       658,
+       1388,
+       856,
+       1434
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "递等式题只印算式本身（无小题号），下方学生作答笔迹未纳入框内",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 24,
+     "qno": 24,
+     "printed_no": "",
+     "section": "四、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "6\\times486+314\\times6"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p1.jpg",
+      "page": 1,
+      "bbox": [
+       1030,
+       1380,
+       1310,
+       1445
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "递等式题只印算式本身（无小题号），下方学生作答笔迹未纳入框内",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 25,
+     "qno": 25,
+     "printed_no": "",
+     "section": "四、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "1468-356-444"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p2.jpg",
+      "page": 2,
+      "bbox": [
+       148,
+       152,
+       407,
+       200
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "换页续排的递等式算式（无小题号），本页最上一行；上下为学生作答笔迹，未纳入框内",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 26,
+     "qno": 26,
+     "printed_no": "",
+     "section": "四、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "389\\times5\\times2"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p2.jpg",
+      "page": 2,
+      "bbox": [
+       754,
+       186,
+       913,
+       235
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "换页续排的递等式算式（无小题号），本页最上一行；上下为学生作答笔迹，未纳入框内",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 27,
+     "qno": 27,
+     "printed_no": "",
+     "section": "四、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "978+415-278"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p2.jpg",
+      "page": 2,
+      "bbox": [
+       166,
+       485,
+       402,
+       530
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "换页续排的递等式算式（无小题号），本页最上一行；上下为学生作答笔迹，未纳入框内",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 28,
+     "qno": 28,
+     "printed_no": "",
+     "section": "四、递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "9999+999+99+3"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p2.jpg",
+      "page": 2,
+      "bbox": [
+       750,
+       504,
+       1013,
+       542
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "换页续排的递等式算式（无小题号），本页最上一行；上下为学生作答笔迹，未纳入框内",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 29,
+     "qno": 29,
+     "printed_no": "1.",
+     "section": "五、解决问题",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "小明储蓄罐中有 28 个 5 角硬币和 69 个 1 元硬币。小明储蓄罐里一共有多少元？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p2.jpg",
+      "page": 2,
+      "bbox": [
+       238,
+       852,
+       1302,
+       902
+      ],
+      "printed_no": "1.",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号「1.」（题号 x204-228，正文 x246 起）",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 30,
+     "qno": 30,
+     "printed_no": "2.",
+     "section": "五、解决问题",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "运动会长跑比赛在 200 米环形跑道上进行，小海参加的项目是 1000 米，他跑了 4\n圈。小海已经跑了多少米？还剩下多少米没跑？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p2.jpg",
+      "page": 2,
+      "bbox": [
+       188,
+       1350,
+       1425,
+       1510
+      ],
+      "printed_no": "2.",
+      "crop_reviewed": true,
+      "review_note": "题干在卷面上印成两行，按规范在一条 text 片段里用换行表示。左边界紧邻已剔除的卷面题号「2.」（x158-180）：第二行「圈。…」起点 x196，仍在题号末像素右侧，故剔除题号后不会切到第二行首字",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 31,
+     "qno": 31,
+     "printed_no": "4.",
+     "section": "五、解决问题",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "学校三年级有 6 个班，每班发了 48 本书，四年级共发了 356 本书。四年级比三年级多发了多少本？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p3.jpg",
+      "page": 3,
+      "bbox": [
+       184,
+       200,
+       1304,
+       322
+      ],
+      "printed_no": "4.",
+      "crop_reviewed": true,
+      "review_note": "卷面题号从 2 直接跳到 4 —— 五、解决问题的第 3 小题在四张源图中都不存在（p2 底部被手指/阴影遮挡，p3 顶部直接是 4.），属源图缺失而非识别遗漏。左边界紧邻已剔除的卷面题号「4.」（x147-171，正文 x192 起）",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 32,
+     "qno": 32,
+     "printed_no": "5.",
+     "section": "五、解决问题",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "同学们乘车去秋游，每辆车可乘 54 人，前四辆车全部坐满，第五辆车还有 19 个空位。总共有多少人参加秋游？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p3.jpg",
+      "page": 3,
+      "bbox": [
+       198,
+       508,
+       1295,
+       622
+      ],
+      "printed_no": "5.",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号「5.」（x164-186，正文 x208 起）",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 33,
+     "qno": 33,
+     "printed_no": "(1)",
+     "section": "五、解决问题 · 6. 估算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "水蜜桃是上海南汇的特产。\n一箱水蜜桃 69 元，490 元够买 7 箱吗？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p3.jpg",
+      "page": 3,
+      "bbox": [
+       203,
+       860,
+       1020,
+       978
+      ],
+      "printed_no": "(1)",
+      "crop_reviewed": true,
+      "review_note": "「水蜜桃是上海南汇的特产。」是 6. 估算 (1)(2) 两小题共同的情景引导语，卷面上单独一行（y878-908, x211-571），按「题内多行用换行」并入本小题题干，裁剪范围同步向上涵盖它。左边界保留了卷面题号「(1)」（引导语 x211 与题号 x216 起点几乎重合，无法在不切引导语的前提下剔除题号）",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 34,
+     "qno": 34,
+     "printed_no": "(2)",
+     "section": "五、解决问题 · 6. 估算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "某农庄采摘了一批水蜜桃，分装成 1800 箱运往超市。现在有 6 辆货车，每辆最多装 304 箱，一次运得完吗？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p3.jpg",
+      "page": 3,
+      "bbox": [
+       215,
+       1150,
+       1342,
+       1262
+      ],
+      "printed_no": "(2)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号「(2)」（x167-210，正文 x220 起）",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 35,
+     "qno": 35,
+     "printed_no": "1.",
+     "section": "六、判断",
+     "qtype": "other",
+     "stem": [
+      {
+       "t": "text",
+       "v": "乘数的末尾一共有几个 0，积的末尾就有几个 0。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p4.jpg",
+      "page": 4,
+      "bbox": [
+       215,
+       105,
+       1185,
+       280
+      ],
+      "printed_no": "1.",
+      "crop_reviewed": true,
+      "review_note": "⚠️ 「六、判断」的第 1、2 两小题**行距极小且卷面在这两行上明显倾斜**——实测该处斜率约 0.136（≈7.8°，即 x 从 215 到 1185 时行下移 132px）。两题在 y 上**交错重叠**（题 1 用矩形窗口只截得到左半段，右半段比题 2 的左端还低），任何矩形窗口都切不开，故这两题改用**平行四边形采样**（`source.quad` 记 4 个角点，实现见本文件的 crop_quad）：沿该题的斜行方向取样后摆平成水平矩形，题面完整、且不含邻题任何字符。斜率由「裁剪图内每列墨迹质心的方差最小」自动搜出（题 1 d=132、题 2 d=136，两题独立），再逐张放大核对。`source.bbox` 记的是该四边形的外接矩形（故自检会报四边有墨迹，属预期）。学生铅笔圈画与红笔批改被印刷黑掩膜滤除，未进框。",
+      "quad": [
+       [
+        215,
+        105
+       ],
+       [
+        1185,
+        237
+       ],
+       [
+        1185,
+        280
+       ],
+       [
+        215,
+        148
+       ]
+      ],
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 36,
+     "qno": 36,
+     "printed_no": "2.",
+     "section": "六、判断",
+     "qtype": "other",
+     "stem": [
+      {
+       "t": "text",
+       "v": "最小的两位数乘最大的一位数，积是三位数。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p4.jpg",
+      "page": 4,
+      "bbox": [
+       215,
+       155,
+       1185,
+       334
+      ],
+      "printed_no": "2.",
+      "crop_reviewed": true,
+      "review_note": "⚠️ 「六、判断」的第 1、2 两小题**行距极小且卷面在这两行上明显倾斜**——实测该处斜率约 0.136（≈7.8°，即 x 从 215 到 1185 时行下移 132px）。两题在 y 上**交错重叠**（题 1 用矩形窗口只截得到左半段，右半段比题 2 的左端还低），任何矩形窗口都切不开，故这两题改用**平行四边形采样**（`source.quad` 记 4 个角点，实现见本文件的 crop_quad）：沿该题的斜行方向取样后摆平成水平矩形，题面完整、且不含邻题任何字符。斜率由「裁剪图内每列墨迹质心的方差最小」自动搜出（题 1 d=132、题 2 d=136，两题独立），再逐张放大核对。`source.bbox` 记的是该四边形的外接矩形（故自检会报四边有墨迹，属预期）。学生铅笔圈画与红笔批改被印刷黑掩膜滤除，未进框。",
+      "quad": [
+       [
+        215,
+        155
+       ],
+       [
+        1185,
+        291
+       ],
+       [
+        1185,
+        334
+       ],
+       [
+        215,
+        198
+       ]
+      ],
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 37,
+     "qno": 37,
+     "printed_no": "3.",
+     "section": "六、判断",
+     "qtype": "other",
+     "stem": [
+      {
+       "t": "text",
+       "v": "6×324，“6”和百位上的“3”相乘，积是 18 个百。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p4.jpg",
+      "page": 4,
+      "bbox": [
+       218,
+       474,
+       867,
+       548
+      ],
+      "printed_no": "3.",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号（题号 x189-215，正文 x230 起）。⚠️ 更正：原卷判断题**没有任何印刷括号**，学生直接在行尾写 √/×，故 stem 里不写「（　）」。",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 38,
+     "qno": 38,
+     "printed_no": "1.",
+     "section": "七、选择",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "要使□37×3 的积是四位数，□里最小填（　　）。"
+      }
+     ],
+     "options": [
+      {
+       "t": "text",
+       "v": "2"
+      },
+      {
+       "t": "text",
+       "v": "3"
+      }
+     ],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p4.jpg",
+      "page": 4,
+      "bbox": [
+       209,
+       611,
+       1142,
+       752
+      ],
+      "printed_no": "1.",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号（题号 x171-200，正文 x217 起）；选项行按卷面顺序收入 options（不含 A/B/C 前缀）",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.95,
+      "options": 0.95,
+      "figure": null
+     }
+    },
+    {
+     "seq": 39,
+     "qno": 39,
+     "printed_no": "2.",
+     "section": "七、选择",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "306×5 的积中有（　　）个 0。"
+      }
+     ],
+     "options": [
+      {
+       "t": "text",
+       "v": "0"
+      },
+      {
+       "t": "text",
+       "v": "1"
+      },
+      {
+       "t": "text",
+       "v": "2"
+      }
+     ],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p4.jpg",
+      "page": 4,
+      "bbox": [
+       215,
+       752,
+       1099,
+       880
+      ],
+      "printed_no": "2.",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号（题号 x171-200，正文 x217 起）；选项行按卷面顺序收入 options（不含 A/B/C 前缀）",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.95,
+      "options": 0.95,
+      "figure": null
+     }
+    },
+    {
+     "seq": 40,
+     "qno": 40,
+     "printed_no": "3.",
+     "section": "七、选择",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "三位数和一位数相乘，积是（　　）位数。"
+      }
+     ],
+     "options": [
+      {
+       "t": "text",
+       "v": "三"
+      },
+      {
+       "t": "text",
+       "v": "四"
+      },
+      {
+       "t": "text",
+       "v": "以上情况都有可能"
+      }
+     ],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p4.jpg",
+      "page": 4,
+      "bbox": [
+       208,
+       880,
+       940,
+       1088
+      ],
+      "printed_no": "3.",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号（题号 x171-200，正文 x217 起）；选项行按卷面顺序收入 options（不含 A/B/C 前缀）",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.95,
+      "options": 0.95,
+      "figure": null
+     }
+    },
+    {
+     "seq": 41,
+     "qno": 41,
+     "printed_no": "4.",
+     "section": "七、选择",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "（　　）里最大填几？\n（　　）×60<431　1480>（　　）×300"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第2单元练习卷-p4.jpg",
+      "page": 4,
+      "bbox": [
+       178,
+       1098,
+       1260,
+       1215
+      ],
+      "printed_no": "4.",
+      "crop_reviewed": true,
+      "review_note": "一个小题内含三行（提问 + 两条待填的算式），按「题内多行用换行」写在一条 text 片段里；右半条算式「1480>（　）×300」排在卷面同一行的右侧，一并纳入本框。左边界紧邻已剔除的卷面题号「4.」（x138-165）",
+      "paper": "2026-10-01-第2单元练习卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.95,
+      "options": null,
+      "figure": null
+     }
+    }
+   ]
+  },
+  {
+   "title": "数学三年级第一学期第一、二单元素养卷",
+   "paper_date": "2026-10-01",
+   "subject": "数学",
+   "grade": null,
+   "status": "done",
+   "status_note": "示例卷（内置）",
+   "files": [
+    {
+     "page_no": 1,
+     "filename": "2026-10-01-第一二单元素养卷.jpg",
+     "storage_path": "local:assets/benchmark/demo-05-1.jpg",
+     "width": 1279,
+     "height": 1706,
+     "size_bytes": 120448
+    },
+    {
+     "page_no": 2,
+     "filename": "2026-10-01-乘法综合练习.jpg",
+     "storage_path": "local:assets/benchmark/demo-05-2.jpg",
+     "width": 1131,
+     "height": 1920,
+     "size_bytes": 199873
+    },
+    {
+     "page_no": 3,
+     "filename": "2026-10-01-第一二单元素养卷-应用.jpg",
+     "storage_path": "local:assets/benchmark/demo-05-3.jpg",
+     "width": 1279,
+     "height": 1706,
+     "size_bytes": 110216
+    }
+   ],
+   "questions": [
+    {
+     "seq": 1,
+     "qno": 1,
+     "printed_no": "",
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "67-5\\times5="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       227,
+       222,
+       512,
+       288
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 2,
+     "qno": 2,
+     "printed_no": "",
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "32+8\\div4="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       226,
+       282,
+       496,
+       346
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 3,
+     "qno": 3,
+     "printed_no": "",
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "49-49\\div7="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       224,
+       342,
+       501,
+       406
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 4,
+     "qno": 4,
+     "printed_no": "",
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "400\\times6-20="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       519,
+       232,
+       793,
+       288
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 5,
+     "qno": 5,
+     "printed_no": "",
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "2\\times100-100="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       502,
+       282,
+       801,
+       346
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 6,
+     "qno": 6,
+     "printed_no": "",
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "0\\div27\\times3="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       520,
+       342,
+       806,
+       406
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 7,
+     "qno": 7,
+     "printed_no": "",
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "text",
+       "v": "40×□-20=100"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       835,
+       224,
+       1137,
+       292
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "⚠️ 下边紧贴行 2 的方框顶缘：本卷行 1/行 2/行 3 的方框纵向相接（实测间距≈1px），无法再分离；方框是印刷空框，框内「3」是学生笔迹，照实写 □",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.95,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 8,
+     "qno": 8,
+     "printed_no": "",
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "text",
+       "v": "□×9-3=78"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       841,
+       284,
+       1078,
+       350
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "⚠️ 上下边分别紧贴行 1 / 行 3 的方框缘（同上，间距≈1px）；方框内「9」是学生笔迹，照实写 □",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.95,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 9,
+     "qno": 9,
+     "printed_no": "",
+     "section": "1. 直接写出得数",
+     "qtype": "calculate",
+     "stem": [
+      {
+       "t": "text",
+       "v": "□×2=5×6-6"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       843,
+       342,
+       1168,
+       408
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "⚠️ 上边带 q-024 的方框底缘；本题面第三个方框被红笔（学生订正的「31」）覆盖，方框本身可辨认，但无法确认框内是否另有印刷内容，故置信度降到 0.85 —— 待人工核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.85,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 10,
+     "qno": 10,
+     "printed_no": "",
+     "section": "2. 递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "172-95+278"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       227,
+       461,
+       444,
+       516
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 11,
+     "qno": 11,
+     "printed_no": "",
+     "section": "2. 递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "492-(292-165)"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       599,
+       458,
+       861,
+       516
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 12,
+     "qno": 12,
+     "printed_no": "",
+     "section": "2. 递等式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "3\\times80+420"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       1024,
+       469,
+       1186,
+       509
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 13,
+     "qno": 13,
+     "printed_no": "",
+     "section": "3. 竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "52\\times2="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       257,
+       766,
+       441,
+       820
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 14,
+     "qno": 14,
+     "printed_no": "",
+     "section": "3. 竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "104\\times5="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       516,
+       756,
+       706,
+       816
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 15,
+     "qno": 15,
+     "printed_no": "",
+     "section": "3. 竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "810\\times6="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       723,
+       761,
+       1008,
+       814
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 16,
+     "qno": 16,
+     "printed_no": "",
+     "section": "3. 竖式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "latex",
+       "v": "7\\times849="
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       987,
+       761,
+       1246,
+       820
+      ],
+      "printed_no": "",
+      "crop_reviewed": true,
+      "review_note": "本题卷面未印小题号，窗口即内容首字；上下边为相邻题的学生笔迹/红笔越界（本卷笔迹极多），题目行本身完整无切字，已逐张放大核对",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 17,
+     "qno": 17,
+     "printed_no": "(1)",
+     "section": "4. 写出综合算式",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "63÷9=7\n147-7=140"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       307,
+       1060,
+       525,
+       1170
+      ],
+      "printed_no": "(1)",
+      "crop_reviewed": true,
+      "review_note": "本题原卷印的是「印刷小题号 (1) + 两条已知算式」，两条算式同属**一个**小题（学生要在下方空白处写出把两条算式并起来的综合算式），不是两道题——按规范「印刷小题号出现几次就成几题」，此处合并为 1 题，行间用换行表示。（原先按「一条算式一题」拆成了两题，卷详情页里同一小题的两条算式被邻题隔开，用户反馈过。） 裁剪范围 = 两条算式的并集。",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 18,
+     "qno": 18,
+     "printed_no": "(2)",
+     "section": "4. 写出综合算式",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "367+26=393\n494-393=101"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       800,
+       1045,
+       1005,
+       1160
+      ],
+      "printed_no": "(2)",
+      "crop_reviewed": true,
+      "review_note": "本题原卷印的是「印刷小题号 (2) + 两条已知算式」，两条算式同属**一个**小题（学生要在下方空白处写出把两条算式并起来的综合算式），不是两道题——按规范「印刷小题号出现几次就成几题」，此处合并为 1 题，行间用换行表示。（原先按「一条算式一题」拆成了两题，卷详情页里同一小题的两条算式被邻题隔开，用户反馈过。） 裁剪范围 = 两条算式的并集。",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 19,
+     "qno": 19,
+     "printed_no": "(1)",
+     "section": "5. 列式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "17个7的和，减去最大的两位数，差是多少？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       247,
+       1272,
+       841,
+       1337
+      ],
+      "printed_no": "(1)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号「(1)」；手写卷：上（学生写的「99」） 有相邻题的学生笔迹/红笔越界，题目行本身完整无切字（已逐张放大核对）",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 20,
+     "qno": 20,
+     "printed_no": "(2)",
+     "section": "5. 列式计算",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "116与8的积减去480，差是多少？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷.jpg",
+      "page": 1,
+      "bbox": [
+       262,
+       1438,
+       691,
+       1490
+      ],
+      "printed_no": "(2)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号「(2)」；手写卷：上（上一题的作答笔迹） 有相邻题的学生笔迹/红笔越界，题目行本身完整无切字（已逐张放大核对）",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 21,
+     "qno": 21,
+     "printed_no": "(1)",
+     "section": "4. 写出综合算式",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "63÷9=7\n147-7=140"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       270,
+       108,
+       455,
+       201
+      ],
+      "printed_no": "(1)",
+      "crop_reviewed": true,
+      "review_note": "本题原卷印的是「印刷小题号 (1) + 两条已知算式」，两条算式同属**一个**小题（学生要在下方空白处写出把两条算式并起来的综合算式），不是两道题——按规范「印刷小题号出现几次就成几题」，此处合并为 1 题，行间用换行表示。（原先按「一条算式一题」拆成了两题，卷详情页里同一小题的两条算式被邻题隔开，用户反馈过。） 裁剪范围 = 两条算式的并集。",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 22,
+     "qno": 22,
+     "printed_no": "(2)",
+     "section": "4. 写出综合算式",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "367+26=393\n494-393=101"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       766,
+       111,
+       975,
+       204
+      ],
+      "printed_no": "(2)",
+      "crop_reviewed": true,
+      "review_note": "本题原卷印的是「印刷小题号 (2) + 两条已知算式」，两条算式同属**一个**小题（学生要在下方空白处写出把两条算式并起来的综合算式），不是两道题——按规范「印刷小题号出现几次就成几题」，此处合并为 1 题，行间用换行表示。（原先按「一条算式一题」拆成了两题，卷详情页里同一小题的两条算式被邻题隔开，用户反馈过。） 裁剪范围 = 两条算式的并集。",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 23,
+     "qno": 23,
+     "printed_no": "(1)",
+     "section": "第二部分 概念 · 1、选择题",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "计算 268×3 时，百位上的“2”乘“3”的积是（　　）。"
+      }
+     ],
+     "options": [
+      {
+       "t": "text",
+       "v": "6"
+      },
+      {
+       "t": "text",
+       "v": "60"
+      },
+      {
+       "t": "text",
+       "v": "600"
+      },
+      {
+       "t": "text",
+       "v": "804"
+      }
+     ],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       163,
+       508,
+       817,
+       600
+      ],
+      "printed_no": "(1)",
+      "crop_reviewed": true,
+      "review_note": "选项行顶格（起点 x≈164-171，比题号 178-216 更靠左），左边界随内容取，卷面题号完整保留在裁剪图内——取「题号末+1」会切掉选项 A",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": 0.97,
+      "figure": null
+     }
+    },
+    {
+     "seq": 24,
+     "qno": 24,
+     "printed_no": "(2)",
+     "section": "第二部分 概念 · 1、选择题",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "估算下面算式中积最大的是（　　）。"
+      }
+     ],
+     "options": [
+      {
+       "t": "latex",
+       "v": "268\\times4"
+      },
+      {
+       "t": "latex",
+       "v": "102\\times8"
+      },
+      {
+       "t": "latex",
+       "v": "399\\times6"
+      },
+      {
+       "t": "latex",
+       "v": "799\\times1"
+      }
+     ],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       163,
+       608,
+       621,
+       692
+      ],
+      "printed_no": "(2)",
+      "crop_reviewed": true,
+      "review_note": "选项行顶格（起点 x≈164-171，比题号 178-216 更靠左），左边界随内容取，卷面题号完整保留在裁剪图内——取「题号末+1」会切掉选项 A",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": 0.97,
+      "figure": null
+     }
+    },
+    {
+     "seq": 25,
+     "qno": 25,
+     "printed_no": "(3)",
+     "section": "第二部分 概念 · 1、选择题",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "一本书有 286 页，乐乐第一天看了 97 页，第二天看了 104 页，第三天应该从第（　　）页开始看。"
+      }
+     ],
+     "options": [
+      {
+       "t": "text",
+       "v": "85"
+      },
+      {
+       "t": "text",
+       "v": "86"
+      },
+      {
+       "t": "text",
+       "v": "202"
+      },
+      {
+       "t": "text",
+       "v": "201"
+      }
+     ],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       166,
+       702,
+       989,
+       833
+      ],
+      "printed_no": "(3)",
+      "crop_reviewed": true,
+      "review_note": "选项行顶格（起点 x≈164-171，比题号 178-216 更靠左），左边界随内容取，卷面题号完整保留在裁剪图内——取「题号末+1」会切掉选项 A",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": 0.97,
+      "figure": null
+     }
+    },
+    {
+     "seq": 26,
+     "qno": 26,
+     "printed_no": "(4)",
+     "section": "第二部分 概念 · 1、选择题",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "妈妈买了 24 个石榴，每个石榴 4 元。下面用竖式计算出了 24 个石榴的总价，框住的这一步的结果表示的是（　　）。"
+      },
+      {
+       "t": "figure",
+       "state": "crop",
+       "src": "q-20261001-008-fig1.jpg",
+       "bbox": [
+        776,
+        930,
+        906,
+        1132
+       ],
+       "expr": null,
+       "geometry": null,
+       "confidence": 0.95,
+       "caption": "图：24×4 的竖式，框住的是 20×4 这一步"
+      }
+     ],
+     "options": [
+      {
+       "t": "text",
+       "v": "2 个石榴的价钱"
+      },
+      {
+       "t": "text",
+       "v": "4 个石榴的价钱"
+      },
+      {
+       "t": "text",
+       "v": "20 个石榴的价钱"
+      },
+      {
+       "t": "text",
+       "v": "24 个石榴的价钱"
+      }
+     ],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       164,
+       842,
+       991,
+       1134
+      ],
+      "printed_no": "(4)",
+      "crop_reviewed": true,
+      "review_note": "选项行顶格（起点 x≈164-171，比题号 178-216 更靠左），左边界随内容取，卷面题号完整保留在裁剪图内——取「题号末+1」会切掉选项 A",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": 0.97,
+      "figure": 0.95
+     }
+    },
+    {
+     "seq": 27,
+     "qno": 27,
+     "printed_no": "(5)",
+     "section": "第二部分 概念 · 1、选择题",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "8×70□，积的末尾不可能（　　）。"
+      }
+     ],
+     "options": [
+      {
+       "t": "text",
+       "v": "没有 0"
+      },
+      {
+       "t": "text",
+       "v": "有 1 个 0"
+      },
+      {
+       "t": "text",
+       "v": "有 2 个 0"
+      },
+      {
+       "t": "text",
+       "v": "有 3 个 0"
+      }
+     ],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       168,
+       1124,
+       722,
+       1212
+      ],
+      "printed_no": "(5)",
+      "crop_reviewed": true,
+      "review_note": "选项行顶格（起点 x≈164-171，比题号 178-216 更靠左），左边界随内容取，卷面题号完整保留在裁剪图内——取「题号末+1」会切掉选项 A",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": 0.97,
+      "figure": null
+     }
+    },
+    {
+     "seq": 28,
+     "qno": 28,
+     "printed_no": "(6)",
+     "section": "第二部分 概念 · 1、选择题",
+     "qtype": "choice",
+     "stem": [
+      {
+       "t": "text",
+       "v": "7×5□6，积可能是（　　）。"
+      }
+     ],
+     "options": [
+      {
+       "t": "text",
+       "v": "3042"
+      },
+      {
+       "t": "text",
+       "v": "3648"
+      },
+      {
+       "t": "text",
+       "v": "3752"
+      },
+      {
+       "t": "text",
+       "v": "3502"
+      }
+     ],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       171,
+       1219,
+       583,
+       1304
+      ],
+      "printed_no": "(6)",
+      "crop_reviewed": true,
+      "review_note": "选项行顶格（起点 x≈164-171，比题号 178-216 更靠左），左边界随内容取，卷面题号完整保留在裁剪图内——取「题号末+1」会切掉选项 A",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": 0.97,
+      "figure": null
+     }
+    },
+    {
+     "seq": 29,
+     "qno": 29,
+     "printed_no": "(1)",
+     "section": "第二部分 概念 · 2、填空题",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "text",
+       "v": "250×4 的积的末尾有____个 0。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       233,
+       1360,
+       595,
+       1402
+      ],
+      "printed_no": "(1)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号，题面完整",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 30,
+     "qno": 30,
+     "printed_no": "(2)",
+     "section": "第二部分 概念 · 2、填空题",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "text",
+       "v": "238×□<1000，□里最大可以填____。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       234,
+       1408,
+       666,
+       1449
+      ],
+      "printed_no": "(2)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号，题面完整",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 31,
+     "qno": 31,
+     "printed_no": "(3)",
+     "section": "第二部分 概念 · 2、填空题",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "text",
+       "v": "东东家距离学校 305 米，他每天往返于学校和家两次，一共要走____米。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       229,
+       1455,
+       986,
+       1497
+      ],
+      "printed_no": "(3)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号，题面完整",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 32,
+     "qno": 32,
+     "printed_no": "(4)",
+     "section": "第二部分 概念 · 2、填空题",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "text",
+       "v": "如果□=5，△=6，☆=7，那么□×10×☆+△=____。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       236,
+       1505,
+       809,
+       1544
+      ],
+      "printed_no": "(4)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号，题面完整",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 33,
+     "qno": 33,
+     "printed_no": "(5)",
+     "section": "第二部分 概念 · 2、填空题",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "text",
+       "v": "幼儿园准备买 5 台微波炉，请你估一估，大约要花____元。"
+      },
+      {
+       "t": "figure",
+       "state": "crop",
+       "src": "q-20261001-015-fig1.jpg",
+       "bbox": [
+        471,
+        1603,
+        771,
+        1715
+       ],
+       "expr": null,
+       "geometry": null,
+       "confidence": 0.95,
+       "caption": "图：微波炉，每台 398 元"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       236,
+       1551,
+       881,
+       1717
+      ],
+      "printed_no": "(5)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号，题面完整",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": 0.95
+     }
+    },
+    {
+     "seq": 34,
+     "qno": 34,
+     "printed_no": "(6)",
+     "section": "第二部分 概念 · 2、填空题",
+     "qtype": "fill",
+     "stem": [
+      {
+       "t": "text",
+       "v": "计算 6×432，“6”和百位上“4”相乘的积是____百。"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-乘法综合练习.jpg",
+      "page": 1,
+      "bbox": [
+       238,
+       1741,
+       829,
+       1781
+      ],
+      "printed_no": "(6)",
+      "crop_reviewed": true,
+      "review_note": "左边界紧邻已剔除的卷面题号，题面完整",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 35,
+     "qno": 35,
+     "printed_no": "1.",
+     "section": "第三部分 应用",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "王老师家第一个月电费共 160 元，按这个标准计算，王老师家一个季度的电费是多少元？（一个季度 3 个月）"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷-应用.jpg",
+      "page": 1,
+      "bbox": [
+       154,
+       120,
+       1200,
+       214
+      ],
+      "printed_no": "1.",
+      "crop_reviewed": true,
+      "review_note": "左边界取全部内容行的最小墨迹 x：续行「是多少元？（一个季度 3 个月）」顶格，比首行题号起点还靠左 1px，故卷面题号「1.」完整留在裁剪图内（规范取舍：题号留图只是观感问题，切掉续行是内容错误）。右端有红笔批改斜线自下方穿出题干：题干文字在「一个季度的电费」处被斜线擦过，文字本身完整可辨认，未遮挡任何字符。自检在下边界（y214）内侧报「有墨迹」即这条红笔斜线；题干文字最下沿在 y196，与下边界有 18px 余量，无切字。",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 36,
+     "qno": 36,
+     "printed_no": "2.",
+     "section": "第三部分 应用",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "把 4 本相同的书摞起来，高度是 24 毫米。如果把 40 本这样的书摞起来，高度是多少毫米？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷-应用.jpg",
+      "page": 1,
+      "bbox": [
+       152,
+       474,
+       1200,
+       562
+      ],
+      "printed_no": "2.",
+      "crop_reviewed": true,
+      "review_note": "左边界取全部内容行的最小墨迹 x：续行「是多少毫米？」顶格，与首行题号起点同为 x160，故卷面题号「2.」完整留在裁剪图内。下边界外紧邻学生作答「24×4=96(mm)」的上缘（实测笔迹上缘 y562，题干下沿 y549），题干本身完整无切字。",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 37,
+     "qno": 37,
+     "printed_no": "3.",
+     "section": "第三部分 应用",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "小明 3 天看完了一本故事书，前两天平均每天看 125 页，第三天看了 85 页，这本故事书一共多少页？"
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷-应用.jpg",
+      "page": 1,
+      "bbox": [
+       156,
+       822,
+       1169,
+       910
+      ],
+      "printed_no": "3.",
+      "crop_reviewed": true,
+      "review_note": "左边界取全部内容行的最小墨迹 x：续行「这本故事书一共多少页？」顶格，比首行题号起点靠左 1px，故卷面题号「3.」完整留在裁剪图内。题干上「前两天平均每天看」有学生铅笔圈画，圈内文字清晰可辨认，未遮挡任何字符。自检在上边界（y822）内侧报「有墨迹」是上一题作答区的横线与学生铅笔圈的上缘；题干首行文字上缘在 y833，与上边界有 11px 余量，无切字。",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    },
+    {
+     "seq": 38,
+     "qno": 38,
+     "printed_no": "4.",
+     "section": "第三部分 应用",
+     "qtype": "solve",
+     "stem": [
+      {
+       "t": "text",
+       "v": "每辆自行车 289 元，买 3 辆这样的自行车，准备 900 元够吗？（用两种方法解答）\n①估算法：\n②计算法："
+      }
+     ],
+     "options": [],
+     "source": {
+      "file": "2026-10-01-第一二单元素养卷-应用.jpg",
+      "page": 1,
+      "bbox": [
+       158,
+       1170,
+       992,
+       1549
+      ],
+      "printed_no": "4.",
+      "crop_reviewed": true,
+      "review_note": "卷面在题干下方另印有「①估算法：」（y1299–1325, x171–296）与「②计算法：」（y1516–1541, x181–305）两行作答位置标签（印刷体，两行之间是学生手写作答）。上一轮把它们判成「只有标签、无小题内容」而未入题干，用户指出这是卷面上真实存在的印刷内容、不该丢；本次已写回 stem（行间用换行表示），并把裁剪范围下延到覆盖这两行——题区 = 该题在卷面上的全部印刷范围，左右对照才对得起来。左边界仍取题干首行首字 x158（题号「4.」留在图内，原因见原 review_note）。",
+      "paper": "2026-10-01-第一二单元素养卷.jpg"
+     },
+     "confidence": {
+      "stem": 0.97,
+      "options": null,
+      "figure": null
+     }
+    }
+   ]
+  }
+ ]
+}

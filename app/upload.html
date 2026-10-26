@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>上传试卷 · 试卷题库</title>
+<link rel="stylesheet" href="css/app.css?v=20261026c">
+<link rel="stylesheet" href="css/katex.css">
+</head>
+<body>
+<div id="topbar" class="topbar"></div>
+
+<div class="wrap narrow">
+  <div id="page" data-nav="upload" style="display:none">
+    <h1 class="page">上传试卷</h1>
+    <p class="lead">一份卷拍成多张照片时，请一次性全部选中——<b>选择顺序就是页面顺序</b>，识别后按这个顺序排题。</p>
+
+    <div class="msg err" id="up-msg"></div>
+
+    <div class="card"><div class="pad">
+      <label class="fld"><span>卷名</span>
+        <input type="text" id="f-title" placeholder="如：第一、二单元素养卷" maxlength="60"></label>
+      <div class="row2">
+        <label class="fld grow"><span>日期</span><input type="text" id="f-date" placeholder="选择日期"></label>
+        <label class="fld grow"><span>学科</span><input type="text" id="f-subject" value="数学" maxlength="20"></label>
+        <label class="fld grow"><span>年级 / 班级（可空）</span><input type="text" id="f-grade" placeholder="如：三年级上" maxlength="20"></label>
+      </div>
+
+      <div class="drop" id="drop">
+        <div class="big"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h2.2l1.4-2h6.8l1.4 2H19a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.3" r="3.4"/></svg></div>
+        <div>点这里选择试卷照片，或把图片拖进来</div>
+        <div class="hint" style="margin-top:6px">支持 jpg / png / webp / heic 拍摄的原图；单张建议不超过 20MB</div>
+      </div>
+      <input type="file" id="file" accept="image/*" multiple hidden>
+
+      <div class="picks" id="picks"></div>
+      <div class="progress" id="prog" style="display:none"><i></i></div>
+      <div class="hint" id="prog-txt" style="display:none"></div>
+
+      <details class="adv" style="margin-top:14px">
+        <summary>高级选项</summary>
+        <label class="fld" style="margin-top:10px"><span>识别模型</span>
+          <div id="f-model"></div>
+          <span class="hint">一般不用换。默认模型偶尔限流时可换一个试试；选择会记住。</span></label>
+      </details>
+
+      <div class="quota-note" id="quota-note" style="display:none"></div>
+
+      <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+        <button class="btn" id="go" disabled>创建并上传</button>
+        <span class="hint" id="cnt">尚未选择照片</span>
+      </div>
+    </div></div>
+
+    <div class="card tint" style="margin-top:16px"><div class="pad">
+      <h2 style="font-size:14px;color:#55607a;margin:0 0 8px;font-weight:500">上传之后会怎样？</h2>
+      <div class="hint" style="line-height:1.9">
+        照片上传完，会<b>自动跳到这份卷的详情页并立刻开始识别</b>：逐题切分、转写题干与选项、判定题型，写进你的题库。
+        一页大约 5~15 秒，<b>请在详情页等识别跑完</b>，中途关掉或刷新可以用「重新识别」继续（照片不用重传）。<br>
+        识别只做「题目 + 题型」，不含答案、解析与学生作答；手写笔迹不会被转写。<br>
+        <span style="color:#8a94a8">识别由云服务的免密钥大模型完成，会消耗你账号的额度（实测约 0.2 分/页）。
+        题区坐标是模型估的、会有些许偏差，界面上会标出来。</span>
+      </div>
+    </div></div>
+  </div>
+
+  <div id="login-host" style="padding:0"></div>
+</div>
+
+<script src="js/vendor/workbuddy-cloud-sdk.js"></script>
+<script src="js/config.js?v=20261026c"></script>
+<script src="js/local-demo.js?v=20261026c"></script>
+<script src="js/vendor/katex.min.js"></script>
+<script src="js/vendor/auto-render.min.js"></script>
+<script src="js/render.js?v=20261026c"></script>
+<script src="js/cloud.js?v=20261026c"></script>
+<script src="js/recognize-prompt.js?v=20261026c"></script>
+<script src="js/refine.js?v=20261026c"></script>
+<script src="js/recognize.js?v=20261026c"></script>
+<script src="js/ui.js?v=20261026c"></script>
+<script>
+(function () {
+  "use strict";
+  var picks = [];   // {file, url}
+  var QUOTA_OUT = false;   // 免费识别次数用完了就不让再建卷（建了也识别不了）
+
+  function showMsg(t, kind) {
+    var m = document.getElementById("up-msg");
+    m.textContent = t || "";
+    m.className = "msg " + (kind || "err") + (t ? " show" : "");
+  }
+
+  function paint() {
+    var box = document.getElementById("picks");
+    box.innerHTML = picks.map(function (p, i) {
+      return '<div class="pick"><span class="idx">第 ' + (i + 1) + ' 页</span>'
+        + '<button class="del" data-i="' + i + '" title="移除">×</button>'
+        + '<img src="' + p.url + '" alt="">'
+        + '<div class="nm" title="' + Render.esc(p.file.name) + '">' + Render.esc(p.file.name) + "</div></div>";
+    }).join("");
+    document.getElementById("go").disabled = picks.length === 0 || QUOTA_OUT;
+    document.getElementById("cnt").textContent = QUOTA_OUT
+      ? "免费识别次数已用完"
+      : (picks.length ? "已选择 " + picks.length + " 张（按此顺序排页）" : "尚未选择照片");
+  }
+
+  function addFiles(list) {
+    [].forEach.call(list, function (f) {
+      if (!/^image\//.test(f.type || "")) return;
+      picks.push({ file: f, url: URL.createObjectURL(f) });
+    });
+    paint();
+  }
+
+  document.getElementById("drop").addEventListener("click", function () { document.getElementById("file").click(); });
+  document.getElementById("file").addEventListener("change", function () { addFiles(this.files); this.value = ""; });
+
+  var drop = document.getElementById("drop");
+  ["dragenter", "dragover"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("over"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("over"); });
+  });
+  drop.addEventListener("drop", function (e) {
+    if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+  });
+
+  document.getElementById("picks").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button.del");
+    if (!b) return;
+    var i = Number(b.dataset.i);
+    URL.revokeObjectURL(picks[i].url);
+    picks.splice(i, 1);
+    paint();
+  });
+
+  document.getElementById("go").addEventListener("click", function () {
+    if (!picks.length) return;
+    if (QUOTA_OUT) { showMsg("免费识别次数已用完，可以自行部署后继续使用"); return; }
+    var btn = this;
+    btn.disabled = true;
+    showMsg("");
+
+    var title = document.getElementById("f-title").value.trim() || "未命名试卷";
+    var date = document.getElementById("f-date").value || new Date().toISOString().slice(0, 10);
+    var subject = document.getElementById("f-subject").value.trim() || "数学";
+    var grade = document.getElementById("f-grade").value.trim();
+
+    var prog = document.getElementById("prog"), bar = prog.querySelector("i"), txt = document.getElementById("prog-txt");
+    prog.style.display = "block"; txt.style.display = "block";
+    function setProg(done, total, note) {
+      bar.style.width = Math.round(done / total * 100) + "%";
+      txt.textContent = (note || "正在上传") + " " + done + "/" + total;
+    }
+    setProg(0, picks.length);
+
+    var paperId = null;
+    CloudAPI.createPaper({ title: title, paper_date: date, subject: subject, grade: grade || null, status: "processing" })
+      .then(function (p) {
+        paperId = p.id;
+        // 逐张顺序上传（并发上传容易把页序和失败处理搞乱）
+        return picks.reduce(function (chain, pk, i) {
+          return chain.then(function () {
+            return CloudAPI.uploadPhoto(paperId, pk.file, i + 1).then(function () { setProg(i + 1, picks.length); });
+          });
+        }, Promise.resolve());
+      })
+      .then(function () {
+        txt.textContent = "照片已上传，正在跳转到详情页…";
+        return CloudAPI.updatePaper(paperId, {
+          page_count: picks.length, status: "processing", status_note: "正在自动识别…",
+        });
+      })
+      .then(function () {
+        // 识别不在这页跑：传完立刻跳详情页，由那边从云端取回照片开始识别
+        // （storage.download() 走同源通道能拿回原始像素，详情页有进度卡和「重新识别」入口）。
+        // 选过的识别模型存在 localStorage，详情页会沿用。
+        location.href = "paper.html?id=" + paperId + "&reco=1";
+      })
+      .catch(function (e) {
+        btn.disabled = false;
+        btn.textContent = "创建并上传";
+        txt.style.display = "none"; prog.style.display = "none";
+        showMsg((e.message || "上传失败") + (paperId ? "（试卷已创建，可在首页看到；识别失败可在卷详情页重试）" : ""));
+      });
+  });
+
+  UI.initLightbox();
+  Recognize.wireModelSelect(document.getElementById("f-model"));
+  UI.datePicker(document.getElementById("f-date"));
+  document.getElementById("f-date").value = new Date().toISOString().slice(0, 10);
+
+  /* 剩余识别次数：进页面就查一次，用完就把「创建并上传」按住并给出去处。
+     本地演示默认不限，这时整条提示不显示。 */
+  function paintQuota() {
+    var box = document.getElementById("quota-note");
+    if (!box || !CloudAPI.recognitionQuota) return;
+    CloudAPI.recognitionQuota().then(function (s) {
+      if (!s || s.quota == null) return;
+      box.style.display = "";
+      if (s.remain > 0) {
+        box.className = "quota-note";
+        box.innerHTML = "免费识别次数：还可识别 <b>" + s.remain + "</b> / " + s.quota
+          + " 次（一次整卷识别算 1 次，删卷不返还）";
+      } else {
+        QUOTA_OUT = true;
+        box.className = "quota-note out";
+        box.innerHTML = "免费识别次数已用完（" + s.used + "/" + s.quota + "）。"
+          + '可以 <a href="https://github.com/nicoaigc/juan" target="_blank" rel="noopener">自行部署</a>'
+          + " 后继续使用，不限次数。";
+        paint();
+      }
+    }).catch(function () { /* 查不到不影响上传，后面识别那一步还会再拦一次 */ });
+  }
+
+  CloudAPI.handleWechatCallback().then(function () {
+    return UI.requireLogin(document.getElementById("page"), function () {
+      document.getElementById("page").style.display = "block";
+      paintQuota();
+    });
+  });
+})();
+</script>
+</body>
+</html>

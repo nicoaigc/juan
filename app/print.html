@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>打印卷面 · 试卷题库</title>
+<link rel="stylesheet" href="css/app.css?v=20261026c">
+<link rel="stylesheet" href="css/katex.css">
+</head>
+<body class="print">
+<div id="topbar" class="topbar"></div>
+
+<div class="wrap">
+  <div id="page" data-nav="papers" style="display:none">
+    <div class="toolbar no-print">
+      <a class="btn sec sm" id="btn-back" href="#">&larr; 返回试卷</a>
+      <div class="spacer"></div>
+      <span class="hint" id="pages"></span>
+      <span id="mg"></span>
+      <button class="btn sec sm no-print" id="btn-lay" style="display:none">排版</button>
+      <button class="btn sm" id="btn-print">打印 / 存为 PDF</button>
+    </div>
+    <div class="lay-panel no-print" id="lay" style="display:none"></div>
+    <div class="msg err" id="msg" style="max-width:210mm;margin:0 auto 12px"></div>
+    <div id="sheets"></div>
+  </div>
+
+  <div class="wrap narrow" id="login-host" style="padding:0"></div>
+</div>
+
+<script src="js/vendor/workbuddy-cloud-sdk.js"></script>
+<script src="js/config.js?v=20261026c"></script>
+<script src="js/local-demo.js?v=20261026c"></script>
+<script src="js/vendor/katex.min.js"></script>
+<script src="js/vendor/auto-render.min.js"></script>
+<script src="js/render.js?v=20261026c"></script>
+<script src="js/qtype.js?v=20261026c"></script>
+<script src="js/sheet.js?v=20261026c"></script>
+<script src="js/cloud.js?v=20261026c"></script>
+<script src="js/ui.js?v=20261026c"></script>
+<script src="js/sheet-edit.js?v=20261026c"></script>
+<script>
+(function () {
+  "use strict";
+
+  var SE = null;          // 卷面就地排版控制器（自建卷与照片卷共用一个）
+  var sheetCtx = null;
+
+  function showMsg(t) {
+    var m = document.getElementById("msg");
+    m.textContent = t || "";
+    m.className = "msg err" + (t ? " show" : "");
+  }
+
+  function secStats(secs) {
+    var total = secs.reduce(function (a, s) { return a + s.items.length; }, 0);
+    document.getElementById("pages").textContent = total + " 题 · "
+      + (SE && SE.manual() ? "自定义排版 " : "")
+      + secs.map(function (s) { return Sheet.secLabel(s.title) + " " + s.cols + "列"; }).join(" / ");
+  }
+
+  /* layout（存进 papers.layout / custom_papers.layout 的那份）-> 灌进排版控制器。
+     两个页面共用：自建卷的板块标题存的是**纯名**（序号自动生成），照片卷存的是
+     **原卷标题原文**（"一、直接算一算"），剥不剥序号由 raw 决定 —— 弄反了就会
+     变成"一、一、直接算一算"或者把原卷序号吃掉。 */
+  function loadLayout(row, raw) {
+    var L = (row && row.layout) || {};
+    SE.setNo(L.numbering);
+    SE.setTypes(L.types);
+    SE.setFigW(L.figs);
+    SE.setCaps(L.caps);
+    SE.setManual((L.sections && L.sections.length) ? L.sections.map(function (s) {
+      return { title: raw ? String(s.title == null ? "" : s.title) : Sheet.stripSecNo(s.title),
+               type: s.type || "", cols: Sheet.clampCols(s.cols),
+               smallNo: (s.smallNo === true || s.smallNo === false) ? s.smallNo : undefined,
+               ids: (s.ids || []).map(Number) };
+    }) : null);
+  }
+
+  /* 「恢复智能排版」：只清板块，题号方案 / 题型覆盖 / 插图大小与说明都留着（跟那些无关）。 */
+  function autoLayoutPatch() {
+    var keep = { numbering: SE.no() };
+    if (Object.keys(SE.types()).length) keep.types = SE.types();
+    if (Object.keys(SE.figws()).length) keep.figs = SE.figws();
+    if (Object.keys(SE.caps()).length) keep.caps = SE.caps();
+    return keep;
+  }
+
+  UI.initLightbox();
+
+/* 页边距：改完要按新边距重新分页（卷面自带边距，纸上的边距跟着变）。
+   两个入口都交给排版控制器重画 —— 它内部就会重新分页。 */
+document.getElementById("mg").appendChild(Sheet.marginCtl(function () {
+  if (SE) SE.draw();
+}));
+
+  /* 顶栏高亮：组卷走「我的组卷」，照片卷走「我的试卷」（要在登录守卫渲染顶栏之前设好） */
+  if (UI.qs("custom")) document.getElementById("page").dataset.nav = "customs";
+
+  /* 照片卷（?id=N）：默认按原卷版面逐板块还原；点「排版」就能在卷面上拖动调整
+     （板块标题 / 列数 / 板块顺序 / 插图大小 / 图下说明），存进 papers.layout。
+     原卷的大题标题与题号**保持原样** —— 这里调的是版面，不是重编题号（那是组卷的事）。 */
+  function renderDoc(id) {
+    var paper = null, files = [], questions = [];
+    document.getElementById("btn-back").href = "paper.html?id=" + id;
+    return CloudAPI.getPaper(id).then(function (p) {
+      if (!p) { showMsg("找不到这份试卷"); return null; }
+      paper = p;
+      document.title = (p.title || "试卷") + " · 打印";
+      return CloudAPI.listFiles(p.id);
+    }).then(function (fs) {
+      if (!paper) return null;
+      files = fs || [];
+      return UI.buildImageMap(files);
+    }).then(function (map) {
+      if (!paper) return null;
+      sheetCtx = UI.ctxFor(map || {}, files);
+      return CloudAPI.listQuestions(paper.id).then(function (qs) {
+        questions = Sheet.usableList(qs || []);      // 草稿类板块与识别存疑的题不进卷面
+        if (!questions.length) {
+          showMsg("这份卷没有可排入卷面的题目（识别存疑的题不会进入卷面）。");
+          return;
+        }
+        SE = SheetEd.create({
+          host: "#sheets",
+          bar: "#lay",
+          tag: "排版",
+          hint: "扫描卷的排版：拖动题目卡片换位置（同板块内调先后、拖到别的板块就换过去），"
+              + "板块标题点开即改，右侧 1/2/3/4 切列数，板块左端的 ≡ 拖动整块换序。"
+              + "带图的题拖图片右缘的小手柄调图片大小（双击回默认），图右下角的「说明 ✕」"
+              + "移掉图片下面那行小字（再点一下恢复）。「打印预览」随时看按 A4 分页的成品效果。"
+              + "原卷的大题标题与题号保持不变；改完记得保存。",
+          labels: { reset: "恢复原卷排版" },
+          buttons: ["reset", "save", "preview", "done"],
+          autoNo: false,                       // 标题/题号沿用原卷，不重编
+          autoSecs: function () { return Sheet.collect(questions); },
+          title: function () { return paper.title || ""; },
+          ctx: function () { return sheetCtx; },
+          onDraw: secStats,
+          onOpenChange: function (open) {
+            document.getElementById("btn-lay").textContent = open ? "退出排版" : "排版";
+          },
+          onAction: function (act) {
+            if (act === "save") return saveDocLayout();
+            if (act === "reset") return resetDocLayout();
+            if (act === "done") return SE.setOpen(false);
+          },
+        });
+        SE.setQuestions(questions);
+        loadLayout(paper, true);
+        SE.pid = id;
+        SE.row = paper;
+        document.getElementById("btn-lay").style.display = "";
+        SE.draw();
+      });
+    });
+  }
+
+  function saveDocLayout() {
+    var payload = SE.snapshot();
+    CloudAPI.updatePaper(SE.pid, { layout: payload }).then(function () {
+      SE.row.layout = payload;
+      SE.setDirty(false);
+      UI.toast("排版已保存");
+    }).catch(function (e) { showMsg(e.message || "保存排版失败"); });
+  }
+
+  /* 「恢复原卷排版」= 把这份排版整个清掉，回到"识别结果按原卷还原"的样子。
+     跟自建卷的「恢复智能排版」不一样：那边只清板块（题号方案/插图大小与说明是跟题目走的，
+     用户调过就不该被清）；照片卷这颗按钮的语义是"回到原卷"，所以插图大小、图下说明开关、
+     题型覆盖一起清 —— 否则点了之后卷面上还留着上一轮的痕迹，看着不像"原卷"。 */
+  function resetDocLayout() {
+    CloudAPI.updatePaper(SE.pid, { layout: null }).then(function () {
+      SE.row.layout = null;
+      SE.setNo(null);
+      SE.setTypes(null);
+      SE.setFigW(null);
+      SE.setCaps(null);
+      SE.clearManual();
+      SE.setDirty(false);
+      SE.draw();
+      UI.toast("已恢复原卷排版");
+    }).catch(function (e) { showMsg(e.message || "恢复失败"); });
+  }
+
+  /* 自建卷（?custom=N）：题目只存了 id 引用，所以要回题库按 id 取；原图按每道题的 paper_id 找。
+     卷面本身就是编辑画布（js/sheet-edit.js）。 */
+  function renderCustom(cid) {
+    document.getElementById("btn-back").href = "customs.html";
+    var row = null;
+    return CloudAPI.getCustomPaper(cid).then(function (c) {
+      if (!c) { showMsg("找不到这份组卷（可能已删除）"); return null; }
+      row = c;
+      document.title = (c.title || "组卷") + " · 打印";
+      var ids = (c.question_ids || []).map(Number);
+      return Promise.all([CloudAPI.listAllQuestions(), CloudAPI.listAllFiles()]).then(function (r) {
+        var by = {};
+        (r[0] || []).forEach(function (q) { by[Number(q.id)] = q; });
+        var qs = ids.map(function (i) { return by[i]; }).filter(Boolean);
+        if (!qs.length) { showMsg("这份组卷还没有题目，回「组卷」页挑几道题吧。"); return null; }
+        if (qs.length < ids.length) {
+          showMsg("有 " + (ids.length - qs.length) + " 道题已不在题库里（原卷可能被删除），已自动跳过。");
+        }
+        var files = r[1] || [];
+        return UI.buildImageMap(files).then(function (map) {
+          return { qs: qs, files: files, map: map || {} };
+        });
+      });
+    }).then(function (got) {
+      if (!got) return null;
+      sheetCtx = UI.ctxFor(got.map, got.files);
+      SE = SheetEd.create({
+        host: "#sheets",
+        bar: "#lay",
+        title: function () { return row.title || ""; },
+        ctx: function () { return sheetCtx; },
+        onDraw: secStats,
+        onOpenChange: function (open) {
+          document.getElementById("btn-lay").textContent = open ? "退出排版" : "排版";
+        },
+        onAction: function (act) {
+          if (act === "save") return saveCustomLayout();
+          if (act === "reset") return resetCustomLayout();
+          if (act === "done") return SE.setOpen(false);
+        },
+      });
+      SE.setQuestions(got.qs);
+      loadLayout(row, false);
+      SE.cid = cid;
+      SE.row = row;
+      document.getElementById("btn-lay").style.display = "";
+      SE.draw();
+    });
+  }
+
+  function saveCustomLayout() {
+    var payload = SE.snapshot();
+    CloudAPI.updateCustomPaper(SE.cid, { layout: payload }).then(function () {
+      SE.row.layout = payload;
+      SE.setDirty(false);
+      UI.toast("排版已保存");
+    }).catch(function (e) { showMsg(e.message || "保存排版失败"); });
+  }
+
+  /* 恢复智能排版：清掉 layout 里的板块，但**留在排版模式** —— 让人在自动结果上接着调，
+     不用退出再点一次「排版」重新进。序号方案与手动改过的题型跟题目无关，都保留。 */
+  function resetCustomLayout() {
+    var keep = autoLayoutPatch();
+    CloudAPI.updateCustomPaper(SE.cid, { layout: keep }).then(function () {
+      SE.row.layout = keep;
+      SE.clearManual();
+      SE.setDirty(false);
+      SE.draw();
+      UI.toast("已恢复智能排版");
+    }).catch(function (e) { showMsg(e.message || "恢复失败"); });
+  }
+
+  CloudAPI.handleWechatCallback().then(function () {
+    return UI.requireLogin(document.getElementById("page"), function () {
+      document.getElementById("page").style.display = "block";
+      var cid = UI.qs("custom"), id = UI.qs("id");
+      if (!cid && !id) { showMsg("缺少试卷参数"); return; }
+      (cid ? renderCustom(cid) : renderDoc(id)).catch(function (e) {
+        showMsg(e.message || "加载失败");
+      });
+      document.getElementById("btn-lay").addEventListener("click", function () {
+        if (!SE) return;                       // 卷面没画出来（缺参数 / 加载失败）就没什么可排的
+        SE.setOpen(!SE.isOpen());
+      });
+      document.getElementById("btn-print").addEventListener("click", function () {
+        if (SE && SE.isOpen()) SE.setOpen(false);   // 收起编辑控件再打印；排版数据还在，卷面不变
+        window.print();
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

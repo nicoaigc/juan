@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>题目详情 · 试卷题库</title>
+<link rel="stylesheet" href="css/app.css?v=20261026c">
+<link rel="stylesheet" href="css/katex.css">
+<link rel="stylesheet" href="js/vendor/mathlive/mathlive-fonts.css">
+</head>
+<body>
+<div id="topbar" class="topbar"></div>
+
+<div class="wrap">
+  <div id="page" data-nav="papers" style="display:none">
+    <div id="crumb" class="crumb"></div>
+    <div class="msg err" id="msg"></div>
+    <div class="qsplit">
+      <div class="panel">
+        <h2>原图 <span style="font-size:10.5px;font-weight:400;background:rgba(43,83,168,.78);color:#fff;padding:3px 5px;border-radius:4px;vertical-align:middle">自动定位</span></h2>
+        <div class="hint" style="margin:6px 0 8px">题区坐标由识别模型给出，<b>可能有偏差</b>；点图可看整页原图。</div>
+        <div id="crop"></div>
+      </div>
+      <div class="panel">
+        <h2>结构化还原（可与左栏核对）</h2>
+        <div id="qhead"></div>
+        <div class="stem" id="stem"></div>
+        <div id="options"></div>
+        <div id="editor" class="qedit" style="display:none"></div>
+        <div class="marks" id="marks"></div>
+        <div class="metabox" id="meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap narrow" id="login-host" style="padding:0"></div>
+</div>
+
+<!-- 公式编辑器（MathLive 自托管，懒加载）：点符号拼结构（分式/根号/上下标），
+     输出 LaTeX，落回题干成 $…$ 片段 —— 存储格式不变，渲染端 KaTeX 照排 -->
+<div class="figm" id="fxm" style="display:none">
+  <div class="figm-card fxm-card">
+    <div class="figm-head"><b>公式编辑器</b><span class="figm-sub">点符号拼结构，也认得直接打的 LaTeX</span>
+      <button type="button" class="ico" id="fxm-x" title="关闭">&times;</button></div>
+    <div class="fxm-body">
+      <math-field id="fx-field"></math-field>
+      <div class="fxm-hint">分式：长按虚拟键盘上的 ÷ 选分数；÷ × − = 直接打；也认 LaTeX（如 \frac{3}{4}）。</div>
+    </div>
+    <div class="figm-foot">
+      <button type="button" class="btn sm" id="fxm-ok">插入公式</button>
+      <button type="button" class="btn sec sm" id="fxm-cancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 题内插图「替换」：在整页原图上拖框重裁（+ 顺手摆正） -->
+<div class="figm" id="figm" style="display:none">  <div class="figm-card">
+    <div class="figm-head"><b id="figm-title">替换图片</b><span class="figm-sub" id="figm-sub">在左边整页原图上重新框选 —— 识别偏了 / 裁多了就把框拖正，扫描歪了就把框转正</span>
+      <button type="button" class="ico" id="figm-x" title="关闭">&times;</button></div>
+    <div class="figm-body">
+      <div class="figm-left">
+        <div class="figm-pages" id="figm-pages" style="display:none"></div>
+        <div class="figm-page" id="figm-page">
+          <img id="figm-img" alt="整页原图" draggable="false">
+          <div class="figm-rect" id="figm-rect">
+            <i class="rh" data-h="-1" title="拖动 = 转整个选区（扫描歪了就往回转）"></i>
+            <i class="h c0" data-h="0"></i><i class="h c1" data-h="1"></i>
+            <i class="h c2" data-h="2"></i><i class="h c3" data-h="3"></i>
+          </div>
+        </div>
+        <div class="figm-tip">在图上<b>直接拖一下</b>就能画出新框 · 框内拖动 = 移动 · 拖四角 = 改大小 · 拖上面那个圆点 = <b>转选区</b>（斜着印的内容转正，出来的图就是摆正的）</div>
+      </div>
+      <div class="figm-right">
+        <span class="flab">图下说明（可留空）</span>
+        <input type="text" id="figm-cap" placeholder="这张图是什么，如「24×4 的竖式」">
+        <span class="flab">效果预览</span>
+        <div class="figm-prev" id="figm-prev"></div>
+        <span class="flab">微调（原图像素）</span>
+        <div class="figm-nudge">
+          <div class="nrow">
+            <button type="button" class="btn sec sm" data-nudge="x1,-1">&larr;左缘</button>
+            <button type="button" class="btn sec sm" data-nudge="x1,1">左缘&rarr;</button>
+            <button type="button" class="btn sec sm" data-nudge="x2,-1">右缘&larr;</button>
+            <button type="button" class="btn sec sm" data-nudge="x2,1">右缘&rarr;</button>
+          </div>
+          <div class="nrow">
+            <button type="button" class="btn sec sm" data-nudge="y1,-1">&uarr;上缘</button>
+            <button type="button" class="btn sec sm" data-nudge="y1,1">上缘&darr;</button>
+            <button type="button" class="btn sec sm" data-nudge="y2,-1">下缘&uarr;</button>
+            <button type="button" class="btn sec sm" data-nudge="y2,1">下缘&darr;</button>
+          </div>
+        </div>
+        <div class="figm-read" id="figm-read"></div>
+        <span class="flab">摆正角度（转的是选区本身，框跟着转）</span>
+        <div class="nrow">
+          <input type="range" id="figm-rot" min="-8" max="8" step="0.5" value="0">
+          <span class="figm-rotv" id="figm-rotv">0.0°</span>
+        </div>
+        <div class="nrow" style="margin-top:10px">
+          <button type="button" class="btn sec sm" id="figm-restore" style="display:none">恢复识别原状</button>
+        </div>
+      </div>
+    </div>
+    <div class="figm-foot">
+      <button type="button" class="btn sm" id="figm-save">保存调整</button>
+      <button type="button" class="btn sec sm" id="figm-cancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/vendor/workbuddy-cloud-sdk.js"></script>
+<script src="js/config.js?v=20261026c"></script>
+<script src="js/local-demo.js?v=20261026c"></script>
+<script src="js/vendor/katex.min.js"></script>
+<script src="js/vendor/auto-render.min.js"></script>
+<script src="js/qtype.js?v=20261026c"></script>
+<script src="js/render.js?v=20261026c"></script>
+<script src="js/cloud.js?v=20261026c"></script>
+<script src="js/recognize.js?v=20261026c"></script>
+<script src="js/ui.js?v=20261026c"></script>
+<script>
+(function () {
+  "use strict";
+  var qid = UI.qs("id"), q = null, curMap = null, curFiles = null, editing = false, curCtx = null;
+
+  function showMsg(t) {
+    var m = document.getElementById("msg");
+    m.textContent = t || "";
+    m.className = "msg err" + (t ? " show" : "");
+  }
+
+  /* ---------------- 编辑态：按题型出简单面板（2026-10-07 二次简化） ----------------
+     用户原话：算式/比大小给一个公式编辑器就够；只有选择题才有选项；图片能编辑/替换。
+     面板因此只有三样东西（**不暴露「块」的概念**）：
+       · 算式/比大小 → 一个多行公式编辑器（一行一式，×÷○ 直接打，底部实时预览）
+       · 其余        → 一个多行文本框（____ 是空格；$…$ = 复杂公式；［图：…］ = 插图占位）
+       · 选择题      → 文本框 + 选项行（「加选项」只在这里有）
+     题干里的图在文本框下方的「图列表」里编辑：缩略图 + 说明 + 调整（在原图上重框 = 替换）+ 删除。
+     存储约定（schema v2 不变）：
+       可读算式（×÷○□[?]）存 text 片段（渲染层 mathify 排成 KaTeX，观感与 latex 一致）；
+       $…$ 包起来的存 latex 片段（复杂公式才用）；［图：说明］按顺序回填 figure 原片段
+       （bbox/fix 全保留；占位删了图也不丢 —— 剩下的图自动补回末尾）。
+     没动过的片段原引用回写 —— 改一个字不影响别的片段。 */
+  var TEX_SYM = { "\\times": "×", "\\div": "÷", "\\cdot": "·", "\\pm": "±",
+    "\\leq": "≤", "\\le": "≤", "\\geq": "≥", "\\ge": "≥", "\\neq": "≠", "\\ne": "≠" };
+  var PLAIN_SYM = { "×": "\\times", "÷": "\\div", "·": "\\cdot", "±": "\\pm",
+    "≤": "\\le", "≥": "\\ge", "≠": "\\ne" };
+
+  /* LaTeX -> 可读符号。返回 null = 有认不得的命令（\frac 等），块自动切「源码」模式 */
+  function texToPlain(v) {
+    var s = String(v == null ? "" : v);
+    s = s.replace(/\\text\s*\{\s*\[\?\]\s*\}/g, "[?]");
+    s = s.replace(/\\bigcirc/g, " ○ ");
+    s = s.replace(/\\square/g, " □ ");
+    s = s.replace(/\\times|\\div|\\cdot|\\pm|\\leq|\\le|\\geq|\\ge|\\neq|\\ne/g,
+      function (m) { return TEX_SYM[m]; });
+    s = s.replace(/\\left|\\right/g, "").replace(/\\,|\\;|\\!|~/g, " ")
+      .replace(/[{}]/g, "").replace(/\s+/g, " ").trim();
+    return /\\[a-zA-Z]/.test(s) ? null : s;
+  }
+  /* 可读符号 -> LaTeX（算式块保存时用） */
+  function plainToTex(s) {
+    var out = String(s == null ? "" : s);
+    out = out.replace(/\[\?\]/g, "\\text{[?]}");
+    out = out.replace(/○/g, " \\bigcirc ");
+    out = out.replace(/□/g, " \\square ");
+    out = out.replace(/[×÷·±≤≥≠]/g, function (m) { return PLAIN_SYM[m]; });
+    return out.replace(/\s{2,}/g, " ").trim();
+  }
+
+  var efigs = [];          // 图列表：{seg}（seg 是 q.stem 里的原对象引用，未动过就原样回写）
+  var CARET = { at: null };   // 题干文本框最后停过的光标位置（「＋ 切图」把占位符插在这儿）
+
+  /* 片段数组 -> 编辑框文本。latex 转得平就摊平成可读符号（×÷）；转不平包 $…$；图 = 占位行。
+     算式/比大小：片段之间换行（一行一式）；其余：片段连排（算式留在句子里）。 */
+  function stemToText(stem, perLine) {
+    var out = "";
+    var nl = function () { if (out && !/\n$/.test(out)) out += "\n"; };
+    (stem || []).forEach(function (s) {
+      if (s.t === "figure") { nl(); out += "［图：" + (s.caption || "") + "］\n"; return; }
+      if (s.t === "latex") {
+        if (perLine) nl();
+        var p = texToPlain(s.v);
+        out += (p != null) ? p : "$" + String(s.v == null ? "" : s.v) + "$";
+        if (perLine) out += "\n";
+        return;
+      }
+      out += String(s.v == null ? "" : s.v);
+    });
+    return out.replace(/\n{3,}/g, "\n\n").trim();
+  }
+  /* 编辑框文本 -> 片段数组。$…$ = latex；［图：…］按序回填 figure 原片段（说明在图列表里改，
+     占位只是位置标记；占位删了图补回末尾）；其余存 text（可读算式直接存，mathify 负责排版）。 */
+  function stemFromText(txt, figs) {
+    var segs = [], buf = "", fi = 0, rest = String(txt == null ? "" : txt);
+    var flush = function () { if (buf) { segs.push({ t: "text", v: buf }); buf = ""; } };
+    while (rest) {
+      var md = /^\$([^$]+)\$/.exec(rest);
+      var ph = /^［图：[^］]*］/.exec(rest);
+      if (md) { flush(); segs.push({ t: "latex", v: md[1] }); rest = rest.slice(md[0].length); continue; }
+      if (ph) {
+        flush();
+        var f = figs[fi];
+        if (f) segs.push(f.seg);
+        fi += 1;
+        rest = rest.slice(ph[0].length);
+        continue;
+      }
+      buf += rest[0]; rest = rest.slice(1);
+    }
+    flush();
+    for (; fi < figs.length; fi++) segs.push(figs[fi].seg);   // 占位被删的图补回末尾
+    return segs;
+  }
+  /* 第 k 个占位的说明文字同步（图列表里改说明时，占位显示跟着变） / 删第 k 个占位 */
+  function mapPh(txt, k, cap) {
+    var i = -1;
+    return String(txt).replace(/［图：[^］]*］/g, function (m) {
+      i += 1;
+      return i === k ? (cap == null ? "" : "［图：" + cap + "］") : m;
+    });
+  }
+
+  function optToInput(o) {
+    if (o && o.t === "latex") {
+      var p = texToPlain(o.v);
+      if (p != null) return p;
+      return "$" + String(o.v == null ? "" : o.v) + "$";
+    }
+    return String((o && o.v) == null ? "" : o.v);
+  }
+  function parseOpt(s) {
+    s = String(s || "").trim();
+    if (!s) return null;
+    var m = /^\$([^$]+)\$$/.exec(s);
+    return m ? { t: "latex", v: m[1] } : { t: "text", v: s };
+  }
+  function orowHtml(v, i) {
+    return '<div class="orow"><span class="olab">' + String.fromCharCode(65 + i) + '.</span>'
+      + '<input type="text" value="' + Render.esc(v) + '" placeholder="选项内容">'
+      + '<button type="button" class="ico" data-delopt="' + i + '" title="删掉这个选项">&times;</button></div>';
+  }
+  function optValues() {
+    return [].map.call(document.querySelectorAll("#e-opts input"), function (i) { return i.value; });
+  }
+
+  /* ---------------- 编辑态 ---------------- */
+  var curBucket = "other";
+
+  function openEditor() {
+    editing = true;
+    ["stem", "options", "marks"].forEach(function (id) {
+      document.getElementById(id).style.display = "none";
+    });
+    var ed = document.getElementById("editor");
+    ed.style.display = "";
+    var bucket = window.QType ? QType.bucketOf(q) : (q.qtype || "other");
+    curBucket = bucket;
+    var bucketTxt = (window.QType ? QType.TYPE_TITLE[bucket] : null) || Render.typeText(q);
+    var perLine = bucket === "calc" || bucket === "compare";   // 算式/比大小 = 公式编辑器
+    efigs = (q.stem || []).filter(function (s) { return s.t === "figure"; })
+      .map(function (s) { return { seg: s }; });
+    var txt = stemToText(q.stem, perLine);
+
+    var rows = (q.options || []).map(optToInput);
+    /* 选项区只属于选择题（用户原话：只有选择题才会出现加选项的情况）；
+       其它题型识别误加了才把行显出来让删，不给加钮 */
+    var optBlock = "";
+    if (bucket === "choice") {
+      if (!rows.length) rows = ["", "", "", ""];
+      optBlock = '<span class="flab">选项（自动编 A/B/C…；全删掉 = 这道题没有选项）</span>'
+        + '<div id="e-opts">' + rows.map(orowHtml).join("") + "</div>"
+        + '<button type="button" class="btn sec sm" id="e-add">+ 加一个选项</button>';
+    } else if (rows.length) {
+      optBlock = '<span class="flab">选项（' + Render.esc(bucketTxt)
+        + '不该有选项 —— 识别误加的，把行删掉再保存）</span>'
+        + '<div id="e-opts">' + rows.map(orowHtml).join("") + "</div>";
+    }
+
+    var lab = perLine ? "算式（一行一个 —— ×÷○ 直接打，回车换行）"
+      : bucket === "fill" ? "题干（____ 是空格，卷面按空给分）"
+      : "题干（识别有误的字直接改；复杂公式用 $…$ 包起来）";
+    /* 图列表：**没有图也要出这块** —— 「＋ 从原图切一张图」是识别漏图时唯一的补图入口
+       （用户原话：有些你没切图片，编辑的时候需要支持切图）。 */
+    var figsBlock = '<span class="flab" id="e-figl">图（' + efigs.length + "）</span>"
+      + '<div id="e-figs"></div>'
+      + '<button type="button" class="btn sec sm" id="e-figadd"'
+      + ' title="识别漏了图 / 想多切一块：在整页原图上框选一块当这道题的插图">'
+      + "＋ 从原图切一张图</button>";
+    /* 算式/比大小：直接内嵌公式编辑器本体（math-field 所见即所得），没有文本框；
+       其余题型：文本框 + 「√ 公式编辑器」弹层。 */
+    var stemBlock = perLine
+      ? '<math-field id="e-mf"></math-field>'
+        + '<div class="etools"><span class="etools-tip" id="e-mf-load">公式编辑器加载中…</span>'
+        + '<span class="etools-tip">分数/根号：长按键盘上的 ÷，或直接打 LaTeX（\\frac{1}{2}）</span></div>'
+      : '<textarea id="e-stem" rows="' + Math.max(3, txt.split("\n").length + 1) + '">'
+        + Render.esc(txt) + "</textarea>"
+        + '<div class="etools"><button type="button" class="btn sec sm" id="e-fx"'
+        + ' title="分数、根号这类复杂公式，点开可视化编辑器拼">&radic; 公式编辑器</button>'
+        + '<span class="etools-tip">简单符号 ×÷○ 直接打就行；编辑器里点分式、根号拼结构</span></div>';
+    ed.innerHTML =
+      '<div class="ehead"><span class="flab">' + Render.esc(lab) + "</span>"
+      + '<span class="eblank" id="e-blank"></span></div>'
+      + stemBlock
+      + figsBlock
+      + optBlock
+      + '<div class="etip">可读算式（×÷±≤≥≠ ○ □ [?]）直接打、存成文本照常按公式排版；'
+      + "复杂公式用 $…$ 包起来写 LaTeX。改完点「保存修改」，题库、卷面、组卷里都是新内容。</div>"
+      + '<div class="eops"><button type="button" class="btn sm" id="e-save">保存修改</button>'
+      + '<button type="button" class="btn sec sm" id="e-cancel">取消</button></div>';
+    drawFigs();
+    syncBlank();
+    if (perLine) {
+      MF0.txt = txt;                                  // 模块加载完成前的兜底文本
+      fxEnsure(function () {
+        var mf = document.getElementById("e-mf");
+        if (!mf) return;
+        tameMf(mf);
+        mf.value = textToMfValue(MF0.txt);
+        var ld = document.getElementById("e-mf-load");
+        if (ld && ld.parentNode) ld.parentNode.removeChild(ld);
+      });
+    }
+  }
+
+  /* ---------------- 图列表一行（2026-10-11 加「切图 / 显示大小 / 显示位置」）----------------
+     大小 dw（30~100%，100 或没有 = 该容器的默认满宽）、位置 pos（l/c/r，不设 = 跟随各页
+     默认落位）、环绕 wrap（浮起来，题干文字绕另一侧，只有左右位置成立）—— 都直接改在
+     figure 片段上，和说明一样点「保存修改」落库；改完立刻反映到缩略图（所见即所得）。
+     口径与渲染层共用 render.js 的 figView，别在两处各写一套。 */
+  function dwOf(seg) {
+    var d = Math.round(Number(seg && seg.dw) || 0);
+    return (d >= 30 && d < 100) ? d : 100;
+  }
+
+  function figRowHtml(f, i) {
+    var seg = f.seg, dw = dwOf(seg), p = seg.pos || "", wrap = !!seg.wrap;
+    var canWrap = (p === "l" || p === "r");
+    var pos = function (k, t) {
+      return '<button type="button" class="btn sec sm' + (p === k ? " on" : "")
+        + '" data-fpos="' + k + '" data-fi="' + i + '">' + t + "</button>";
+    };
+    return '<div class="figrow" data-row="' + i + '">'
+      + '<span class="fthumb" data-fthumb="' + i + '"></span>'
+      + '<span class="figmeta">'
+      + '<input type="text" data-fcap="' + i + '" value="' + Render.esc(seg.caption || "")
+      + '" placeholder="图下说明（可留空）">'
+      + '<span class="figctl"><span class="fslab">显示大小</span>'
+      + '<input type="range" min="30" max="100" step="5" value="' + dw + '" data-fdw="' + i + '">'
+      + '<span class="fsval" data-fdwv="' + i + '">' + dw + "%</span>"
+      + '<button type="button" class="btn sec sm" data-fdwdef="' + i
+      + '" title="回到默认大小（占满可用宽度）">默认</button></span>'
+      + '<span class="figctl"><span class="fslab">显示位置</span>'
+      + pos("l", "左") + pos("c", "居中") + pos("r", "右")
+      + (p ? '<button type="button" class="btn sec sm" data-fpos="" data-fi="' + i
+        + '" title="不指定 = 跟随题型默认（应用题靠右、带图选择题贴选项右侧）">跟随默认</button>' : "")
+      + '<label class="fchk' + (canWrap ? "" : " off") + '" title="'
+      + (canWrap ? "图浮起来，题干文字绕到另一侧" : "先选左或右，才能环绕") + '">'
+      + '<input type="checkbox" data-fwrap="' + i + '"' + (wrap ? " checked" : "")
+      + (canWrap ? "" : " disabled") + '> 文字环绕</label>' + "</span>"
+      + '<span class="figops">'
+      + '<button type="button" class="btn sec sm" data-frep="' + i
+      + '" title="识别框偏了 / 裁多了？在整页原图上重新框选 = 替换这张图">替换</button>'
+      + '<button type="button" class="ico" data-fdel="' + i + '" title="把这张图从题目里删掉">&times;</button>'
+      + "</span></span></div>";
+  }
+
+  /* 大小滑杆拖动时**不重画整行**（重画会丢焦点、手感也抖）：只把新的 --fdw / 位置类
+     贴到缩略图的 figbox 上 —— 口径直接问渲染层要，和真渲染一模一样。 */
+  function figLive(i) {
+    var f = efigs[i];
+    var row = document.querySelector('#e-figs .figrow[data-row="' + i + '"]');
+    if (!f || !row) return;
+    var fb = row.querySelector(".fthumb .figbox");
+    if (!fb) return;
+    var v = Render.figView(f.seg);
+    fb.className = (fb.classList.contains("fixed") ? "figbox fixed" : "figbox") + v.cls;
+    var st = v.style ? v.style.replace(/^ style="/, "").replace(/"$/, "") : "";
+    if (st) fb.setAttribute("style", st); else fb.removeAttribute("style");
+  }
+
+  function drawFigs() {
+    var box = document.getElementById("e-figs");
+    if (!box) return;
+    var lb = document.getElementById("e-figl");
+    if (lb) lb.textContent = "图（" + efigs.length + "）—— 显示大小 / 位置 / 说明在这里改；"
+      + "框偏了用「替换」，斜了在弹层里转正";
+    box.innerHTML = efigs.length ? efigs.map(figRowHtml).join("")
+      : '<div class="figempty">这道题还没有图。识别漏了图、或想把某一块也切出来当插图，'
+        + "点下面的「＋ 从原图切一张图」，在整页原图上拖出要切的那块。</div>";
+    [].forEach.call(box.querySelectorAll("[data-fthumb]"), function (el) {
+      var f = efigs[Number(el.dataset.fthumb)];
+      if (!f) return;
+      el.innerHTML = Render.stemHtml({ stem: [f.seg] }, curCtx);
+      var cap = el.querySelector(".figcap");
+      if (cap) cap.remove();                     // 说明在旁边单独的输入框里改
+    });
+  }
+
+  /* 一行可读文本 -> LaTeX：$…$ 段原样、外面的可读符号走 plainToTex；［图：…］占位成 \text{【图】}。 */
+  function lineToTex(l) {
+    var out = "", rest = l, m;
+    var ph = /[$]([^$]+)[\$]|［图：[^］]*］/.exec(rest);
+    while ((m = ph)) {
+      if (m.index > 0) out += plainToTex(rest.slice(0, m.index));
+      out += (m[1] != null) ? m[1] : "\\text{【图】}";
+      rest = rest.slice(m.index + m[0].length);
+      ph = /[$]([^$]+)[\$]|［图：[^］]*］/.exec(rest);
+    }
+    return out + plainToTex(rest);
+  }
+
+  /* 公式编辑器（math-field） <-> 可读文本。一行一式；math-field 的换行在 value 里是 \\。
+     ［图：…］占位行进编辑器成 \text{【图】}，存的时候按序换回来。 */
+  function textToMfValue(txt) {
+    var lines = String(txt == null ? "" : txt).split("\n")
+      .filter(function (l) { return l.trim(); })
+      .map(lineToTex);
+    /* 包 \displaylines 才真正叠行（MathLive 顶层 \\ 不堆叠、只显示红色换行符）；
+       编辑器里回车 = addRowAfter，产出的也是这个壳，两边对得上 */
+    return lines.length ? "\\displaylines{" + lines.join(" \\\\ ") + "}" : "";
+  }
+  /* 可读算式收紧成卷面风格（12 × 3 = -> 12×3=），与文本框手打的存量一致 */
+  function stripOpSp(s) {
+    return String(s).replace(/\s*\[\?\]\s*/g, "[?]")
+      .replace(/\s*([+\-×÷=<>≤≥≠±·○□■●▲★☆])\s*/g, "$1").trim();
+  }
+  function mfUpgraded(mf) { return !!mf && !!mf.setOptions; }
+  function mfToText(mf) {
+    var v = String(mf.value == null ? "" : mf.value).trim();
+    var mDL = /^\\displaylines\s*\{([\s\S]*)\}$/.exec(v);  // 剥掉叠行外壳
+    if (mDL) v = mDL[1];
+    v = v.replace(/\\placeholder\s*\{\}/g, "");            // 空占位去掉，免得 KaTeX 不认
+    var prev;
+    do { prev = v; v = v.replace(/\\placeholder\s*\{([^{}]*)\}/g, "$1"); } while (v !== prev);
+    return v.split(/\\\\/).map(function (l) {
+      l = l.replace(/\\text\s*\{\s*【图】\s*\}/g, "［图：］");
+      var p = texToPlain(l);
+      return (p != null) ? stripOpSp(p) : "$" + l.trim() + "$";
+    }).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  }
+  var MF0 = { txt: "" };                                   // 模块加载完成前暂存的编辑框文本
+  function isPerLine() { return curBucket === "calc" || curBucket === "compare"; }
+  /* 当前题干编辑内容 -> 文本（算式/比大小从 math-field 转，其余读文本框） */
+  function stemText() {
+    if (isPerLine()) {
+      var mf = document.getElementById("e-mf");
+      if (mfUpgraded(mf)) return mfToText(mf);
+      return MF0.txt;
+    }
+    var ta = document.getElementById("e-stem");
+    return ta ? ta.value : "";
+  }
+  function setStemText(txt) {
+    if (isPerLine()) {
+      var mf = document.getElementById("e-mf");
+      if (mfUpgraded(mf)) { mf.value = textToMfValue(txt); return; }
+      MF0.txt = txt; return;
+    }
+    var ta = document.getElementById("e-stem");
+    if (ta) ta.value = txt;
+  }
+
+  /* 填空题：数一数空格（____ / （　　）），卷面按空给分 */
+  function syncBlank() {
+    var el = document.getElementById("e-blank");
+    if (!el || curBucket !== "fill") return;
+    var ta = document.getElementById("e-stem");
+    var m = ta ? String(ta.value).match(/_{3,}|（[\s　]*）/g) : null;
+    el.textContent = (m && m.length) ? "共 " + m.length + " 空（卷面按空给分）" : "";
+  }
+
+  /* 编辑框里的事件只绑一次（编辑态反复进出，绑在表单上会丢）。输入只改数据/预览不重画（不丢焦点），
+     结构操作（删图等）才重画对应区域。 */
+  var edEl = document.getElementById("editor");
+  edEl.addEventListener("click", function (ev) {
+    if (!editing) return;
+    var t = ev.target;
+    var delOpt = t.closest("[data-delopt]");
+    if (delOpt) {
+      var box = document.getElementById("e-opts");
+      var vals = optValues();
+      vals.splice(Number(delOpt.dataset.delopt), 1);
+      box.innerHTML = vals.map(orowHtml).join("");
+      return;
+    }
+    if (t.id === "e-add") {                            // 加选项钮只在选择题模板里有
+      var box2 = document.getElementById("e-opts");
+      var vals2 = optValues();
+      vals2.push("");
+      box2.innerHTML = vals2.map(orowHtml).join("");
+      var all = box2.querySelectorAll("input");
+      if (all.length) all[all.length - 1].focus();
+      return;
+    }
+    var frep = t.closest("[data-frep]"), fdel = t.closest("[data-fdel]");
+    if (frep) {
+      var f = efigs[Number(frep.dataset.frep)];
+      if (!f) return;
+      var segIdx = (q.stem || []).indexOf(f.seg);
+      if (segIdx < 0) return;
+      var rec = segFileRec(f.seg);                 // 可能换过原图（多张照片的卷子）
+      if (rec && rec.url) openFigm(segIdx, rec);
+      return;
+    }
+    if (t.id === "e-figadd") return openFigmNew();  // 识别漏图 / 想多切一块
+    var fpos = t.closest("[data-fpos]");
+    if (fpos) {                                    // 左 / 居中 / 右；再点「跟随默认」= 取消
+      var fp = efigs[Number(fpos.dataset.fi)];
+      if (!fp) return;
+      var pk = fpos.dataset.fpos;
+      if (pk) fp.seg.pos = pk; else { delete fp.seg.pos; delete fp.seg.wrap; }
+      if (pk !== "l" && pk !== "r") delete fp.seg.wrap;   // 居中 / 默认不环绕
+      drawFigs();
+      return;
+    }
+    var fdw = t.closest("[data-fdwdef]");
+    if (fdw) { delete efigs[Number(fdw.dataset.fdwdef)].seg.dw; drawFigs(); return; }
+    if (fdel) {
+      var k = Number(fdel.dataset.fdel), f2 = efigs[k];
+      if (!f2) return;
+      if (!window.confirm("把这张图从题目里删掉？（原图还在，以后可以从整页原图重新框选 / 切图）")) return;
+      efigs.splice(k, 1);
+      setStemText(mapPh(stemText(), k, null));         // 占位行一起删掉（图少了会补回末尾，这里直接删干净）
+      drawFigs();
+      return;
+    }
+    if (t.id === "e-fx") return fxOpen();
+    if (t.id === "e-save") return saveEdit();
+    if (t.id === "e-cancel") return render(q, curMap, curFiles);
+  });
+  edEl.addEventListener("input", function (ev) {
+    if (!editing) return;
+    var t = ev.target;
+    if (t.id === "e-stem") { CARET.at = t.selectionStart; syncBlank(); return; }
+    if (t.dataset.fdw != null) {                     // 显示大小：拖的时候只动缩略图，不重画整行
+      var fd = efigs[Number(t.dataset.fdw)];
+      if (!fd) return;
+      var v = Number(t.value);
+      if (v >= 100) delete fd.seg.dw; else fd.seg.dw = v;
+      var rd = document.querySelector('[data-fdwv="' + t.dataset.fdw + '"]');
+      if (rd) rd.textContent = v + "%";
+      figLive(Number(t.dataset.fdw));
+      return;
+    }
+    if (t.dataset.fcap != null) {
+      var k = Number(t.dataset.fcap), f = efigs[k];
+      if (!f) return;
+      f.seg.caption = t.value;                         // 说明落回图片段本体
+      setStemText(mapPh(stemText(), k, t.value));      // 占位显示同步（占位只是位置标记）
+    }
+  });
+  /* 环绕开关走 change（勾选才生效），要重画行 —— 位置按钮的可用态跟着变 */
+  edEl.addEventListener("change", function (ev) {
+    if (!editing) return;
+    var t = ev.target;
+    if (t.dataset.fwrap == null) return;
+    var f = efigs[Number(t.dataset.fwrap)];
+    if (!f) return;
+    if (t.checked) f.seg.wrap = true; else delete f.seg.wrap;
+    drawFigs();
+  });
+  /* 编辑框的**最后停过的光标位置**：点「＋ 切图」时焦点已经跑到按钮上，读不到实时光标，
+     所以点 / 敲键盘时随手记一下 —— 新切的那块就插在这个位置。 */
+  ["click", "keyup"].forEach(function (evName) {
+    edEl.addEventListener(evName, function (ev) {
+      if (editing && ev.target && ev.target.id === "e-stem") CARET.at = ev.target.selectionStart;
+    });
+  });
+
+  function saveEdit() {
+    var segs = stemFromText(stemText(), efigs);
+    if (!segs.length) { showMsg("题干不能为空"); return; }
+    var opts = optValues().map(parseOpt).filter(Boolean);
+    var src = Object.assign({}, q.source || {}, { edited: true });
+    CloudAPI.updateQuestion(q.id, { stem: segs, options: opts, source: src }).then(function (row) {
+      q = row;
+      editing = false;
+      UI.toast("已保存修改，卷面 / 组卷同步生效");
+      render(q, curMap, curFiles);
+    }).catch(function (e) { showMsg(e.message || "保存修改失败"); });
+  }
+
+  /* ---------------- 题内插图「替换」 ----------------
+     图 = 按 seg.bbox 从整页原图现裁的（不是独立文件）。识别框偏了/裁多了，
+     就在整页原图上重新拖框改 bbox。
+     ⚠️ 「摆正」转的是**选区本身**（用户要求）：选区能绕自己的中心转，拖那个圆点或
+     拉滑杆都是在转框 —— 圈住斜着印的那块内容，出来的图就是摆正且紧贴内容的
+     （在选区自己的坐标系里裁：把原图绕选区中心反向转回来再切）。
+     不是"先框一个正框、再转框里的内容" —— 那样四周会多出一圈背景/白角。
+     烤成 data URI 存 seg.fix，渲染层见到 src 直接用、不再按 bbox 现裁。
+     第一次动过就留 seg.bbox0（识别原状），「恢复识别原状」靠它回去。
+     ⚠️ 状态是 中心 + 宽高 + 角度，不是轴对齐 bbox：拖角要"对角钉住"、转角度绕中心，
+     只有中心+宽高算得准；落库时再换算回 bbox（存的是**未旋转的局部框**，配 seg.rot）。 */
+  var FIGM = { mode: "edit", fi: -1, sized: true, cx: 0, cy: 0, w: 0, h: 0, rot: 0, img: null };
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  function figmScale() {
+    var im = document.getElementById("figm-img");
+    return (im.naturalWidth && im.clientWidth) ? im.clientWidth / im.naturalWidth : 1;
+  }
+  function figmDeg() { return clamp(Number(FIGM.rot) || 0, -8, 8); }          // 和滑杆量程一致
+  function figmBox() {
+    return [FIGM.cx - FIGM.w / 2, FIGM.cy - FIGM.h / 2, FIGM.cx + FIGM.w / 2, FIGM.cy + FIGM.h / 2];
+  }
+  /* 中心 + 宽高 + 角度 收进原图里。转起来之后约束的是**外接框**（不让选区转出纸外）。 */
+  function figmClampState() {
+    var im = document.getElementById("figm-img");
+    var W = im.naturalWidth || 1000, H = im.naturalHeight || 1400;
+    FIGM.w = clamp(FIGM.w, 8, W); FIGM.h = clamp(FIGM.h, 8, H);
+    var rad = figmDeg() * Math.PI / 180;
+    var cs = Math.abs(Math.cos(rad)), sn = Math.abs(Math.sin(rad));
+    var ex = (FIGM.w * cs + FIGM.h * sn) / 2, ey = (FIGM.w * sn + FIGM.h * cs) / 2;
+    FIGM.cx = (ex * 2 >= W) ? W / 2 : clamp(FIGM.cx, ex, W - ex);
+    FIGM.cy = (ey * 2 >= H) ? H / 2 : clamp(FIGM.cy, ey, H - ey);
+  }
+  function figmFitRect() {
+    var s = figmScale(), r = document.getElementById("figm-rect");
+    r.style.left = ((FIGM.cx - FIGM.w / 2) * s) + "px";
+    r.style.top = ((FIGM.cy - FIGM.h / 2) * s) + "px";
+    r.style.width = (FIGM.w * s) + "px";
+    r.style.height = (FIGM.h * s) + "px";
+    r.style.transform = "rotate(" + figmDeg() + "deg)";     // ← 转的是选区本身
+  }
+  function figmRead() {
+    document.getElementById("figm-read").textContent =
+      "x " + Math.round(FIGM.cx - FIGM.w / 2) + " · y " + Math.round(FIGM.cy - FIGM.h / 2)
+      + " · 宽 " + Math.round(FIGM.w) + " · 高 " + Math.round(FIGM.h)
+      + " · 转 " + figmDeg().toFixed(1) + "°（原图像素）";
+  }
+  /* 设角度（滑杆与旋转把手共用）：收 0.5° 步进、限幅，然后重画框 + 预览 */
+  function figmSetRot(v, sync) {
+    FIGM.rot = clamp(Math.round((Number(v) || 0) * 2) / 2, -8, 8);
+    if (sync !== false) {
+      var el = document.getElementById("figm-rot");
+      if (el) el.value = String(FIGM.rot);
+      var lv = document.getElementById("figm-rotv");
+      if (lv) lv.textContent = FIGM.rot.toFixed(1) + "°";
+    }
+    figmClampState(); figmFitRect(); figmRead(); figmPrev();
+  }
+  /* 旋转后的选区在整页原图上的轴对齐外接框 —— 画布只需要这一块（整图 drawImage 太贵） */
+  function figmPickBox(b, rot) {
+    var im = document.getElementById("figm-img");
+    var W = im.naturalWidth || 10000, H = im.naturalHeight || 10000;
+    var cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
+    var hw = (b[2] - b[0]) / 2, hh = (b[3] - b[1]) / 2;
+    var rad = (rot || 0) * Math.PI / 180;
+    var cs = Math.abs(Math.cos(rad)), sn = Math.abs(Math.sin(rad));
+    var ex = hw * cs + hh * sn, ey = hw * sn + hh * cs;
+    return [clamp(cx - ex - 1, 0, W), clamp(cy - ey - 1, 0, H),
+            clamp(cx + ex + 1, 0, W), clamp(cy + ey + 1, 0, H)];
+  }
+  /* 选区烤成 canvas：在**选区自己的坐标系里裁** —— 原图绕选区中心反向转回来，
+     于是斜着圈住的内容出来是摆正的、且紧贴内容（不会多出一圈背景）。
+     b 是未旋转的局部框，rot 是选区角度（顺时针为正，与 CSS / 滑杆一致）。
+     maxW 限宽防爆内存。sx/sy 是百分数（100 = 不拉伸）。 */
+  function figmBake(b, rot, sx, sy, srcImg, maxW) {
+    sx = (sx || 100) / 100; sy = (sy || 100) / 100;
+    var w = Math.max(4, b[2] - b[0]), h = Math.max(4, b[3] - b[1]);
+    var cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
+    var rad = (rot || 0) * Math.PI / 180;
+    var sc = Math.min(1, (maxW || 900) / Math.max(w * sx, h * sy, 1));
+    var c = document.createElement("canvas");
+    c.width = Math.max(2, Math.round(w * sx * sc));
+    c.height = Math.max(2, Math.round(h * sy * sc));
+    var g = c.getContext("2d");
+    g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);   // 转到纸外的角落留白，别留透明
+    var pk = figmPickBox(b, rot);
+    g.translate(c.width / 2, c.height / 2);
+    g.scale(sc * sx, sc * sy);
+    g.rotate(-rad);                     // 选区转了 +rad，这里反向转回来 → 内容摆正
+    g.translate(-cx, -cy);
+    try {
+      g.drawImage(srcImg, pk[0], pk[1], pk[2] - pk[0], pk[3] - pk[1],
+        pk[0], pk[1], pk[2] - pk[0], pk[3] - pk[1]);
+    } catch (e) { /* 图没加载完 */ }
+    return c;
+  }
+  function figmPrev() {
+    var pv = document.getElementById("figm-prev");
+    pv.innerHTML = "";
+    pv.appendChild(figmBake(figmBox(), figmDeg(), 100, 100, document.getElementById("figm-img"), 420));
+  }
+
+  /* 原图记录：渲染层按文件名找图，所以切图得把「从哪张原图上切的」记进 seg.img
+     （多张照片的卷子里，插图不一定跟题干在同一张上）。 */
+  function recOfFile(file) {
+    var m = file && curMap && curMap[file.filename];
+    if (!m) return null;
+    return { name: file.filename, url: m.url, w: m.w, h: m.h };
+  }
+  /* 这张图现在是从哪张原图上切的：seg.img > 题干那页 > 第一张 */
+  function segFileRec(seg) {
+    var files = curFiles || [], i;
+    if (seg && seg.img) for (i = 0; i < files.length; i++) if (files[i].filename === seg.img) return recOfFile(files[i]);
+    var own = (q.source || {}).file;
+    if (own) for (i = 0; i < files.length; i++) if (files[i].filename === own) return recOfFile(files[i]);
+    if (files.length) return recOfFile(files[0]);
+    var img = UI.imageFor(curMap, curFiles, q);
+    return img && img.url ? { name: "", url: img.url, w: img.w, h: img.h } : null;
+  }
+  /* 这张卷有多张原图时，弹层顶上给一排小图选「从哪张上切」（只有一张就不显示）。 */
+  function figmPages() {
+    var host = document.getElementById("figm-pages");
+    if (!host) return;
+    var list = (curFiles || []).filter(function (f) { return curMap && curMap[f.filename] && curMap[f.filename].url; });
+    if (list.length < 2) { host.style.display = "none"; host.innerHTML = ""; return; }
+    host.style.display = "";
+    host.innerHTML = list.map(function (f, i) {
+      return '<button type="button" data-file="' + Render.esc(f.filename) + '" title="'
+        + Render.esc("换成第 " + (f.page_no || i + 1) + " 张原图") + '">'
+        + '<img src="' + Render.esc(curMap[f.filename].url) + '" alt=""></button>';
+    }).join("");
+  }
+  /* 换原图（切图 / 替换都用）：框不动，用户接着在新图上框 */
+  function figmSetImg(rec) {
+    if (!rec || !rec.url) { showMsg("这张原图取不到，先刷新页面再试"); return; }
+    FIGM.img = rec;
+    var marks = document.getElementById("figm-pages");
+    if (marks) [].forEach.call(marks.querySelectorAll("button"), function (b) {
+      b.classList.toggle("on", b.dataset.file === rec.name);
+    });
+    var im = document.getElementById("figm-img");
+    im.onload = function () {
+      /* 新切一张时先给个正中间的默认框（用户拖角改大小、或在图上重拖都行） */
+      if (FIGM.mode === "new" && !FIGM.sized) {
+        var W = im.naturalWidth || 1000, H = im.naturalHeight || 1400;
+        FIGM.w = Math.round(W * 0.45); FIGM.h = Math.round(FIGM.w * 0.7);
+        FIGM.cx = W / 2; FIGM.cy = H / 2; FIGM.sized = true;
+      }
+      figmSetRot(FIGM.rot);
+    };
+    im.src = rec.url;
+  }
+  function figmHead(mode) {
+    var t = document.getElementById("figm-title"), s = document.getElementById("figm-sub");
+    var b = document.getElementById("figm-save");
+    if (mode === "new") {
+      if (t) t.textContent = "从原图切一张图";
+      if (s) s.textContent = "在左边整页原图上拖一下，圈出要当插图的那块 —— 框好后点「加进题目」，"
+        + "它就成了这道题的插图（位置跟着你在题干编辑框里的光标走）";
+      if (b) b.textContent = "加进题目";
+    } else {
+      if (t) t.textContent = "替换图片";
+      if (s) s.textContent = "在左边整页原图上重新框选 —— 识别偏了 / 裁多了就把框拖正，扫描歪了就把框转正";
+      if (b) b.textContent = "保存调整";
+    }
+    document.getElementById("figm-restore").style.display =
+      (mode === "edit" && ((q.stem[FIGM.fi] || {}).fix || (q.stem[FIGM.fi] || {}).bbox0)) ? "" : "none";
+  }
+  function figmOpen() {
+    document.getElementById("figm").style.display = "";
+    figmPages();
+  }
+  function openFigm(segIdx, rec) {
+    var seg = q.stem[segIdx];
+    if (!seg || seg.t !== "figure") return;
+    FIGM.mode = "edit"; FIGM.fi = segIdx; FIGM.sized = true;
+    /* 从**上次存下的框**接着调（不是识别原框）—— 想回识别态另有「恢复识别原状」按钮 */
+    var b = (seg.bbox && seg.bbox.length === 4) ? seg.bbox
+      : (seg.bbox0 && seg.bbox0.length === 4) ? seg.bbox0
+      : [0, 0, (rec && rec.w) || 1000, (rec && rec.h) || 1400];
+    FIGM.cx = (b[0] + b[2]) / 2; FIGM.cy = (b[1] + b[3]) / 2;
+    FIGM.w = Math.max(8, b[2] - b[0]); FIGM.h = Math.max(8, b[3] - b[1]);
+    FIGM.rot = Number(seg.rot || 0);
+    document.getElementById("figm-cap").value = seg.caption || "";
+    figmHead("edit"); figmOpen();
+    figmSetImg(rec || segFileRec(seg));
+    figmSetRot(FIGM.rot);
+  }
+  /* 「＋ 从原图切一张图」：识别漏了图 / 想多切一块，都是这里进来 */
+  function openFigmNew() {
+    var rec = segFileRec(null);
+    if (!rec || !rec.url) { showMsg("这道题没有可用的原图，没法切图"); return; }
+    FIGM.mode = "new"; FIGM.fi = -1; FIGM.sized = false;
+    FIGM.rot = 0;
+    document.getElementById("figm-cap").value = "";
+    figmHead("new"); figmOpen();
+    figmSetImg(rec);
+  }
+  function closeFigm() { document.getElementById("figm").style.display = "none"; }
+
+  function figmPersist(msg) {
+    var src = Object.assign({}, q.source || {}, { edited: true });
+    CloudAPI.updateQuestion(q.id, { stem: q.stem, source: src }).then(function (row) {
+      q = row; UI.toast(msg); closeFigm();
+      if (editing) {                        // 从编辑器里点进来的：留在编辑态，图列表刷新
+        efigs = (q.stem || []).filter(function (s) { return s.t === "figure"; })
+          .map(function (s) { return { seg: s }; });   // 保存后 seg 是新克隆，引用要重建
+        drawFigs();
+      } else render(q, curMap, curFiles);
+    }).catch(function (e) { showMsg(e.message || "保存调整失败"); });
+  }
+
+  /* 框住的这块烤成成品图（转过角度才烤）：局部坐标系里裁，见 figmBake 上面那段说明 */
+  function figmFixOf(box, rot) {
+    return figmBake(box, rot, 100, 100, document.getElementById("figm-img"), 900)
+      .toDataURL("image/jpeg", 0.85);
+  }
+  /* 新切的那块**插在编辑框的哪里**：文本框用最后停过的光标（点「＋切图」时焦点已经跑到
+     按钮上了，读不到实时光标），公式编辑器没有光标概念 -> 补在末尾。 */
+  function figPlaceAt(tx) {
+    var ta = document.getElementById("e-stem");
+    if (!ta) return tx.length;                       // 算式/比大小：公式编辑器，补末尾
+    var at = (CARET.at == null) ? tx.length : clamp(CARET.at, 0, tx.length);
+    var re = /［图：[^］]*］/g, m;
+    while ((m = re.exec(tx))) {                      // 光标落在占位符中间 = 挪到它后面
+      if (at > m.index && at < m.index + m[0].length) { at = m.index + m[0].length; break; }
+    }
+    return at;
+  }
+  /* 切图 = 新增一个 figure 片段。文本里的第 k 个 ［图：］ 对应 efigs 的第 k 项
+     （占位符只是位置标记，渲染顺序看 stem 数组），所以两边要**一起插在 k 位置**，
+     不然保存修改时占位符会把别的图换到自己的位置上。 */
+  function figmCreate(cap) {
+    var box = figmBox(), rot = figmDeg();
+    var seg = { t: "figure", bbox: box.map(Math.round) };
+    if (cap) seg.caption = cap;
+    if (FIGM.img && FIGM.img.name) seg.img = FIGM.img.name;
+    if (rot) { seg.fix = figmFixOf(box, rot); seg.rot = rot; }
+    var tx = stemText(), at = figPlaceAt(tx);
+    var k = (tx.slice(0, at).match(/［图：[^］]*］/g) || []).length;
+    var stem = q.stem || (q.stem = []);
+    var anchor = (k < efigs.length) ? efigs[k].seg : null;
+    var ai = anchor ? stem.indexOf(anchor) : -1;
+    if (ai < 0) stem.push(seg); else stem.splice(ai, 0, seg);
+    efigs.splice(k, 0, { seg: seg });
+    setStemText(tx.slice(0, at) + "［图：" + cap + "］" + tx.slice(at));
+    figmPersist("已把这块切进题目，卷面 / 组卷同步生效");
+  }
+  function figmSave() {
+    var cap = String((document.getElementById("figm-cap") || {}).value || "").trim();
+    if (FIGM.mode === "new") return figmCreate(cap);
+    var seg = q.stem[FIGM.fi]; if (!seg) return;
+    if (!seg.bbox0) seg.bbox0 = ((seg.bbox && seg.bbox.length === 4) ? seg.bbox.slice() : figmBox());
+    seg.bbox = figmBox().map(Math.round);        // 存未旋转的局部框（配 seg.rot 才能还原位置）
+    if (FIGM.img && FIGM.img.name) seg.img = FIGM.img.name;   // 换过原图的记下来（见 render.js figView）
+    if (cap) seg.caption = cap; else delete seg.caption;
+    var rot = figmDeg();
+    if (rot) { seg.fix = figmFixOf(figmBox(), rot); seg.rot = rot; }
+    else { delete seg.fix; delete seg.rot; }     // 角度归零 = 回到按 bbox 现裁，不留 data URI
+    /* 说明在弹层里改了的话，编辑框里的占位行跟着变（占位只是位置标记，不影响落库） */
+    var k = -1;
+    efigs.forEach(function (f, i) { if (f.seg === seg) k = i; });
+    if (k >= 0) setStemText(mapPh(stemText(), k, cap));
+    figmPersist("已保存图片调整，卷面 / 组卷同步生效");
+  }
+  function figmRestore() {
+    var seg = q.stem[FIGM.fi]; if (!seg) return;
+    if (seg.bbox0) seg.bbox = seg.bbox0.slice();
+    delete seg.fix; delete seg.rot; delete seg.bbox0;
+    figmPersist("已恢复识别原状");
+  }
+
+  /* ---------------- 公式编辑器（MathLive，懒加载自托管） ----------------
+     「√ 公式编辑器」钮 -> #fxm 弹层（<math-field>，所见即所得拼分式/根号）。
+     确定 -> LaTeX 包 $…$ 写回光标处（选中一段 $…$ 时原地替换）。
+     存储还是 $…$ -> latex 片段，schema 不动；渲染端 KaTeX 不变。 */
+  var FXM = { mod: null, from: -1, to: -1, perLine: false, configed: false };
+
+  /* math-field 默认「太聪明」：打 / 出分数、打 * 出 ·（用户原话「输入除法就变成了分数」）。
+     小学算式要的是字面输入 —— 两处都关掉，不动 vendor：
+     · inlineShortcuts 换成最小表：* 直接给 ×（内联 shortcut 走这张表）；
+     · / 是键盘绑定，normalizeKeybindings 会把追加项过滤掉 —— 干脆 keydown 捕获阶段
+       拦下 / 自己 insert 字面字符（executeCommand），抢在 MathLive 的 frac 绑定前。 */
+  function tameMf(mf) {
+    if (!mf || !mf.setOptions || mf.dataset.tamed) return;
+    try {
+      mf.setOptions({ inlineShortcuts: { "*": "\\times", "-:": "\\div" } });
+      mf.addEventListener("keydown", function (e) {
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key === "/" || e.key === "\u00f7") {
+          e.preventDefault(); e.stopPropagation();
+          mf.executeCommand("insert", e.key === "\u00f7" ? "\\div" : "/");
+          return;
+        }
+        /* MathLive 0.103 里 Shift+Enter 没绑换行（只有 Ctrl/Cmd/Alt+Enter），
+           算式面板要「一行一式」—— 回车一律接成 addRowAfter（value 里成 \\，
+           保存时按行拆开转可读算式；编辑器里行间显示红色 \ 是 MathLive 的换行符样子） */
+        if (e.key === "Enter") {
+          e.preventDefault(); e.stopPropagation();
+          mf.executeCommand("addRowAfter");
+        }
+      }, true);
+      mf.dataset.tamed = "1";
+    } catch (e) { /* 版本差异容忍：最坏也就是原行为 */ }
+  }
+  function fxConfigField() {
+    if (FXM.configed) return;
+    var mf = document.getElementById("fx-field");
+    if (!mf) return;
+    tameMf(mf);
+    if (mf.dataset.tamed) FXM.configed = true;
+  }
+
+  function fxEnsure(cb) {
+    if (FXM.mod) { fxConfigField(); return cb(); }
+    import("./js/vendor/mathlive/mathlive.mjs?v=20261007ah").then(function (m) {
+      FXM.mod = m; fxConfigField(); cb();
+    }).catch(function (e) { showMsg("公式编辑器加载失败：" + (e.message || e)); });
+  }
+  function fxOpen() {
+    var ta = document.getElementById("e-stem");
+    if (!ta) return;
+    FXM.perLine = true;   // 任何模式都优先转回可读符号（mathify 全站认，转不平才包 $…$）
+    var sel = ta.value.slice(ta.selectionStart, ta.selectionEnd);
+    FXM.from = ta.selectionStart; FXM.to = ta.selectionEnd;
+    var m = sel.match(/^\$([\s\S]*)\$$/);            // 选中整段 $…$ -> 原地替换
+    var latex = m ? m[1] : "";
+    if (!m && ta.selectionStart === ta.selectionEnd && ta.selectionStart > 0) {
+      var l = ta.value.lastIndexOf("$", ta.selectionStart - 1),
+          r = ta.value.indexOf("$", ta.selectionStart);
+      if (l >= 0 && r > l) {                          // 光标落在 $…$ 里 -> 也算选中它
+        latex = ta.value.slice(l + 1, r);
+        FXM.from = l; FXM.to = r + 1;
+      }
+    }
+    fxEnsure(function () {
+      document.getElementById("fx-field").value = latex;
+      document.getElementById("fxm").style.display = "";
+      setTimeout(function () {
+        try { document.getElementById("fx-field").executeCommand("moveToMathfieldStart"); } catch (e) { /* ignore */ }
+      }, 80);
+    });
+  }
+  function fxInsert() {
+    var lx = String(document.getElementById("fx-field").value || "").trim();
+    document.getElementById("fxm").style.display = "none";
+    if (!lx) return;
+    var ta = document.getElementById("e-stem");
+    var v = ta.value;
+    var from = FXM.from >= 0 ? Math.min(FXM.from, v.length) : v.length;
+    var to = FXM.to >= 0 ? Math.min(FXM.to, v.length) : v.length;
+    /* 任何模式都优先把 LaTeX 转回可读符号（×÷·±○□）直接落 —— mathify 全站认，
+       存 text 片段渲染无损；转不平的（\frac 等）才包 $…$。 */
+    var ins;
+    if (FXM.perLine) {
+      var p = texToPlain(lx);
+      ins = (p != null && p.indexOf("$") < 0) ? p : "$" + lx + "$";
+    } else {
+      ins = "$" + lx + "$";
+    }
+    ta.value = v.slice(0, from) + ins + v.slice(to);
+    var pos = from + ins.length;
+    ta.focus();
+    try { ta.setSelectionRange(pos, pos); } catch (e) { /* ignore */ }
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
+    FXM.from = FXM.to = -1;
+  }
+  (function bindFxm() {
+    var m = document.getElementById("fxm");
+    m.addEventListener("click", function (ev) {
+      if (ev.target.id === "fxm-ok") return fxInsert();
+      if (ev.target.id === "fxm-cancel" || ev.target.id === "fxm-x") {
+        m.style.display = "none"; FXM.from = FXM.to = -1;
+      }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && m.style.display !== "none") {
+        m.style.display = "none"; FXM.from = FXM.to = -1;
+      }
+    });
+  })();
+
+
+  /* 弹层交互只绑一次 */
+  (function bindFigm() {
+    var m = document.getElementById("figm"), rect = document.getElementById("figm-rect");
+    var st = null;                  // 当前手势状态（null = 没在拖）
+    /* 屏幕位移 → 选区局部坐标系的位移：选区带角度时，拖角/微调得按框自己的轴向走，
+       不然框一转，"拖右下角"就会往斜里长。R(-rot)·(dx,dy)。 */
+    function toLocal(dx, dy) {
+      var rad = figmDeg() * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
+      return [dx * cs + dy * sn, -dx * sn + dy * cs];
+    }
+    rect.addEventListener("pointerdown", function (e) {
+      var d = e.target.dataset || {};
+      var h = (d.h != null && d.h !== "") ? Number(d.h) : null;
+      if (h === -1) {                       // 顶上那个圆点：转选区
+        var r = rect.getBoundingClientRect();
+        var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        st = { mode: "rot", cx: cx, cy: cy, a0: Math.atan2(e.clientY - cy, e.clientX - cx),
+               rot0: figmDeg() };
+      } else {
+        st = { mode: h === null ? "move" : "h" + h, sx: e.clientX, sy: e.clientY,
+               cx: FIGM.cx, cy: FIGM.cy, w: FIGM.w, h: FIGM.h };
+      }
+      try { rect.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      e.preventDefault();
+    });
+    rect.addEventListener("pointermove", function (e) {
+      if (!st) return;
+      var s = figmScale();
+      if (st.mode === "rot") {
+        /* 屏幕坐标 y 向下、CSS rotate 顺时针为正，两边方向天然一致：指针转到哪，框就转到哪 */
+        var d = (Math.atan2(e.clientY - st.cy, e.clientX - st.cx) - st.a0) * 180 / Math.PI;
+        figmSetRot(st.rot0 + d);
+        return;
+      }
+      var dx = (e.clientX - st.sx) / s, dy = (e.clientY - st.sy) / s;
+      if (st.mode === "move") { FIGM.cx = st.cx + dx; FIGM.cy = st.cy + dy; }
+      else {
+        /* 改大小：把位移换算到框的局部轴，**对角那个角钉住不动** ——
+           宽高按局部位移变，中心再挪半个变化量（都在局部坐标里算，转多少度都对）。 */
+        var ld = toLocal(dx, dy), ldx = ld[0], ldy = ld[1];
+        var i = Number(st.mode.slice(1));
+        var w = (i === 0 || i === 3) ? st.w - ldx : st.w + ldx;
+        var h = (i === 0 || i === 1) ? st.h - ldy : st.h + ldy;
+        w = Math.max(8, w); h = Math.max(8, h);
+        var ax = (i === 0 || i === 3) ? st.w - w : w - st.w;   // 实际生效的局部位移（触底时别漂）
+        var ay = (i === 0 || i === 1) ? st.h - h : h - st.h;
+        var rad = figmDeg() * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
+        FIGM.w = w; FIGM.h = h;
+        FIGM.cx = st.cx + (ax / 2 * cs - ay / 2 * sn);
+        FIGM.cy = st.cy + (ax / 2 * sn + ay / 2 * cs);
+      }
+      figmClampState(); figmFitRect(); figmRead(); figmPrev();
+    });
+    ["pointerup", "pointercancel"].forEach(function (t) {
+      rect.addEventListener(t, function () { st = null; });
+    });
+    /* 在整页原图上**直接拖出一个框**（2026-10-11 加「切图」时加的）：
+       切新图用它画框；替换模式下也能顺手重新框（点一下不动 = 不改，免得误触把框弄跑）。 */
+    var page = document.getElementById("figm-page"), dg = null;
+    function pageXY(e) {
+      var im = document.getElementById("figm-img"), r = im.getBoundingClientRect(), s = figmScale();
+      return [(e.clientX - r.left) / s, (e.clientY - r.top) / s];
+    }
+    page.addEventListener("pointerdown", function (e) {
+      if (e.target !== page && e.target.id !== "figm-img") return;   // 点在框 / 把手上不走这条
+      var p = pageXY(e);
+      dg = { sx: p[0], sy: p[1] };
+      try { page.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      e.preventDefault();
+    });
+    page.addEventListener("pointermove", function (e) {
+      if (!dg) return;
+      var p = pageXY(e), s = figmScale();
+      var w = Math.abs(p[0] - dg.sx), h = Math.abs(p[1] - dg.sy);
+      if (w * s < 6 && h * s < 6) return;             // 还没拉开：先不动，免得点一下就毁掉原框
+      FIGM.w = Math.max(8, w); FIGM.h = Math.max(8, h);
+      FIGM.cx = (p[0] + dg.sx) / 2; FIGM.cy = (p[1] + dg.sy) / 2;
+      figmSetRot(0);                                  // 手画的框是正的（歪了再拖圆点转）
+    });
+    ["pointerup", "pointercancel"].forEach(function (t) {
+      page.addEventListener(t, function () { dg = null; });
+    });
+    document.getElementById("figm-pages").addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-file]");
+      if (!b) return;
+      var f = (curFiles || []).filter(function (x) { return x.filename === b.dataset.file; })[0];
+      if (!f) return;
+      FIGM.sized = (FIGM.mode === "new") ? false : true;   // 新图换页 = 重新给个默认框
+      figmSetImg(recOfFile(f));
+      UI.toast("已换成这张原图 —— 框不对的话重新拖一个");
+    });
+    m.addEventListener("click", function (ev) {
+      var n = ev.target.closest("[data-nudge]");
+      if (n) {
+        /* 微调：左右缘沿框的**局部 x 轴**、上下缘沿局部 y 轴挪一格（框转了也顺着边框走） */
+        var p = n.dataset.nudge.split(","), d = Number(p[1]) * 2;
+        var rad = figmDeg() * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad);
+        var ux = p[0] === "x1" || p[0] === "x2" ? [cs, sn] : [-sn, cs];
+        if (p[0] === "x1") FIGM.w = Math.max(8, FIGM.w - d);
+        else if (p[0] === "x2") FIGM.w = Math.max(8, FIGM.w + d);
+        else if (p[0] === "y1") FIGM.h = Math.max(8, FIGM.h - d);
+        else FIGM.h = Math.max(8, FIGM.h + d);
+        FIGM.cx += ux[0] * d / 2; FIGM.cy += ux[1] * d / 2;
+        figmClampState(); figmFitRect(); figmRead(); figmPrev();
+        return;
+      }
+      if (ev.target.id === "figm-save") return figmSave();
+      if (ev.target.id === "figm-restore") return figmRestore();
+      if (ev.target.id === "figm-cancel" || ev.target.id === "figm-x") return closeFigm();
+    });
+    document.getElementById("figm-rot").addEventListener("input", function () {
+      figmSetRot(Number(this.value));          // 滑杆和圆点是同一个入口：都在转选区
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && m.style.display !== "none") closeFigm();
+    });
+  })();
+
+  function render(q, map, files) {
+    curMap = map; curFiles = files;
+    document.title = "第 " + (q.qno != null ? q.qno : "?") + " 题 · 试卷题库";
+    var nav = '<a href="index.html">我的试卷</a><span class="sep">/</span>';
+    if (q.paper) nav += '<a href="paper.html?id=' + q.paper.id + '">' + Render.esc(q.paper.title || "试卷") + '</a><span class="sep">/</span>';
+    nav += '<span>第 ' + (q.qno != null ? q.qno : "?") + " 题</span>";
+    document.getElementById("crumb").innerHTML = nav;
+
+    var img = UI.imageFor(map, files, q);
+    document.getElementById("crop").innerHTML = (img && q.source && q.source.bbox)
+      ? Render.cropBox(img, q.source.bbox, "第 " + (q.qno || "") + " 题原图")
+        + (img.url ? '<div class="hint" style="margin-top:8px"><a href="#" id="open-full">看整页原图 &rarr;</a></div>' : "")
+      : '<div class="hint">这道题没有登记原图坐标，无法裁切。</div>';
+    var of = document.getElementById("open-full");
+    if (of) of.addEventListener("click", function (e) { e.preventDefault(); UI_lightbox(img.url); });
+    var cv = document.querySelector("#crop .cropbox");
+    if (cv && img && img.url) cv.addEventListener("click", function () { UI_lightbox(img.url); });
+
+    var man = q.source && q.source.qtype_manual;
+    var bucket = (window.QType ? QType.bucketOf(q) : (q.qtype || "other"));
+    var bucketTxt = (window.QType ? QType.TYPE_TITLE[bucket] : null) || Render.typeText(q);
+    document.getElementById("qhead").innerHTML =
+      '<div class="qno" style="font-size:17px;font-weight:600;margin-bottom:10px">第 '
+      + (q.qno != null ? q.qno : "-") + ' 题 '
+      + '<button type="button" class="chip type tchip" id="tchip" data-taid="' + q.id + '"'
+      + ' title="题型（点一下可手动打标，改的是题库本身）">'
+      + Render.esc(bucketTxt + (man ? " ·手" : "")) + "</button> "
+      + '<button type="button" class="btn sec sm" id="q-edit" title="识别有误？改题干、补选项">编辑题目</button></div>';
+    var tchip = document.getElementById("tchip");
+    if (tchip) tchip.addEventListener("click", function () {
+      var cur = q;
+      UI.typePicker(tchip, bucket, man, function (t) {
+        if (t === null && !man) return;
+        var src = Object.assign({}, cur.source || {});
+        if (t) src.qtype_manual = t; else delete src.qtype_manual;
+        CloudAPI.updateQuestion(cur.id, { source: src }).then(function (row) {
+          q = row;
+          UI.toast(t ? "已打成「" + (QType.TYPE_TITLE[QType.normBucket(t)] || t) + "」" : "已恢复自动识别");
+          render(q, map, files);
+        }).catch(function (e) { showMsg(e.message || "打标没保存上"); });
+      });
+    });
+
+    var ctx = UI.ctxFor(map, files);
+    curCtx = ctx;
+    /* 重画前把三块展示区恢复出来（编辑态把它们藏了） */
+    ["stem", "options", "marks"].forEach(function (id) {
+      document.getElementById(id).style.display = "";
+    });
+    document.getElementById("editor").style.display = "none";
+    document.getElementById("stem").innerHTML = Render.stemHtml(q, ctx);
+    document.getElementById("options").innerHTML = Render.optionsHtml(q, ctx);
+    Render.typeset(document.getElementById("page"));
+    var qe = document.getElementById("q-edit");
+    if (qe) qe.addEventListener("click", openEditor);
+
+    /* 识别后自检（recognize.js）：把"机器能挑出来的硬伤"标在这一题上。
+       _flags 只是渲染用的临时字段，保存编辑时不会写回库里。 */
+    q._flags = (window.Recognize && Recognize.auditOne) ? Recognize.auditOne(q) : [];
+    var doubt = Render.hasDoubt(q);
+    var confTxt = Render.confLevel(q);            // 「高 · 96%」，用户对 0.96 裸数字无感
+    document.getElementById("marks").innerHTML =
+      (q.source && q.source.edited ? '<span class="mark ok">已人工校对</span>' : "")
+      + (doubt
+        ? '<span class="mark low">' + Render.esc(doubt) + "</span>"
+          + '<span class="mark">识别置信度 ' + Render.esc(confTxt) + "</span>"
+        : '<span class="mark">识别置信度 ' + Render.esc(confTxt) + "</span>");
+
+    /* 技术性信息（坐标/文件/题号细节）是识别引擎的调试数据，对使用者是噪音 —— 默认折起来 */
+    var s = q.source || {};
+    var bits = [];
+    if (s.file) bits.push("来源文件：" + s.file + (s.page ? "（第 " + s.page + " 页）" : ""));
+    if (s.bbox) bits.push("原图坐标：" + [].join.call(s.bbox, ", ") + "（自动识别，可能有偏差）");
+    if (s.printed_no) bits.push("卷面题号：" + s.printed_no + "（未写入题干文本）");
+    if (s.crop_reviewed) bits.push("裁切边界已人工核对" + (s.review_note ? "：" + s.review_note : ""));
+    if (q.section) bits.push("板块：" + q.section);
+    if (q.source && q.source.edited) bits.push("内容：已人工修改（对照左栏原图核对）");
+    if (q.source && q.source.qtype_manual) bits.push("题型：手动打标（覆盖自动识别，点上面的小标可改回）");
+    bits.push("题库序号：" + (q.seq != null ? q.seq : "-"));
+    document.getElementById("meta").innerHTML = bits.length
+      ? '<details class="qmeta"><summary>识别详情（来源坐标等）</summary><div class="qmeta-body">'
+        + bits.map(Render.esc).join("<br>") + "</div></details>"
+      : "";
+  }
+
+  UI.initLightbox();
+
+  /* 自检钩子（tools/compose_lay_check.mjs ⑮）：摆正几何要拿**真实实现**验 —— 合成一张
+     "歪 5° 的黑条"，跑真 figmBake 看出来的图是不是摆正且紧贴；只在 DOM 上量框转没转，
+     验不出这一层。生产路径不读它。 */
+  window.__figm = { bake: figmBake, box: figmBox, deg: figmDeg, state: FIGM };
+
+  CloudAPI.handleWechatCallback().then(function () {
+    return UI.requireLogin(document.getElementById("page"), function () {
+      document.getElementById("page").style.display = "block";
+      if (!qid) { showMsg("缺少题目 id"); return; }
+      CloudAPI.getQuestion(qid).then(function (row) {
+        if (!row) { showMsg("找不到这道题（可能已删除，或不属于当前账号）"); return; }
+        q = row;
+        return CloudAPI.getPaper(q.paper_id).then(function (p) {
+          q.paper = p;
+          return CloudAPI.listFiles(q.paper_id);
+        }).then(function (fs) {
+          return UI.buildImageMap(fs).then(function (map) { render(q, map, fs || []); });
+        });
+      }).catch(function (e) { showMsg(e.message || "加载失败"); });
+    });
+  });
+})();
+</script>
+</body>
+</html>

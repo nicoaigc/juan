@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>试卷详情 · 试卷题库</title>
+<link rel="stylesheet" href="css/app.css?v=20261026c">
+<link rel="stylesheet" href="css/katex.css">
+</head>
+<body>
+<div id="topbar" class="topbar"></div>
+
+<div class="wrap">
+  <div id="page" data-nav="papers" style="display:none">
+    <div class="phead" id="head" style="display:none">
+      <div class="r1">
+        <div style="flex:1;min-width:0">
+          <h1 class="title" id="p-title"></h1>
+          <div class="meta" id="p-meta"></div>
+        </div>
+        <a class="btn sm" id="btn-print" href="#">打印本卷</a>
+      </div>
+      <div class="r2">
+        <a class="back" href="index.html">&larr; 我的试卷</a>
+        <span class="spacer"></span>
+        <span id="f-model" class="sm" style="max-width:230px;min-width:170px;flex:0 1 auto"></span>
+        <button class="btn sec sm" id="btn-reco">重新识别</button>
+        <button class="btn sec sm" id="btn-reup" title="换一批照片或照片拍错时用">重传照片</button>
+        <button class="btn danger sm" id="btn-del">删除本卷</button>
+      </div>
+    </div>
+    <div class="msg err" id="msg"></div>
+
+    <div class="card" style="margin-bottom:16px"><div class="pad">
+      <h2 style="font-size:14px;color:#55607a;margin:0 0 12px;font-weight:500">原始照片（点开看大图）</h2>
+      <div class="origins" id="origins"></div>
+    </div></div>
+
+    <div id="notice"></div>
+    <div id="backups"></div>
+
+    <div class="toolbar">
+      <h1 class="page" style="font-size:17px;margin:0">识别结果 <span class="chip plain" id="qcount"></span></h1>
+      <span class="spacer"></span>
+      <button type="button" class="btn sec sm" id="btn-only-sus" style="display:none">只看可疑</button>
+    </div>
+    <div id="audit"></div>
+
+    <div class="qlist" id="qlist"></div>
+    <div class="empty" id="qempty" style="display:none">
+      <div class="big"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+      <div id="qempty-txt">这份卷还没有识别结果。</div>
+    </div>
+  </div>
+
+  <input type="file" id="reco-file" accept="image/*" multiple hidden>
+
+  <div class="wrap narrow" id="login-host" style="padding:0"></div>
+</div>
+
+<script src="js/vendor/workbuddy-cloud-sdk.js"></script>
+<script src="js/config.js?v=20261026c"></script>
+<script src="js/local-demo.js?v=20261026c"></script>
+<script src="js/vendor/katex.min.js"></script>
+<script src="js/vendor/auto-render.min.js"></script>
+<script src="js/render.js?v=20261026c"></script>
+<script src="js/cloud.js?v=20261026c"></script>
+<script src="js/recognize-prompt.js?v=20261026c"></script>
+<script src="js/refine.js?v=20261026c"></script>
+<script src="js/recognize.js?v=20261026c"></script>
+<script src="js/ui.js?v=20261026c"></script>
+<script>
+(function () {
+  "use strict";
+
+  var STATUS = { pending: ["待识别", "pending"], processing: ["识别中", "processing"], done: ["已完成", "done"], failed: ["识别失败", "failed"] };
+  var id = UI.qs("id");
+  var paper = null, files = [], questions = [], imgMap = {};
+  var backups = [];                                   // 最近几份识别备份（新的在前）
+  var onlySus = false;                                // 「只看可疑」开关
+  var auditInfo = { flags: {}, suspect: 0, total: 0 }; // 识别后自检结果
+
+  function showMsg(t) {
+    var m = document.getElementById("msg");
+    m.textContent = t || "";
+    m.className = "msg err" + (t ? " show" : "");
+  }
+
+  function headHtml() {
+    var s = STATUS[paper.status] || [paper.status || "未知", "plain"];
+    document.title = (paper.title || "试卷") + " · 试卷题库";
+    document.getElementById("head").style.display = "block";
+    document.getElementById("p-title").innerHTML = Render.esc(paper.title || "未命名试卷")
+      + ' <span class="chip ' + s[1] + '" style="vertical-align:2px">' + Render.esc(s[0]) + "</span>";
+    document.getElementById("p-meta").textContent =
+      UI.fmtDate(paper.paper_date)
+      + (paper.grade ? " · " + paper.grade : "")
+      + " · " + (paper.subject || "数学")
+      + (paper.question_count ? " · " + paper.question_count + " 题" : "")
+      + (paper.page_count ? " · " + paper.page_count + " 张照片" : "")
+      + (paper.status_note ? " · " + paper.status_note : "");
+  }
+
+  /* 原图区。多页卷时每张下面挂「只重扫这页」——某页认砸了不必把整卷重掷
+     （整卷重扫会把其它页现在对的、甚至手工改过的题一起换掉）。单页卷不显示。 */
+  function renderOrigins() {
+    document.getElementById("origins").innerHTML = files.length
+      ? files.map(function (f, i) {
+          return "<figure><img src=\"" + Render.esc((imgMap[f.filename] || {}).url || "") + '" alt="" data-open="'
+            + Render.esc(f.filename) + '"><figcaption>第 ' + f.page_no + " 页 · " + Render.esc(f.filename)
+            + "<br>" + u(f) + "</figcaption>"
+            + (files.length > 1
+                ? '<button type="button" class="btn sec sm repage" data-page="' + f.page_no
+                  + '" data-file="' + Render.esc(f.filename) + '">只重扫这页</button>'
+                : "")
+            + "</figure>";
+        }).join("")
+      : '<div class="hint">这份卷没有登记原图。</div>';
+    function u(f) { return (f.width && f.height ? f.width + "×" + f.height + " · " : "") + UI.bytes(f.size_bytes); }
+  }
+
+  function confLevel(q) {
+    var c = (q && q.confidence) || {};
+    var vals = Object.keys(c).map(function (k) { return c[k]; })
+      .filter(function (v) { return typeof v === "number"; });
+    if (!vals.length) return "";
+    var s = vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+    return s >= 0.8 ? "ok" : (s >= 0.6 ? "mid" : "low");
+  }
+
+  function renderQuestions() {
+    var box = document.getElementById("qlist");
+    document.getElementById("qcount").textContent = questions.length + " 题";
+
+    /* 识别后自检：把机器能挑出来的硬伤挂到每题上（_flags），下面只渲染这些题的标记。
+       这是"只减不增"人工量的关键 —— 复核从"整页逐题看"变成"只看标出来的几处"。 */
+    auditInfo = (window.Recognize && Recognize.auditPaper)
+      ? Recognize.auditPaper(questions)
+      : { flags: {}, suspect: 0, total: questions.length };
+    questions.forEach(function (q) {
+      q._flags = auditInfo.flags[String(q.seq)] || auditInfo.flags[String(q.id)] || [];
+    });
+    renderAuditBar();
+
+    var empty = document.getElementById("qempty");
+    if (!questions.length) {
+      box.innerHTML = "";
+      empty.style.display = "block";
+      document.getElementById("qempty-txt").textContent =
+        paper.status === "done" ? "这份卷识别完成，但没有解析出题目。" : "这份卷还没有识别结果，识别完成后这里会列出逐题结果。";
+      return;
+    }
+    var shown = onlySus ? questions.filter(function (q) { return q._flags.length; }) : questions;
+    if (!shown.length) {
+      box.innerHTML = "";
+      empty.style.display = "block";
+      document.getElementById("qempty-txt").textContent = "机器自检没有挑出可疑的题。";
+      return;
+    }
+    empty.style.display = "none";
+    box.innerHTML = shown.map(function (q) {
+      var img = UI.imageFor(imgMap, files, q);
+      var crop = img && q.source && q.source.bbox
+        ? Render.cropBox(img, q.source.bbox, "第 " + (q.qno || "") + " 题") + '<span class="autotag">自动定位</span>'
+        : "";
+      var doubt = Render.hasDoubt(q);
+      var cl = confLevel(q);
+      return '<a class="qrow' + (q._flags.length ? " sus" : "") + '" href="question.html?id=' + q.id + '">'
+        + '<div class="crop">' + crop + "</div>"
+        + '<div class="qbody">'
+        + '<div class="qhead"><span class="qno">第 ' + (q.qno != null ? q.qno : "-") + " 题</span>"
+        + '<span class="chip type">' + Render.esc(Render.typeText(q)) + "</span>"
+        + '<span class="sec">' + Render.esc(q.section || "未分板块") + "</span>"
+        + (doubt ? '<span class="chip doubt">' + Render.esc(doubt) + "</span>" : "")
+        + "</div>"
+        + '<div class="stem">' + Render.stemHtml(q, UI.ctxFor(imgMap, files)) + "</div>"
+        + '<div class="foot">' + (cl ? '<i class="cdot ' + cl + '"></i>' : "") + "整体置信度 " + Render.esc(Render.overallConf(q))
+        + (q.printed_no ? " · 卷面题号 " + Render.esc(q.printed_no) : "") + "</div>"
+        + "</div></a>";
+    }).join("");
+    Render.typeset(box);
+  }
+
+  /* 汇总条 + 「只看可疑」：先说清有几题要复核、按什么判的，再给一个筛选按钮。
+     没挑出问题时也要说一句 —— 免得用户以为"没标 = 全对"。 */
+  function renderAuditBar() {
+    var host = document.getElementById("audit");
+    var btn = document.getElementById("btn-only-sus");
+    if (!host || !btn) return;
+    if (!questions.length) { host.innerHTML = ""; btn.style.display = "none"; return; }
+    var n = auditInfo.suspect;
+    if (!n) {
+      onlySus = false;
+      host.innerHTML = '<div class="auditbar ok"><b>机器自检：没有发现明显硬伤。</b>'
+        + '<span class="hint">但「漏字、认错数字」这类形式完全合法的错，机器判不出来，'
+        + "重要卷子仍建议抽查几题。</span></div>";
+      btn.style.display = "none";
+      return;
+    }
+    host.innerHTML = '<div class="auditbar"><b>机器自检：' + n + " 题需要复核</b>"
+      + '<span class="hint">判据：未辨认的 [?]、算式形式异常、题号不连续、题干重复、置信度偏低。</span></div>';
+    btn.style.display = "";
+    btn.textContent = onlySus ? "显示全部 " + questions.length + " 题" : "只看可疑 " + n + " 题";
+  }
+
+  function renderNotice() {
+    var n = document.getElementById("notice");
+    if (paper.status === "done") { n.innerHTML = ""; return; }
+    var head, body;
+    if (paper.status === "processing") {
+      head = "这份卷正在识别中…";
+      body = "如果识别中途刷新或关掉了这个页面，识别就中断了 —— "
+        + "点「重新识别」即可继续（照片用已上传的那份，不用重传）。";
+    } else if (paper.status === "failed") {
+      head = "这份卷识别失败了。";
+      body = paper.status_note || "点「重新识别」重试（照片用已上传的那份，不用重传）。";
+    } else {
+      head = "这份卷还没有识别结果。";
+      body = "点「重新识别」就能开始：照片用已上传的那份，从云端取回来直接识别，不需要重传。";
+    }
+    n.innerHTML = '<div class="card" style="margin-bottom:16px"><div class="pad">'
+      + "<b>" + Render.esc(head) + '</b><div class="hint" style="margin-top:6px;line-height:1.9">'
+      + Render.esc(body) + "</div></div></div>";
+  }
+
+  /* 通知区里的"进度卡"：重新识别 / 重传照片 / 恢复备份共用 */
+  function busy(t, pct, head) {
+    document.getElementById("notice").innerHTML =
+      '<div class="card" style="margin-bottom:16px"><div class="pad">'
+      + '<b style="color:#2b53a8">' + Render.esc(head || "正在重新识别") + "</b>"
+      + '<div class="hint" style="margin-top:6px;line-height:1.9">' + Render.esc(t) + "</div>"
+      + '<div class="progress" style="display:block;margin-top:10px"><i style="width:'
+      + Math.max(0, Math.min(100, pct || 0)) + '%"></i></div></div></div>';
+  }
+
+  /* ---- 只重扫某一张 ------------------------------------------------------------
+     一卷传了 N 张照片时，某一页认砸了不必把整卷重掷：只把这一张重新送模型，
+     只替换这一页的题，其它页（含手工改动）一个字节都不动。仍然是"重掷"，
+     所以照样给"要不要先备份"的选择。 ---- */
+  function qPage(q) {
+    var s = (q && q.source) || {};
+    return (s.page == null || s.page === "") ? NaN : Number(s.page);
+  }
+
+  function askPageRescan(page, filename) {
+    var n = questions.filter(function (q) { return qPage(q) === Number(page); }).length;
+    UI.choose({
+      title: "只重扫第 " + page + " 页",
+      text: "只把这一张照片重新送模型，其它页的题（含你手工改过的）一个字都不动。\n"
+        + "· 这一页现在的 " + n + " 道题会被这一页的新结果整体替换\n"
+        + "· 这一页识别出几道题由模型决定，可能和现在不一样\n"
+        + "· 只花这一页的识别额度（不是整卷）"
+        + (hasLayout() ? "\n· 打印页上排过的卷面会重置（这一页的题换了，编排要重来）" : ""),
+      buttons: [
+        { key: "plain", label: "不备份，直接重扫" },
+        { key: "backup", label: "备份并重扫", primary: true, danger: true },
+      ],
+    }).then(function (k) { if (k) runPageRescan(page, filename, k === "backup"); });
+  }
+
+  function runPageRescan(page, filename, doBackup) {
+    // 先按文件名精确找这张图（老数据的 page_no 可能重复，两个条件顺序不能反）
+    var f = files.filter(function (x) {
+      return x.storage_path && x.filename === filename;
+    })[0] || files.filter(function (x) {
+      return x.storage_path && Number(x.page_no) === Number(page);
+    })[0];
+    if (!f) { showMsg("找不到第 " + page + " 页的照片（可能没有已上传的原图）"); return; }
+    var btn = document.getElementById("btn-reco");
+    btn.disabled = true;
+    var pct = 0;
+    function say(t, p) {
+      if (typeof p === "number") pct = Math.max(0, Math.min(100, p));
+      busy(t, pct, "正在重扫第 " + page + " 页");
+    }
+
+    if (doBackup) say("正在备份当前识别结果…", 3);
+    (doBackup ? backupNow("只重扫第 " + page + " 页前") : Promise.resolve(null)).then(function () {
+      say("正在从云端取回第 " + page + " 页的照片…", 6);
+      return CloudAPI.downloadPhoto(f.storage_path, f.filename);
+    }).then(function (df) {
+      return Recognize.rescanPage({
+        paperId: paper.id, page: Number(page), file: df, filename: f.filename,
+        model: Recognize.currentModel(),
+        onProgress: function (ev) {
+          if (ev.phase === "page-start") {
+            say("正在识别第 " + page + " 页… 约 5~15 秒，请让页面保持打开", 20);
+          } else if (ev.phase === "page-done") {
+            say("第 " + page + " 页识别出 " + ev.count + " 题，正在写回…", 85);
+          }
+        },
+      });
+    }).then(function (r) {
+      say("已重扫第 " + page + " 页（" + r.count + " 题），正在刷新…", 100);
+      return dropLayout();                    // 这一页的题 id 换了，旧排版作废
+    }).then(function () {
+      location.reload();
+    }).catch(function (e) {
+      btn.disabled = false;
+      showMsg(e.message || ("第 " + page + " 页重扫失败"));
+      renderNotice();
+    });
+  }
+
+  /* ---- 识别备份（重新识别 / 重传照片 / 只重扫某页 都从这里存）----------------------
+     重扫是"重掷骰子"，会把现在对的题也换掉（实测同一张照片两次识别，出错的题不重合），
+     所以重扫前会**问用户**：备份后重扫（可一键回滚）／不备份直接重扫（快，赌一把）。
+     备份存云端 question_backups，换设备也在，每卷最多留 BACKUP_KEEP 份（超过自动清最旧）。
+     备份失败不阻断重扫，但要明确告诉用户"这次没法回滚"。 */
+  function backupNow(reason) {
+    if (!questions.length) return Promise.resolve(null);
+    return CloudAPI.backupQuestions(paper.id, questions, reason)
+      .then(function (b) { loadBackups(); return b; })
+      .catch(function (e) {
+        showMsg("旧识别结果没备份上（" + (e.message || e) + "）；仍会继续，但这次没法一键回滚。");
+        return null;
+      });
+  }
+
+  function loadBackups() {
+    if (!window.CloudAPI || !CloudAPI.listBackups) return Promise.resolve([]);
+    return CloudAPI.listBackups(paper.id).then(function (bs) {
+      backups = bs || []; renderBackupBar();
+    }).catch(function () { backups = []; renderBackupBar(); });
+  }
+
+  function renderBackupBar() {
+    var host = document.getElementById("backups");
+    if (!host) return;
+    if (!backups.length) { host.innerHTML = ""; return; }
+    var b = backups[0];
+    host.innerHTML = '<div class="card bkbar" style="margin-bottom:16px"><div class="pad bk">'
+      + "<div><b>识别备份</b>"
+      + '<div class="hint">最近一次 ' + Render.esc(CloudAPI.fmtStamp(b.created_at))
+      + "（" + b.q_count + " 题" + (b.reason ? " · " + Render.esc(b.reason) : "") + "）"
+      + (backups.length > 1 ? "，共 " + backups.length + " 份" : "") + "</div></div>"
+      + '<button type="button" class="btn sec sm" id="btn-restore">恢复到最近一次</button>'
+      + '<button type="button" class="btn sec sm" id="btn-bkmgr">管理备份'
+      + (backups.length > 1 ? "（" + backups.length + "）" : "") + "</button>"
+      + "</div></div>";
+    document.getElementById("btn-restore").addEventListener("click", function () { doRestore(backups[0]); });
+    document.getElementById("btn-bkmgr").addEventListener("click", openBackupMgr);
+  }
+
+  /* 备份管理：列出本卷全部备份（最近在前），逐份「恢复 / 删除」，也能一次清空。
+     备份不会自己消失（只有 5 份上限兜着），所以给用户一个显式的删除出口。 */
+  function openBackupMgr() {
+    var mask = document.createElement("div");
+    mask.className = "modal-mask";
+    mask.innerHTML = '<div class="modal bkm" role="dialog" aria-modal="true">'
+      + '<div class="m-t" id="bkm-title"></div>'
+      + '<div class="m-b">每次「重新识别」之前存下来的整卷快照。恢复会把这卷退回备份那一刻，'
+      + "之后的手工改动都会被覆盖（题目 id 不变，自建卷的引用不受影响）。</div>"
+      + '<div class="bkm-list" id="bkm-list"></div>'
+      + '<div class="m-f"><button type="button" class="btn danger-solid" data-x="clear" '
+      + 'style="margin-right:auto">全部删除</button>'
+      + '<button type="button" class="btn sec" data-x="close">关闭</button></div></div>';
+
+    function paint() {
+      mask.querySelector("#bkm-title").textContent = "识别备份（" + backups.length + " 份）";
+      mask.querySelector("#bkm-list").innerHTML = backups.length
+        ? backups.map(function (b, i) {
+            return '<div class="bkm-it"><div class="t"><b>'
+              + Render.esc(CloudAPI.fmtStamp(b.created_at)) + "</b>"
+              + '<div class="hint">' + b.q_count + " 题"
+              + (b.reason ? " · " + Render.esc(b.reason) : "") + "</div></div>"
+              + '<div class="acts"><button type="button" class="btn sec sm" data-a="restore" data-i="'
+              + i + '">恢复</button>'
+              + '<button type="button" class="btn sec sm" data-a="del" data-i="' + i
+              + '">删除</button></div></div>';
+          }).join("")
+        : '<div class="bkm-empty">这份卷现在没有备份。</div>';
+      var clr = mask.querySelector('[data-x="clear"]');
+      if (clr) clr.disabled = !backups.length;
+    }
+    function close() {
+      document.removeEventListener("keydown", onKey);
+      mask.remove();
+    }
+    function onKey(e) { if (e.key === "Escape") close(); }
+    function after(b) { return loadBackups().then(paint).catch(function () { paint(); }); }
+
+    function delOne(b) {
+      UI.confirm({ title: "删除这份备份", okText: "删除", danger: true,
+        text: "备份时间 " + CloudAPI.fmtStamp(b.created_at) + "（" + b.q_count + " 题）\n"
+          + "删掉之后就不能再退回那一刻了；题目本身不受影响。" })
+        .then(function (ok) {
+          if (!ok) return;
+          return CloudAPI.deleteBackup(b.id).then(function () { return after(b); })
+            .catch(function (e) { showMsg(e.message || "删除备份失败"); });
+        });
+    }
+    function clearAll() {
+      UI.confirm({ title: "删除全部备份", okText: "全部删除", danger: true,
+        text: "这 " + backups.length + " 份备份都会被删掉，之后不能再恢复。" })
+        .then(function (ok) {
+          if (!ok) return;
+          Promise.all(backups.map(function (b) { return CloudAPI.deleteBackup(b.id); }))
+            .then(function () { return after(); })
+            .catch(function (e) { showMsg(e.message || "删除备份失败"); });
+        });
+    }
+
+    mask.addEventListener("click", function (ev) {
+      if (ev.target === mask) return close();
+      var x = ev.target.closest("[data-x]");
+      if (x) return x.dataset.x === "clear" ? clearAll() : close();
+      var a = ev.target.closest("[data-a]");
+      if (!a) return;
+      var b = backups[Number(a.dataset.i)];
+      if (!b) return;
+      if (a.dataset.a === "restore") { close(); doRestore(b); } else delOne(b);
+    });
+    document.addEventListener("keydown", onKey);
+    document.body.appendChild(mask);
+    paint();
+  }
+
+  function doRestore(b) {
+    if (!b) return;
+    UI.confirm({
+      title: "恢复到这次备份", okText: "恢复", danger: true,
+      text: "把这份卷的题目整体退回备份时的状态：\n"
+        + "· 备份时间 " + CloudAPI.fmtStamp(b.created_at) + "（" + b.q_count + " 题）\n"
+        + "· 现在识别错的、已经被改对的，都会一起退回那一刻\n"
+        + "· 之后的手工改动（题干、题型打标、裁切微调）会被覆盖\n"
+        + "题目 id 不变，自建卷的引用不受影响。",
+    }).then(function (go) {
+      if (!go) return;
+      busy("正在按备份还原题目…", 5, "正在恢复备份");
+      CloudAPI.restoreQuestions(b.id, function (i, total) {
+        busy("正在还原第 " + i + "/" + total + " 题…", 5 + i / total * 90, "正在恢复备份");
+      }).then(function () { location.reload(); })
+        .catch(function (e) { showMsg(e.message || "恢复失败"); });
+    });
+  }
+
+  /* ---- 重新识别（免重传）：照片本来就存在云端，SDK 的 download() 走与应用同源的
+     /.cloud/storage 通道（自带鉴权头、无跨域问题），把原照片取回成 File 直接进识别。
+     以前要用户重选照片，是因为浏览器读不回"上次上传的那个 File"；云端那份其实一直都在。 ---- */
+  function runReco(doBackup) {
+    var btn = document.getElementById("btn-reco");
+    var usable = files.filter(function (f) { return f.storage_path; })
+      .slice().sort(function (a, b) { return a.page_no - b.page_no || a.id - b.id; });
+    if (!usable.length) { showMsg("这份卷没有已上传的照片，请用「重传照片」"); return; }
+    btn.disabled = true;
+    var pct = 0;
+    function say(t, p) {
+      if (typeof p === "number") pct = Math.max(0, Math.min(100, p));
+      busy(t, pct);
+    }
+
+    if (doBackup) say("正在备份当前识别结果…", 2);
+    (doBackup ? backupNow("重新识别前") : Promise.resolve(null)).then(function () {
+      say("正在从云端取回已上传的照片…", 4);
+      return Promise.all(usable.map(function (f) {
+        return CloudAPI.downloadPhoto(f.storage_path, f.filename);
+      }));
+    })
+      .then(function (dfs) {
+        // replace=true：recognizePaper 内部先清旧题、登记状态；照片保持不动
+        return Recognize.recognizePaper({
+          paperId: paper.id,
+          replace: true,
+          model: Recognize.currentModel(),
+          pages: dfs.map(function (f, i) {
+            return { file: f, filename: f.name, pageNo: i + 1 };
+          }),
+          onProgress: function (ev) {
+            var base = 15 + (ev.index != null ? ev.index / ev.total * 83 : 0);
+            if (ev.phase === "page-start") {
+              say("正在识别第 " + (ev.index + 1) + "/" + ev.total + " 页… 一页约 5~15 秒，请让页面保持打开", base);
+            } else if (ev.phase === "page-done") {
+              say("第 " + (ev.index + 1) + "/" + ev.total + " 页完成，识别出 " + ev.count + " 题",
+                  base + 83 / ev.total);
+            } else if (ev.phase === "page-fail") {
+              say("第 " + (ev.index + 1) + " 页失败：" + ev.error, base + 83 / ev.total);
+            }
+          },
+        });
+      })
+      .then(function () { return dropLayout(); })   // 题目全换了，旧排版作废
+      .then(function () { location.reload(); })
+      .catch(function (e) {
+        btn.disabled = false;
+        showMsg((e.message || "重新识别失败") + "（若照片取回失败，可试「重传照片」）");
+        paper.status = "pending";
+        renderNotice();
+      });
+  }
+
+  /* ---- 重传照片识别：换照片用。清旧结果 -> 删旧照片 -> 上传新照片 -> 识别 ----
+     换照片必须重选一次：识别要在 canvas 上给原图画参考网格、必须读到**原始像素**，
+     而浏览器读不回"上次上传的那个 File"。 */
+  function runRecognize(newFiles, doBackup) {
+    var btn = document.getElementById("btn-reco");
+    var oldFiles = files.slice();
+    btn.disabled = true;
+    var pct = 0;
+    function say(t, p) {
+      if (typeof p === "number") pct = Math.max(0, Math.min(100, p));
+      busy(t, pct);
+    }
+
+    if (doBackup) say("正在备份当前识别结果…", 2);
+    (doBackup ? backupNow("重传照片前") : Promise.resolve(null)).then(function () {
+      say("正在清除旧的识别结果…", 4);
+      return CloudAPI.deleteQuestions(paper.id);
+    })
+      .then(function () {
+        // 旧原图记录连同存储里的文件一起清掉：重传会建新路径，不清就成垃圾
+        return Promise.all(oldFiles.map(function (f) {
+          return CloudAPI.removePhoto(f.storage_path).then(function () {
+            return CloudAPI.removeFileRow(f.id);
+          });
+        }));
+      })
+      .then(function () {
+        say("正在上传照片…", 8);
+        return newFiles.reduce(function (chain, f, i) {
+          return chain.then(function () {
+            return CloudAPI.uploadPhoto(paper.id, f, i + 1).then(function () {
+              say("正在上传第 " + (i + 1) + "/" + newFiles.length + " 张…",
+                  8 + (i + 1) / newFiles.length * 12);
+            });
+          });
+        }, Promise.resolve());
+      })
+      .then(function () {
+        return CloudAPI.updatePaper(paper.id, {
+          page_count: newFiles.length, status: "processing", status_note: "正在自动识别…",
+        });
+      })
+      .then(function () {
+        return Recognize.recognizePaper({
+          paperId: paper.id,
+          model: Recognize.currentModel(),
+          pages: newFiles.map(function (f, i) {
+            return { file: f, filename: f.name, pageNo: i + 1 };
+          }),
+          onProgress: function (ev) {
+            var base = 20 + (ev.index != null ? ev.index / ev.total * 78 : 0);
+            if (ev.phase === "page-start") {
+              say("正在识别第 " + (ev.index + 1) + "/" + ev.total + " 页… 一页约 5~15 秒，请让页面保持打开", base);
+            } else if (ev.phase === "page-done") {
+              say("第 " + (ev.index + 1) + "/" + ev.total + " 页完成，识别出 " + ev.count + " 题",
+                  base + 78 / ev.total);
+            } else if (ev.phase === "page-fail") {
+              say("第 " + (ev.index + 1) + " 页失败：" + ev.error, base + 78 / ev.total);
+            }
+          },
+        });
+      })
+      .then(function () { return dropLayout(); })   // 照片换了、题目重来，旧排版作废
+      .then(function () { location.reload(); })
+      .catch(function (e) {
+        btn.disabled = false;
+        showMsg(e.message || "重新识别失败");
+        paper.status = "pending";
+        renderNotice();
+      });
+  }
+
+  UI.initLightbox();
+  Recognize.wireModelSelect(document.getElementById("f-model"));
+  document.getElementById("btn-only-sus").addEventListener("click", function () {
+    onlySus = !onlySus;
+    renderQuestions();
+  });
+
+  /* ---- 卷面排版跟着题目走 --------------------------------------------------------
+     打印页（print.html?id=N）上排的版存进 papers.layout，板块里存的是**题目 id**。
+     重识别 / 重传照片 / 单页重扫都会换掉题目 id —— 旧排版这时全对不上（板块里的 id
+     落空，新题再按题型被塞回某个板块，看着就像乱排）。所以题目一变就把 layout 清掉，
+     跟自建卷"题目一变 layout={}"是同一条规矩。问卷时会顺带告诉用户要重排。 ---- */
+  function hasLayout() {
+    var L = paper.layout || {};
+    return !!((L.sections || []).length || Object.keys(L.figs || {}).length
+      || Object.keys(L.caps || {}).length);
+  }
+
+  function dropLayout() {
+    if (!hasLayout()) return Promise.resolve();
+    paper.layout = null;
+    return CloudAPI.updatePaper(paper.id, { layout: null }).catch(function (e) {
+      showMsg("旧的卷面排版没清干净（" + (e.message || e)
+        + "）；到打印页点「恢复原卷排版」也能清。");
+    });
+  }
+
+  /* 重扫会覆盖现有结果，所以先问清楚：要不要留一份能回滚的备份。
+     「不备份」也允许——用户可能就是想快速重试一次，不想每次都存几十 KB 快照。 */
+  document.getElementById("btn-reco").addEventListener("click", function () {
+    if (!questions.length) return runReco(false);
+    UI.choose({
+      title: "重新识别（会覆盖现在的结果）",
+      text: "重新识别是让模型把照片再看一遍，不是「修正」：\n"
+        + "· 文字、坐标、题目切分都会重新生成，现在对的题也可能被换错\n"
+        + "· 手工改过的题干、修过的裁切，都会被覆盖\n"
+        + "（实测同一张照片识别两次，出错的题并不重合）"
+        + (hasLayout() ? "\n· 打印页上排过的卷面会重置（题目全换了，编排得重来）" : ""),
+      buttons: [
+        { key: "plain", label: "不备份，直接重新识别" },
+        { key: "backup", label: "备份并重新识别", primary: true, danger: true },
+      ],
+    }).then(function (k) { if (k) runReco(k === "backup"); });
+  });
+  document.getElementById("btn-reup").addEventListener("click", function () {
+    document.getElementById("reco-file").click();
+  });
+  document.getElementById("reco-file").addEventListener("change", function () {
+    var fs = [].slice.call(this.files || []);
+    this.value = "";
+    if (!fs.length) return;
+    if (!questions.length) return runRecognize(fs, false);
+    UI.choose({
+      title: "重传照片（会覆盖现在的结果）",
+      text: "会用新选的照片替换这卷现有的照片，并清掉 " + questions.length
+          + " 道已识别的题重做一遍（卷名、日期不变）。\n"
+          + "重做同样可能把现在对的题换错；备份过之后可以一键恢复。"
+          + (hasLayout() ? "\n打印页上排过的卷面会重置（题目全换了，编排得重来）。" : ""),
+      buttons: [
+        { key: "plain", label: "不备份，直接替换重做" },
+        { key: "backup", label: "备份并替换重做", primary: true, danger: true },
+      ],
+    }).then(function (k) { if (k) runRecognize(fs, k === "backup"); });
+  });
+
+  CloudAPI.handleWechatCallback().then(function () {
+    return UI.requireLogin(document.getElementById("page"), function () {
+      document.getElementById("page").style.display = "block";
+      if (!id) { showMsg("缺少试卷 id"); return; }
+
+      CloudAPI.getPaper(id).then(function (p) {
+        if (!p) { showMsg("找不到这份试卷（可能已删除，或不属于当前账号）"); return; }
+        paper = p;
+        headHtml();
+        document.getElementById("btn-print").href = "print.html?id=" + p.id;
+        renderNotice();
+        return CloudAPI.listFiles(p.id);
+      }).then(function (fs) {
+        if (!paper) return;
+        files = fs || [];
+        return UI.buildImageMap(files);
+      }).then(function (map) {
+        if (!paper) return;
+        imgMap = map || {};
+        renderOrigins();
+        return CloudAPI.listQuestions(paper.id);
+      }).then(function (qs) {
+        if (!paper) return;
+        questions = qs || [];
+        renderQuestions();
+        loadBackups();
+        // 上传页传完照片带着 reco=1 跳过来：自动开始识别（照片从云端取回，无需重传）。
+        // 走按钮那条路，复用同一套"要不要先备份"的选择框（新上传的卷没有旧题，直接就扫）。
+        if (UI.qs("reco") === "1") {
+          try { history.replaceState(null, "", "paper.html?id=" + id); } catch (e) {}
+          document.getElementById("btn-reco").click();
+        }
+      }).catch(function (e) { showMsg(e.message || "加载失败"); });
+
+      document.getElementById("origins").addEventListener("click", function (ev) {
+        // 「只重扫这页」按钮（多页卷才有）：先于看图逻辑，否则会被当成点图
+        var rp = ev.target.closest("button[data-page]");
+        if (rp) { ev.preventDefault(); askPageRescan(rp.dataset.page, rp.dataset.file); return; }
+        var t = ev.target.closest("img[data-open]");
+        if (!t) return;
+        var m = imgMap[t.dataset.open];
+        UI_lightbox(m && m.url);
+      });
+
+      document.getElementById("btn-del").addEventListener("click", function () {
+        UI.confirm({ title: "删除试卷", okText: "删除", danger: true,
+            text: "这份试卷的题目、原图记录都会一并删除，无法恢复。" })
+          .then(function (ok) {
+            if (!ok) return;
+            Promise.all(files.map(function (f) { return CloudAPI.removePhoto(f.storage_path); }))
+              .then(function () { return CloudAPI.deletePaper(paper.id); })
+              .then(function () { UI.toast("已删除"); setTimeout(function () { location.href = "index.html"; }, 600); })
+              .catch(function (e) { showMsg(e.message || "删除失败"); });
+          });
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

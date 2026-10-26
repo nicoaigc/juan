@@ -1,0 +1,16 @@
+# 统一用 LF：项目里 HTML / JS / CSS / Python 都是 LF，Windows 检出不要变成 CRLF
+# （曾经因为 CRLF 让 `grep`/`sed` 的断言失败过）
+* text=auto eol=lf
+
+# 二进制：别做换行归一化
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.wasm binary
+*.db binary

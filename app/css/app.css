@@ -1,0 +1,1326 @@
+/* 「试卷题库」样式。单套浅色主题（要打印，浅色更合适）。
+   变量集中在 :root，改配色只动这里。 */
+:root {
+  --bg: #f5f6f8;
+  --panel: #ffffff;
+  --ink: #1f2430;
+  --ink-2: #55607a;
+  --ink-3: #8a94a8;
+  --line: #e4e8ef;
+  --line-2: #eef1f6;
+  --brand: #1f2937;
+  --accent: #2563eb;
+  --accent-soft: #e0e7ff;
+  --ok: #166534;
+  --ok-soft: #dcfce7;
+  --warn: #92400e;
+  --warn-soft: #fef3c7;
+  --bad: #b91c1c;
+  --bad-soft: #fee2e2;
+  --info: #075985;
+  --info-soft: #e0f2fe;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, .07), 0 6px 20px rgba(15, 23, 42, .05);
+  /* ---- 打印页边距（mm）--------------------------------------------------------
+     这四个值是**唯一口径**：屏幕上的 .sheet 内边距、打印时卷面的内边距、
+     分页按 A4 算内容高度（js/sheet.js 的 pageMetrics），全从它们读。
+     为什么不让 @page 管边距：打印对话框的「边距」一改（选「无」/「最小」/驱动默认），
+     @page 就被忽略，卷面直接贴到纸角 —— 实测就是这样（量出来左边距 0mm）。
+     现在 @page margin 固定 0，边距由卷面自己内缩：对话框无论怎么选，纸上的边距
+     只会 ≥ 这里设的值，不会被吃掉。由 sheet.js 的页边距选择器改写。（2026-10-11） */
+  --pg-t: 18mm;
+  --pg-r: 18mm;
+  --pg-b: 18mm;
+  --pg-l: 18mm;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.7 "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------------------------------------------------------------- 顶栏
+   白底轻量化：深色大色块会压住浅色内容；导航 active 用浅蓝底。 */
+.topbar {
+  background: rgba(255, 255, 255, .94); color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 18px;
+  padding: 0 20px; height: 54px; position: sticky; top: 0; z-index: 30;
+}
+.topbar .brand { font-weight: 600; font-size: 16px; letter-spacing: .5px; color: var(--ink); }
+.topbar .brand span { color: var(--accent); }
+.topbar nav { display: flex; gap: 4px; margin-left: 6px; }
+.topbar nav a {
+  color: var(--ink-2); padding: 6px 12px; border-radius: 8px; font-size: 14px; text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.topbar nav a:hover { background: #f1f5f9; color: var(--ink); }
+.topbar nav a.on { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.topbar .right { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.topbar .who { color: var(--ink-3); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topbar button.ghost {
+  background: transparent; border: 1px solid var(--line); color: var(--ink-2);
+  padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  transition: background .15s, color .15s;
+}
+.topbar button.ghost:hover { background: #f4f6fb; color: var(--ink); }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 22px 20px 60px; }
+.wrap.narrow { max-width: 760px; }
+/* 组卷台（编辑试卷）要宽一档：左栏题库 360 + 卷面本体 794，1120 的壳在 1280 屏上
+   连卷面都放不下（被 fitSheet 缩到 ~91%）。放开到 1500 —— 1280 屏不再限宽（卷面 1:1），
+   更宽的屏也不会散到没法看。 */
+.wrap.wide { max-width: 1500px; }
+
+/* 页面大标题：上下留足空（用户要求加大）—— 顶栏 22px 页padding 之上再空 16px，
+   标题与下面内容之间也从 4px 放宽到 10px。 */
+h1.page { font-size: 21px; margin: 16px 0 10px; }
+p.lead { color: var(--ink-2); margin: 0 0 20px; font-size: 14px; }
+
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.card .pad { padding: 18px 20px; }
+
+/* ---------------------------------------------------------------- 表单 */
+label.fld { display: block; margin-bottom: 14px; }
+label.fld > span { display: block; font-size: 13px; color: var(--ink-2); margin-bottom: 5px; }
+input[type=text], input[type=email], input[type=tel], input[type=password], input[type=date], select {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px;
+  font: inherit; color: var(--ink); background: #fff;
+}
+input:focus, select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; justify-content: center;
+  background: var(--accent); color: #fff; border: 0; border-radius: 8px;
+  padding: 10px 18px; font: inherit; font-weight: 500; cursor: pointer;
+  transition: filter .15s, background .15s, border-color .15s, box-shadow .15s;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.sec { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+.btn.wx { background: #07c160; }
+.btn.sm { padding: 6px 12px; font-size: 13px; }
+.btn.danger { background: #fff; color: var(--bad); border: 1px solid #f4c7c7; }
+.row2 { display: flex; gap: 10px; align-items: flex-start; }
+.row2 .grow { flex: 1; }
+
+.msg { padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; display: none; }
+.msg.show { display: block; }
+.msg.err { background: var(--bad-soft); color: var(--bad); }
+.msg.ok { background: var(--ok-soft); color: var(--ok); }
+.msg.info { background: var(--info-soft); color: var(--info); }
+.hint { font-size: 12.5px; color: var(--ink-3); }
+.err-inline { font-size: 12.5px; color: var(--bad); margin-top: 4px; display: none; }
+.err-inline.show { display: block; }
+
+/* ---------------------------------------------------------------- 登录 / 注册 */
+/* 「极简下划线」版式：白卡无边框、输入只用一条底线、主按钮纯黑。
+   微信登录是一个圆形图标按钮（只用图标、不放文字），悬停时描边与底色转绿。 */
+.auth { max-width: 412px; margin: 30px auto 0; padding: 0 18px; }
+.auth-card {
+  background: var(--panel); border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 12px 34px rgba(15, 23, 42, .05);
+  padding: 38px 34px 30px;
+}
+.auth-brand { font-size: 14px; font-weight: 700; letter-spacing: 2px; color: var(--ink); }
+.auth-brand span { color: var(--accent); }
+.auth-card h1 { font-size: 27px; font-weight: 700; letter-spacing: -.6px; margin: 26px 0 8px; }
+.auth-card .sub { color: var(--ink-3); font-size: 13px; margin: 0 0 34px; }
+/* 顶部横幅（少数错误走它）：显示时上移贴住副标题，隐藏时完全不占位 */
+.auth-card .msg { margin: -24px 0 16px; }
+
+.auth-line {
+  display: flex; align-items: center; padding-bottom: 9px; margin-bottom: 24px;
+  border-bottom: 1px solid var(--line); transition: border-color .18s;
+}
+.auth-line:focus-within { border-bottom-color: var(--accent); }
+.auth-line.bad { border-bottom-color: #e8a8a8; }
+.auth-line > input {
+  flex: 1; min-width: 0; width: auto; padding: 0; border: 0; outline: 0;
+  background: none; font: inherit; font-size: 15px; color: var(--ink);
+}
+.auth-line > input::placeholder { color: #b4bcc9; }
+.auth-cc {
+  color: var(--ink-3); font-size: 14.5px; padding-right: 10px; margin-right: 10px;
+  border-right: 1px solid var(--line-2); line-height: 1.15;
+}
+.auth-clear { display: none; border: 0; background: none; padding: 0 0 0 8px; cursor: pointer; line-height: 0; }
+.auth-clear.show { display: block; }
+.auth-send {
+  border: 0; background: none; color: var(--accent); font: inherit; font-size: 13px;
+  padding: 0 0 0 10px; cursor: pointer; white-space: nowrap; transition: color .15s;
+}
+.auth-send:disabled { color: var(--ink-3); cursor: not-allowed; }
+.auth-code { letter-spacing: .3em; font-variant-numeric: tabular-nums; }
+/* 行内报错：紧贴输入行下方。隐藏时 display:none，负边距不生效，两条线之间仍是 24px */
+.auth-err { display: none; color: var(--bad); font-size: 12px; margin: -18px 0 22px; }
+.auth-err.show { display: block; }
+
+.auth-submit {
+  width: 100%; height: 48px; border: 0; border-radius: 9px;
+  background: #0f172a; color: #fff; font: inherit; font-size: 15px; font-weight: 500;
+  letter-spacing: .5px; cursor: pointer; margin-top: 4px;
+  transition: background .15s, transform .1s;
+}
+.auth-submit:hover { background: #1b2434; }
+.auth-submit:active { transform: translateY(1px); }
+.auth-submit:disabled { opacity: .62; cursor: not-allowed; transform: none; }
+
+.auth-agree {
+  display: flex; align-items: flex-start; gap: 8px; margin: 18px 0 0;
+  font-size: 11.5px; color: var(--ink-3); line-height: 1.75; cursor: pointer;
+}
+.auth-agree input { position: absolute; opacity: 0; width: 0; height: 0; }
+.auth-ck {
+  flex: none; width: 14px; height: 14px; margin-top: 3px; border-radius: 3px;
+  border: 1px solid #c6cdda; background: #fff; position: relative;
+  transition: background .15s, border-color .15s;
+}
+.auth-agree input:checked + .auth-ck { background: var(--ink); border-color: var(--ink); }
+.auth-agree input:checked + .auth-ck::after {
+  content: ""; position: absolute; left: 4px; top: .5px; width: 4px; height: 8px;
+  border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.auth-agree.bad { color: var(--bad); }
+.auth-agree.bad .auth-ck { border-color: var(--bad); }
+.auth-agree.shake { animation: auth-shake .32s; }
+@keyframes auth-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.sp {
+  display: inline-block; width: 13px; height: 13px; margin-right: 6px; vertical-align: -1px;
+  border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff; border-radius: 50%;
+  animation: auth-spin .7s linear infinite;
+}
+@keyframes auth-spin { to { transform: rotate(360deg); } }
+
+/* 微信登录：只一个圆形图标按钮，不放文字 */
+.auth-alt { display: flex; justify-content: center; margin-top: 26px; }
+.auth-wx {
+  width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line);
+  background: #fff; color: #0b8a4d; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.auth-wx:hover { border-color: #b9e0ca; background: #f5fdf8; box-shadow: 0 3px 10px rgba(11, 138, 77, .13); }
+.auth-wx:disabled { opacity: .6; cursor: not-allowed; }
+
+@media (max-width: 520px) {
+  .auth { margin-top: 14px; padding: 0 12px; }
+  .auth-card { padding: 30px 22px 26px; border-radius: 14px; }
+  .auth-card h1 { font-size: 25px; }
+  .auth-card .sub { margin-bottom: 30px; }
+}
+
+/* ------------------------------------------------- 门禁模式（未登录 / 未开通）
+   这两种状态下页面本体是隐藏的，登录卡就是这一页的全部内容（顶栏由 ui.js 的
+   gateMode 收起）。桌面端把它做成「整页居中一张大卡」：更大字号、更松的行距、
+   一层很淡的顶光背景，不靠装饰撑场面（保持用户选的极简下划线风格）。
+   注意 min-height 用 100vh + 100svh 两行写 —— 手机浏览器地址栏收起/展开会变，
+   svh 是"稳定视口高度"，不支持 svh 的老浏览器退回 vh。 */
+body.gate-mode {
+  background:
+    radial-gradient(920px 480px at 50% -12%, #e8edfb 0%, rgba(232, 237, 251, 0) 72%),
+    radial-gradient(760px 440px at 88% 112%, #ecf2fd 0%, rgba(236, 242, 253, 0) 70%),
+    var(--bg);
+}
+/* 门禁态下业务页是隐藏的，外层留白全部归零，卡片才能真正落在视口正中 */
+body.gate-mode .wrap { padding: 0; max-width: none; }
+body.gate-mode #login-host { display: flex; flex-direction: column; min-height: 100vh; min-height: 100svh; }
+/* ⚠️ 必须写 width:100%：居中用的 auto 外边距会让 flex 子项**按内容宽度收缩**
+   （align-items: stretch 被 auto 边距取消），不写就会缩成协议那行文字的宽度 */
+body.gate-mode .auth { width: 100%; max-width: 524px; margin: auto; padding: 0 22px; }
+
+body.gate-mode .auth-card {
+  padding: 56px 50px 44px; border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 28px 64px -22px rgba(15, 23, 42, .22);
+}
+body.gate-mode .auth-brand { font-size: 15px; letter-spacing: 2.4px; }
+body.gate-mode .auth-card h1 { font-size: 34px; letter-spacing: -1px; margin: 30px 0 10px; }
+body.gate-mode .auth-card .sub { font-size: 14px; margin-bottom: 42px; }
+body.gate-mode .auth-line { padding-bottom: 11px; margin-bottom: 30px; }
+body.gate-mode .auth-line > input { font-size: 16.5px; }
+body.gate-mode .auth-cc { font-size: 15.5px; }
+body.gate-mode .auth-send { font-size: 13.5px; }
+body.gate-mode .auth-err { margin: -21px 0 26px; }
+body.gate-mode .auth-submit { height: 54px; border-radius: 11px; font-size: 16px; }
+body.gate-mode .auth-agree { margin-top: 22px; font-size: 12px; }
+body.gate-mode .auth-alt { margin-top: 30px; }
+body.gate-mode .auth-wx { width: 50px; height: 50px; }
+
+@media (max-width: 640px) {
+  /* 手机端换成"整屏铺满"：不留外边距、不留圆角，跟原生登录页一致 */
+  body.gate-mode { overflow-x: hidden; }
+  body.gate-mode .auth { max-width: none; margin: 0; padding: 0; }
+  body.gate-mode .auth-card {
+    min-height: 100vh; min-height: 100svh;
+    display: flex; flex-direction: column;
+    border-radius: 0; box-shadow: none;
+    padding: 40px 26px calc(40px + env(safe-area-inset-bottom));
+  }
+  /* 垂直居中用「首尾 auto 外边距」，不用 justify-content:center ——
+     内容比屏幕高时（待开通页在小屏手机上就会）auto 外边距自动归零，
+     退回顶部对齐 + 可滚动；justify-content:center 那种会被顶出屏幕外还滚不回来。 */
+  body.gate-mode .auth-card > :first-child { margin-top: auto; }
+  body.gate-mode .auth-card > :last-child { margin-bottom: auto; }
+  body.gate-mode .auth-card h1 { font-size: 29px; }
+  body.gate-mode .auth-card .sub { margin-bottom: 36px; }
+}
+
+/* ---------------------------------------------------------------- 我的试卷 */
+.toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.toolbar .spacer { flex: 1; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button {
+  background: #fff; border: 1px solid var(--line); color: var(--ink-2);
+  border-radius: 999px; padding: 5px 13px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.filters button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.pcard {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;
+  text-decoration: none; color: inherit;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+}
+.pcard:hover {
+  border-color: #c7d2fe; text-decoration: none;
+  transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15, 23, 42, .10);
+}
+.pcard .thumb {
+  height: 152px; background: #eef1f6; display: flex; align-items: center; justify-content: center;
+  overflow: hidden; border-bottom: 1px solid var(--line-2);
+}
+.pcard .thumb img { width: 100%; height: 152px; object-fit: cover; object-position: top center; }
+.pcard .thumb .na { color: var(--ink-3); font-size: 13px; }
+.pcard .body { padding: 13px 15px 14px; }
+.pcard .r1 { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.pcard .date { font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.pcard .title {
+  font-weight: 600; font-size: 15.5px; margin-bottom: 6px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.pcard .meta { font-size: 12.5px; color: var(--ink-3); }
+.pcard .dist { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+
+/* 题型分布条：按题数着色的横条，一眼看出卷子构成 */
+.dist-bar { display: flex; height: 5px; border-radius: 999px; overflow: hidden; margin-top: 9px; background: var(--line-2); }
+.dist-bar i { display: block; height: 100%; min-width: 2px; }
+.dist-legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-3); margin-top: 5px; }
+.dist-legend i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; vertical-align: 0; }
+.dc-calc { background: #4c7ef3; }
+.dc-fill { background: #2fa779; }
+.dc-compare { background: #0f9d8f; }
+.dc-choice { background: #f0a32f; }
+.dc-judge { background: #e2574c; }
+.dc-solve { background: #8b6ce7; }
+.dc-geo { background: #1a9bb5; }
+.dc-other { background: #b8c0cf; }
+
+.chip {
+  display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 12px; white-space: nowrap;
+}
+.chip.pending { background: var(--warn-soft); color: var(--warn); }
+.chip.processing { background: var(--info-soft); color: var(--info); }
+.chip.done { background: var(--ok-soft); color: var(--ok); }
+.chip.failed { background: var(--bad-soft); color: var(--bad); }
+.chip.plain { background: #eef1f6; color: var(--ink-2); }
+.chip.type { background: var(--accent-soft); color: #3730a3; }
+.chip.doubt { background: var(--bad-soft); color: var(--bad); }
+/* 题型小标做成可点（题库级打标）：组卷台左栏每条题目 + 题目详情页。
+   仍是 chip 的样子，只多了可点的暗示；「·手」= 有手动打标。 */
+button.chip { font: inherit; line-height: 1.6; }
+.tchip { cursor: pointer; border: 1px solid transparent; transition: border-color .15s, color .15s; }
+.tchip:hover { border-color: #3730a3; }
+
+
+.empty { text-align: center; padding: 54px 20px; color: var(--ink-3); }
+.empty .big { font-size: 34px; margin-bottom: 10px; }
+.empty .big svg, .drop .big svg { display: inline-block; vertical-align: middle; }
+
+/* ---------------------------------------------------------------- 卷详情 */
+.origins { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+.origins figure { margin: 0; flex: 0 0 auto; width: 148px; }
+.origins img {
+  width: 148px; height: 196px; object-fit: cover; object-position: top center;
+  border: 1px solid var(--line); border-radius: 8px; cursor: zoom-in; background: #fff;
+}
+.origins figcaption { font-size: 11.5px; color: var(--ink-3); margin-top: 5px; line-height: 1.4;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 多页卷：每张原图下面挂「只重扫这页」，只换这一页的题（单页卷不显示） */
+.origins figure .repage { display: block; width: 100%; margin-top: 6px; padding: 4px 6px; font-size: 11.5px; }
+
+.qlist { display: flex; flex-direction: column; gap: 10px; }
+.qrow {
+  display: flex; gap: 14px; align-items: flex-start; background: var(--panel);
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 12px;
+  text-decoration: none; color: inherit; box-shadow: var(--shadow);
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+}
+.qrow:hover {
+  border-color: #c7d2fe; text-decoration: none;
+  transform: translateY(-1px); box-shadow: 0 6px 18px rgba(15, 23, 42, .08);
+}
+.qrow .crop { flex: 0 0 132px; position: relative; }
+.qrow .qbody { flex: 1; min-width: 0; }
+.qrow .qhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+.qrow .qno { font-weight: 600; font-size: 14.5px; }
+.qrow .sec { font-size: 12px; color: var(--ink-3); }
+.qrow .stem { font-size: 14px; color: var(--ink); line-height: 1.75; }
+.qrow .foot { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+
+/* 置信度色点：高绿 / 中黄 / 低红，扫一眼知道哪题可疑 */
+.cdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+.cdot.ok { background: #22c55e; }
+.cdot.mid { background: #f59e0b; }
+.cdot.low { background: #ef4444; }
+
+/* ---- 识别后自检（机器挑出来的硬伤）----
+   .auditbar = 卷详情页顶部的汇总条；.qrow.sus = 可疑题的左侧色条。
+   目的：把"整页都要人核"变成"只看标出来的几处"。 */
+.auditbar {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  background: var(--bad-soft); border: 1px solid #fecaca; color: #7f1d1d;
+  border-radius: var(--radius); padding: 10px 14px; margin-bottom: 14px; font-size: 13.5px;
+}
+.auditbar.ok { background: #f0fdf4; border-color: #bbf7d0; color: #14532d; }
+.auditbar .hint { color: inherit; opacity: .72; }
+.qrow.sus { border-left: 3px solid var(--bad); }
+
+/* 备份条：重扫前自动存的那份，随时可回滚 */
+.bkbar .bk { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.bkbar .hint { margin-top: 3px; }
+
+/* 卷详情头部卡：标题 + 元信息 + 主按钮，次要操作收在第二行 */
+.phead {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px 20px 12px; margin-bottom: 16px;
+}
+.phead .r1 { display: flex; gap: 14px; align-items: flex-start; }
+.phead .title { font-size: 19px; font-weight: 600; margin: 0; line-height: 1.4; }
+.phead .meta { font-size: 13px; color: var(--ink-3); margin-top: 5px; }
+.phead .r2 {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line-2);
+}
+.phead .back { font-size: 13px; color: var(--ink-2); }
+.phead .back:hover { color: var(--accent); text-decoration: none; }
+.phead .spacer { flex: 1; }
+.phead .f-model-host { max-width: 230px; min-width: 170px; flex: 0 1 auto; }
+
+/* 面包屑 */
+.crumb { font-size: 13px; color: var(--ink-3); margin-bottom: 12px; }
+.crumb a { color: var(--ink-2); }
+.crumb a:hover { color: var(--accent); }
+.crumb .sep { margin: 0 7px; color: #c3cad6; }
+
+/* 浅蓝说明卡（上传页「上传之后会怎样」这类提示） */
+.card.tint { background: #f7faff; border-color: #dbeafe; }
+
+/* 从原图实时裁出来的那块（见 render.js cropBox） */
+.cropbox {
+  position: relative; overflow: hidden; width: 100%; background: #fff;
+  border: 1px solid var(--line); border-radius: 6px;
+}
+.cropbox img { position: absolute; left: 0; top: 0; max-width: none; }
+.cropbox.loading::after {
+  content: "加载原图…"; position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; font-size: 11.5px; color: var(--ink-3);
+}
+.cropbox.failed::after { content: "原图不可用"; }
+
+/* 自动识别的题区坐标是模型估的、会有偏差（原因见 js/recognize.js 文件头），
+   标一下免得用户以为是裁错了。 */
+.autotag {
+  position: absolute; right: 4px; bottom: 4px; z-index: 3;
+  background: rgba(43, 83, 168, .78); color: #fff;
+  font-size: 10px; line-height: 1; padding: 3px 5px; border-radius: 4px;
+  pointer-events: none; letter-spacing: .2px;
+}
+
+/* ---------------------------------------------------------------- 题目详情 */
+.qsplit { display: grid; grid-template-columns: minmax(280px, 42%) 1fr; gap: 16px; align-items: start; }
+.qsplit > .panel:first-child { position: sticky; top: 66px; }   /* 左栏看完就没内容，跟随右栏滚动 */
+@media (max-width: 820px) { .qsplit { grid-template-columns: 1fr; } .qsplit > .panel:first-child { position: static; } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px 18px; }
+.panel h2 { margin: 0 0 12px; font-size: 14px; color: var(--ink-2); font-weight: 500; }
+.stem { font-size: 16px; line-height: 1.95; }
+.opts { margin-top: 14px; }
+.opts .lbl { font-size: 13px; color: var(--ink-3); margin-bottom: 5px; }
+.opts .box { border-left: 3px solid #dbeafe; background: #f8fafc; padding: 8px 12px;
+  border-radius: 0 6px 6px 0; line-height: 1.9; }
+.metabox { margin-top: 16px; font-size: 12.5px; color: var(--ink-3); line-height: 1.8;
+  border-top: 1px dashed var(--line); padding-top: 10px; }
+.marks { margin-top: 12px; font-size: 12.5px; }
+.marks .mark { display: inline-block; background: var(--warn-soft); color: var(--warn);
+  padding: 2px 9px; border-radius: 999px; margin: 2px 6px 2px 0; }
+.marks .mark.low { background: var(--bad-soft); color: var(--bad); }
+.qmark { background: #fde68a; padding: 0 4px; border-radius: 3px; }
+.figtag { background: var(--info-soft); color: var(--info); padding: 1px 8px; border-radius: 4px; font-size: 14px; }
+/* 显示大小 --fdw（编辑里调的，见 render.js figView）在 .stem/.fthumb 上走 zoom，见本文件末尾 */
+.figbox { display: inline-block; max-width: 100%; vertical-align: top; position: relative; }
+.figcap { display: block; font-size: 12px; color: var(--ink-3); padding-left: 2px; margin-top: 3px; }
+/* 人工微调摆正后烤出来的成品图（seg.src，data URI）—— 不再按 bbox 现裁 */
+.figbox.fixed { display: block; max-width: min(100%, 440px); }
+.figbox.fixed .figimg { display: block; max-width: 100%; height: auto; }
+
+/* ---- 题内插图「替换」弹层（question.html）----
+   左：整页原图 + 可拖框（拖动 = 移动 / 四角 = 改大小 / 顶上圆点 = 转选区）；右：预览 + 微调钮 + 摆正滑杆。 */
+.figm {
+  position: fixed; inset: 0; z-index: 80; background: rgba(15,23,42,.55);
+  display: flex; align-items: center; justify-content: center; padding: 18px;
+}
+.figm-card {
+  background: #fff; border-radius: 12px; width: min(1080px, 100%);
+  max-height: calc(100vh - 36px); display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 18px 50px rgba(15,23,42,.28);
+}
+.figm-head {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  border-bottom: 1px solid var(--line); font-size: 14.5px;
+}
+.figm-sub { color: var(--ink-3); font-size: 12px; font-weight: 400; }
+.figm-head .ico { margin-left: auto; }
+.figm-body { display: flex; gap: 14px; padding: 14px 16px; overflow: auto; min-height: 0; }
+.figm-left { flex: 1 1 auto; min-width: 0; }
+/* 这张卷有多张原图时：切图 / 替换前先选是从哪张上切（插图不一定跟题干在同一张上） */
+.figm-pages { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.figm-pages button {
+  padding: 0; border: 2px solid var(--line); background: #fff; border-radius: 6px;
+  overflow: hidden; cursor: pointer; line-height: 0;
+}
+.figm-pages button img { display: block; width: 54px; height: 70px; object-fit: cover; }
+.figm-pages button.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+#figm-cap { width: 100%; }
+.figm-page {
+  position: relative; display: inline-block; max-width: 100%; border: 1px solid var(--line);
+  background: #f1f5f9; touch-action: none;
+}
+.figm-page img { display: block; max-width: 100%; height: auto; user-select: none; }
+.figm-rect { position: absolute; box-shadow: 0 0 0 9999px rgba(15,23,42,.42); cursor: move; touch-action: none; transform-origin: 50% 50%; }
+.figm-rect .h {
+  position: absolute; width: 13px; height: 13px; background: #fff;
+  border: 2px solid var(--accent); border-radius: 50%;
+}
+/* 旋转把手：顶上那个圆点。它跟着框一起转（是框的子元素），拖它就是转整个选区。
+   —— 不是"先选正框、再转框里的内容"，所以拖的时候圈住的那块斜内容跟着走。 */
+.figm-rect .rh {
+  position: absolute; left: 50%; top: 0; width: 15px; height: 15px; margin: -34px 0 0 -8px;
+  background: #fff; border: 2px solid var(--accent); border-radius: 50%;
+  cursor: grab; box-shadow: 0 1px 4px rgba(15,23,42,.25);
+}
+.figm-rect .rh::after {          /* 圆点到框顶边的连接线，看得出是"转这个框" */
+  content: ""; position: absolute; left: 50%; top: 100%; width: 2px; height: 19px;
+  margin-left: -1px; background: var(--accent); opacity: .6;
+}
+.figm-rect .rh:active { cursor: grabbing; }
+.figm-rect .c0 { left: -7px; top: -7px; cursor: nwse-resize; }
+.figm-rect .c1 { right: -7px; top: -7px; cursor: nesw-resize; }
+.figm-rect .c2 { right: -7px; bottom: -7px; cursor: nwse-resize; }
+.figm-rect .c3 { left: -7px; bottom: -7px; cursor: nesw-resize; }
+.figm-tip { color: var(--ink-3); font-size: 12px; margin-top: 8px; }
+.figm-right { flex: 0 0 300px; display: flex; flex-direction: column; gap: 6px; }
+/* 公式编辑器弹层（MathLive，懒加载）+ 编辑器里的入口行 */
+.fxm-card { max-width: 720px; }
+.fxm-body { padding: 14px 16px; }
+#fx-field {
+  width: 100%; min-height: 120px; border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px 12px; font-size: 20px; background: #fff; box-sizing: border-box;
+}
+#fx-field:focus-within { border-color: var(--accent); }
+.fxm-hint { margin-top: 8px; font-size: 12px; color: var(--ink-3); line-height: 1.6; }
+/* 算式/比大小编辑面板：内嵌公式编辑器本体（math-field 所见即所得） */
+#e-mf {
+  display: block; width: 100%; min-height: 110px;
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px;
+  font-size: 20px; background: #fff; box-sizing: border-box;
+}
+#e-mf:focus-within { border-color: var(--accent); }
+.etools { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+.etools-tip { font-size: 12px; color: var(--ink-3); }
+.figm-prev {
+  border: 1px dashed var(--line); border-radius: 6px; min-height: 90px;
+  display: flex; align-items: center; justify-content: center; padding: 6px; background: #f8fafc;
+}
+.figm-prev canvas { max-width: 100%; height: auto; }
+.figm-nudge .nrow { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 5px; }
+.figm-nudge .btn { flex: 1 1 auto; padding-left: 6px; padding-right: 6px; }
+.figm-read { color: var(--ink-2); font-size: 12px; background: var(--line-2); border-radius: 5px; padding: 5px 8px; }
+.figm-rotv { font-size: 12.5px; min-width: 42px; text-align: right; }
+.figm-right input[type="range"] { flex: 1; }
+.figm-foot {
+  display: flex; gap: 8px; padding: 11px 16px; border-top: 1px solid var(--line);
+}
+/* 已人工校对（题目内容被手动改过：source.edited） */
+.mark.ok { background: #dcfce7; color: #15803d; }
+/* ---------- 按题型简单编辑面板（question.html「编辑题目」，2026-10-07 二次简化）----------
+   算式/比大小 = 一个公式编辑器；其余 = 一个文本框；只有选择题有选项区/加选项；
+   图在文本框下方「图列表」里编辑（缩略图 + 说明 + 调整/替换 + 删除）。 */
+.ehead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.eblank { font-size: 12px; color: var(--warn); background: var(--warn-soft); border-radius: 999px; padding: 1px 9px; }
+#e-stem { margin-top: 6px; }
+/* 公式编辑器实时预览（算式/比大小） */
+.fprev {
+  margin-top: 8px; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 8px;
+  background: var(--line-2, #f8fafc); font-size: 15px; line-height: 2; overflow-x: auto; color: var(--ink);
+}
+.fprev:empty { display: none; }
+/* 图列表 */
+#e-figs { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.figrow { display: flex; align-items: flex-start; gap: 10px; }
+.fthumb { display: block; flex: none; width: 180px; }
+/* figbox 是 inline-block 收缩包装，img 又绝对定位，不撑开会塌成边框宽；
+   缩略图里浮不起来（父级没有高度会塌），位置显不出来，但**大小照显示**：
+   宽度直接用 --fdw 当百分比（这里不能靠 zoom，见文件末尾 zoom 那条的说明）。 */
+.fthumb .figbox { display: block; width: calc(var(--fdw, 100) * 1%); float: none; margin: 0; }
+.fthumb .cropbox { width: 100%; }
+.figmeta { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; }
+.figops { display: flex; align-items: center; gap: 6px; }
+.figops .ico { width: 26px; height: 26px; font-size: 14px; }
+/* 图列表里的控件行：大小（滑杆 + 读数 + 默认）/ 位置（左·居中·右 + 文字环绕） */
+.figctl { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-3); }
+.figctl .fslab { flex: none; }
+.figctl input[type="range"] { flex: 1 1 110px; min-width: 90px; max-width: 220px; }
+.figctl .fsval { flex: none; min-width: 40px; text-align: right; color: var(--ink-2); }
+.figctl .btn { padding: 3px 9px; font-size: 12.5px; line-height: 1.5; border-radius: 7px; }
+.figctl .btn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.fchk { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-2); }
+.fchk input { margin: 0; }
+.fchk.off { opacity: .45; }
+.fctl-tip { color: var(--ink-3); }
+#e-figadd { margin-top: 8px; }
+#e-figs .figempty { font-size: 12.5px; color: var(--ink-3); background: var(--line-2, #f8fafc);
+  border: 1px dashed var(--line); border-radius: 8px; padding: 8px 12px; }
+
+/* ---- 题目手动修正（question.html 编辑态）----
+   识别难免错字/漏条件/漏选项：右栏就地给表单改。约定：$…$ 按公式（KaTeX）排版，
+   ［图：说明］是题内插图占位（bbox 不能手打，占位删了图也会自动补回末尾，不丢）。 */
+.qedit .flab { display: block; font-size: 13px; color: var(--ink-3); margin: 12px 0 5px; }
+.qedit textarea, .qedit input[type="text"] {
+  width: 100%; box-sizing: border-box; font-family: inherit; font-size: 14px; line-height: 1.7;
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; color: var(--ink);
+  background: #fff; resize: vertical;
+}
+.qedit textarea:focus, .qedit input[type="text"]:focus { outline: none; border-color: var(--accent); }
+.qedit .orow { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.qedit .orow .olab { flex: none; width: 22px; text-align: right; font-weight: 600; font-size: 14px; color: var(--ink-2); }
+.qedit .orow input { flex: 1; min-width: 0; }
+.qedit .orow .ico { flex: none; }
+.qedit .etip { font-size: 12px; color: var(--ink-3); line-height: 1.7; margin: 6px 0 0; }
+.qedit .eops { margin-top: 14px; display: flex; gap: 8px; align-items: center; }
+.qedit .eadd { margin-top: 8px; }
+
+/* 占位/几何符号（□ ○ △ ☆ 及实心变体）：与 engine/render.py 的 SYMBOL_CSS 同一套，
+   字体自带字形偏小且大小不一，统一用内联 SVG 等宽绘制。
+   ⚠️ 尺寸最初按原卷墨迹实测（□ 高 ≈ 汉字 0.84em），但网页字号比原卷小一档，
+   实测观感偏矮（用户反馈「□ 太小」）→ 统一上调到接近 1em，方框基本与汉字同高。 */
+.sym { display: inline-block; vertical-align: -.11em; margin: 0 .06em; line-height: 0; }
+.sym > svg { display: block; width: 100%; height: 100%; }
+.sym.box, .sym.circle { width: .98em; height: .98em; }
+.sym.tri  { width: .98em; height: .94em; }
+.sym.star { width: 1em; height: .96em; }
+
+/* ---------------------------------------------------------------- 我的组卷
+   独立于「我的试卷」的列表页：没有原图缩略图，所以是纯文字白卡。 */
+.ccard {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 15px 16px 14px;
+  display: flex; flex-direction: column;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+}
+.ccard:hover { border-color: #c7d2fe; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15, 23, 42, .10); }
+.ccard .r1 { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.ccard .date { font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.ccard .title { font-weight: 600; font-size: 15.5px; line-height: 1.5; margin-bottom: 6px; }
+.ccard .meta { font-size: 12.5px; color: var(--ink-3); }
+.ccard .cops {
+  margin-top: auto; padding-top: 12px;
+  display: flex; gap: 8px; align-items: center;
+}
+/* 「删除」靠右站，跟「编辑试卷」隔开一段 —— 两个按钮挨着容易点错 */
+.ccard .cops .end { margin-left: auto; }
+/* 右上角打印 icon：进 print.html?custom=N 看卷面成品 / 打印。幽灵小方钮，hover 才上色。 */
+.ccard .cprint {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; flex: none;
+  border: 1px solid var(--line); border-radius: 8px; color: var(--ink-3);
+  transition: color .15s, border-color .15s, background .15s;
+}
+.ccard .cprint:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+/* ---------------------------------------------------------------- 卷面就地排版
+   只出现在自建卷的卷面页。排版模式下**卷面本身就是编辑画布**：题目卡片可拖动、
+   板块标题就地可改、列数就地可切。所有编辑件都带 .no-print —— 打印时整块消失，
+   只剩干净卷面，所以不必为「打印出来的样子」写第二套样式。 */
+.lay-panel {
+  display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 10px 14px;
+  max-width: 210mm; margin: 0 auto 14px;
+  position: sticky; top: 62px; z-index: 20;   /* 顶栏也是 sticky（54px），压在它下面 */
+}
+.lay-panel .hint { flex: 1 1 240px; min-width: 0; font-size: 12.5px; line-height: 1.55; color: var(--ink-3); }
+.lay-panel .spacer { flex: 1; }   /* 操作按钮靠右（「排版?」在左） */
+.lay-tag {
+  flex: none; background: var(--accent); color: #fff; border-radius: 999px;
+  padding: 2px 10px; font-size: 12px; font-weight: 500; letter-spacing: .5px;
+}
+.lay-dirty { flex: none; background: var(--warn-soft); color: var(--warn); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+.lay-panel .btn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+/* 「?」帮助按钮 + 弹出的操作说明（说明文字常驻太占地，2026-10-07 收起） */
+.lay-help {
+  width: 26px; height: 26px; padding: 0; border-radius: 50%;
+  border: 1px solid var(--line); background: #fff; color: var(--ink-2);
+  font-size: 14px; line-height: 1; cursor: pointer; flex: none;
+}
+.lay-help:hover { border-color: var(--accent); color: var(--accent); }
+.lay-helpbox {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 25;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 12px 14px;
+  font-size: 12.5px; line-height: 1.65; color: var(--ink-2);
+}
+/* 题库池「加入」：ghost 描边，hover 才变实 —— 80 行蓝实心太吵，首屏焦点让给卷面 */
+.pi-add { background: #fff; color: var(--accent); border: 1px solid var(--line); }
+.pi-add:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pi-add.sec { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+/* 题目详情：技术性识别信息默认折叠 */
+.qmeta { margin-top: 2px; }
+.qmeta summary {
+  cursor: pointer; color: var(--ink-3); font-size: 12px; user-select: none;
+  list-style: none; display: inline-flex; align-items: center; gap: 5px;
+}
+.qmeta summary::-webkit-details-marker { display: none; }
+.qmeta summary::before { content: "▸"; font-size: 10px; transition: transform .15s; }
+.qmeta[open] summary::before { transform: rotate(90deg); }
+.qmeta summary:hover { color: var(--ink-2); }
+.qmeta-body { margin-top: 8px; }
+/* 上传页：高级选项折叠块 */
+details.adv > summary {
+  cursor: pointer; color: var(--ink-2); font-size: 13px; user-select: none;
+  list-style: none; display: inline-flex; align-items: center; gap: 6px;
+}
+details.adv > summary::-webkit-details-marker { display: none; }
+details.adv > summary::before { content: "▸"; font-size: 10px; transition: transform .15s; }
+details.adv[open] > summary::before { transform: rotate(90deg); }
+details.adv > summary:hover { color: var(--ink); }
+
+/* 「编号」面板：折到工具条第二行（flex-basis 100%），只在排版模式里出现。
+   两行各一个大题 / 小题，左标签定宽、三个控件定宽 → 两行对得齐，右侧是实时预览串。 */
+.no-panel {
+  flex: 1 0 100%; display: block;
+  margin-top: 4px; padding-top: 9px; border-top: 1px dashed var(--line);
+}
+.no-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); }
+.no-row + .no-row { margin-top: 7px; }
+.no-lab { flex: none; width: 4.6em; font-weight: 600; color: var(--ink-2); }
+.no-chk { flex: none; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
+.no-chk input { width: 14px; height: 14px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+/* 面板里的下拉用自绘 .dd（全站约定不用原生 select）；宽度由占位元素的内联 style 带过来，
+   这里只把它压到工具条的比例 */
+.no-panel .dd { flex: none; }
+.no-panel .dd-btn { padding: 3px 8px; font-size: 12px; border-radius: 6px; gap: 4px; }
+.no-panel .dd-ic { width: 12px; height: 12px; }
+.no-panel .dd-name, .no-panel .dd-txt small { font-size: 12px; }
+.no-demo {
+  flex: none; margin-left: auto; padding: 1px 8px; border-radius: 5px; white-space: nowrap;
+  border: 1px dashed var(--line); background: var(--panel); color: var(--ink-3); font-size: 12px;
+}
+.no-tip { margin-top: 8px; font-size: 12px; line-height: 1.5; color: var(--ink-3); }
+.no-tip b { font-family: ui-monospace, Consolas, monospace; color: var(--ink-2); }
+
+/* 板块标题那一行：字号字重与 .sec-title 一致，看着就是在改卷面本身 */
+.sec-edit {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12pt; font-weight: 700; margin: 4mm 0 2mm;
+  padding: 1.2mm 2mm; border: 1px dashed var(--line); border-radius: 6px; background: #fbfdff;
+}
+.sec-edit.dragging { opacity: .4; }
+.sec-edit.drop-hot { border-color: var(--accent); background: #eff6ff; }
+.sec-grip { flex: none; cursor: grab; color: var(--ink-3); font-size: 15px; line-height: 1; user-select: none; padding: 0 2px; }
+.sec-grip:active { cursor: grabbing; }
+/* 大题序号：只读，按板块位置自动生成（交换板块后自己会变），所以不做成输入框 */
+.sec-no { flex: none; color: var(--ink-3); font-weight: 700; user-select: none; }
+.sec-tinp {
+  flex: 1 1 auto; min-width: 70px; font: inherit; color: inherit;
+  border: none; border-bottom: 1px solid var(--line); background: transparent;
+  padding: 1px 4px; border-radius: 0; outline: none;
+}
+.sec-tinp:focus { border-bottom-color: var(--accent); }
+.sec-tinp::placeholder { color: var(--ink-3); font-weight: 400; }
+.sec-colsw { flex: none; display: flex; gap: 2px; }
+.sec-colsw .ccol {
+  width: 22px; height: 22px; padding: 0; line-height: 1; font-size: 11px;
+  border: 1px solid var(--line); background: #fff; border-radius: 5px;
+  color: var(--ink-2); cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.sec-colsw .ccol:hover { border-color: var(--accent); color: var(--accent); }
+.sec-colsw .ccol.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.sec-edit .ico { flex: none; width: 22px; height: 22px; font-size: 11px; }
+.sec-edit .ico.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* 题目卡片：悬停浮出操作条（↑↓ 板块内换位、← → 换板块），拖动时有落点提示 */
+#sheets.editing .sheet { box-shadow: 0 0 0 1px var(--accent-soft), var(--shadow); }
+#sheets.editing .grid-sec { min-height: 16mm; align-content: start; }
+#sheets.editing .gitem { position: relative; border-radius: 5px; }
+#sheets.editing .gitem:hover { background: #f7fafd; box-shadow: 0 0 0 1px var(--line-2); }
+.qbar { position: absolute; top: -6px; right: 0; display: flex; gap: 2px; opacity: 0; transition: opacity .15s; z-index: 4; }
+.gitem:hover .qbar, .qbar:focus-within { opacity: 1; }
+.qbar .ico { width: 20px; height: 20px; font-size: 10px; border-radius: 5px; }
+/* 题型小标：比箭头宽，塞得下两个汉字。点它选这道题归到哪个大题 */
+.qbar .qchip { width: auto; padding: 0 6px; }
+/* 改题型的菜单：挂在题目卡片里（打印时隐藏） */
+.qmenu {
+  position: absolute; top: 18px; right: 0; z-index: 6;
+  display: flex; flex-wrap: wrap; gap: 3px; width: 15.5em;
+  background: var(--panel); border: 1px solid #c7d8f5; border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .12); padding: 6px;
+}
+.qmi {
+  border: 1px solid var(--line); background: #fff; color: var(--ink-2);
+  border-radius: 6px; padding: 2px 7px; font: inherit; font-size: 11.5px; line-height: 1.5;
+  cursor: pointer; transition: border-color .15s, color .15s, background .15s;
+}
+.qmi:hover { border-color: var(--accent); color: var(--accent); }
+.qmi.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+/* 打标浮层（题库级）：复用 .qmenu 的皮，但挂在 body 上、跟随锚点 fixed 定位。
+   ⚠️ 必须 .qmenu.typepick 双类压住 .qmenu 的 absolute（本文件里它声明得更晚），
+   否则 fixed 变 absolute，浮层会弹到莫名其妙的地方（实测弹去了筛选行下面）。 */
+.qmenu.typepick { position: fixed; right: auto; top: auto; z-index: 60; }
+.qmenu.typepick .qmi-clear { color: var(--ink-3); border-style: dashed; }
+.gitem.dragging { opacity: .3; }
+.gitem.drop-before { box-shadow: -2px 0 0 var(--accent), 0 0 0 1px var(--line-2); }
+.gitem.drop-after { box-shadow: 2px 0 0 var(--accent), 0 0 0 1px var(--line-2); }
+.grid-sec.drop-hot { background: #f4f8ff; border-radius: 6px; }
+.gempty { font-size: 11pt; color: var(--ink-3); text-align: center; padding: 5mm 0; border: 1px dashed var(--line); border-radius: 6px; }
+
+/* 触摸屏没有 hover：操作条常显，否则手机上根本调不动（HTML5 拖拽在触摸上也基本不工作） */
+@media (hover: none) { .qbar { opacity: 1; } }
+@media (max-width: 700px) {
+  .lay-panel { position: static; }
+  .lay-helpbox { position: fixed; left: 10px; right: 10px; top: auto; }  /* 面板 static 了，弹层改 fixed 兜底 */
+  .sec-edit { flex-wrap: wrap; }
+  .sec-tinp { flex: 1 1 100%; }
+}
+
+/* ---------------------------------------------------------------- 组卷台（选题 + 排版同一页）
+   左栏题库（窄、sticky、自己滚），右栏就是**卷面本身** —— 卷面即编辑画布（js/sheet-edit.js），
+   挑中的题按题型自动落到卷面上，之后直接在卷面上拖。 */
+.studio {
+  display: grid; grid-template-columns: 360px minmax(0, 1fr);
+  gap: 16px; align-items: start;
+}
+.studio .bank { position: sticky; top: 62px; }
+.fl { display: block; font-size: 13px; color: var(--ink-2); margin-bottom: 6px; }
+.cbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.cbar .inp { flex: 1 1 140px; min-width: 0; }
+.paper-col { min-width: 0; }
+/* 工具条在右栏里不居中、跟着卷面滚动 */
+.paper-col .lay-panel { max-width: none; margin: 0 0 12px; }
+/* 卷面是真实 A4 宽（210mm≈794px）；窄屏放不下时由 JS 等比缩小显示，数据与打印都不受影响 */
+.canvas { width: 210mm; max-width: 100%; margin: 0 auto; overflow: hidden; }
+.canvas #sheets { width: 210mm; }
+.canvas-empty {
+  border: 2px dashed #cbd5e1; border-radius: var(--radius); background: #fff;
+  padding: 40px 24px; text-align: center; color: var(--ink-3); font-size: 13.5px; line-height: 1.9;
+}
+.btn-bank { display: none; }
+.pool, .picked {
+  max-height: 60vh; overflow: auto; margin-top: 8px;
+  border-top: 1px solid var(--line);
+  /* ⚠️ contain:paint 不是为了好看，是为了「整页高度」。题库池子是 overflow:auto 自己滚的，
+     但 `.bank` 是 position:sticky —— Chrome 会把池子里那 1 万多 px 的内容算进祖先的滚动区
+     （实测 .bank scrollHeight=11192、body=11414），于是整页能滚到 11000 多，
+     而卷面只占 3407 → 往下 8000px 全是空白（用户报「编辑试卷下面的留白太多」）。
+     池子本来就裁掉溢出了，加 contain:paint 只是告诉浏览器「别把它算到外面」。
+     换成 .bank{overflow:hidden} 也能修，但那会把卡片里的 UI.select 弹出层一起裁掉，别那么改。 */
+  contain: paint;
+}
+.studio .bank .pool { max-height: calc(100vh - 340px); }
+.pitem {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 2px; border-bottom: 1px solid var(--line-2);
+}
+.pitem.on { background: #f7fafd; }
+/* 题库按页渲染时列表尾部的「继续加载」 —— 点了（或滚到底）就把下一批接上 */
+.pool-more {
+  padding: 14px 4px; text-align: center; font-size: 12.5px; line-height: 1.6;
+  color: var(--ink-3); cursor: pointer; user-select: none;
+  border-bottom: 1px solid var(--line-2);
+}
+.pool-more:hover { color: var(--accent); background: #f8fbff; }
+.pi-no {
+  flex: none; width: 24px; height: 24px; border-radius: 999px;
+  background: var(--accent); color: #fff; font-size: 12.5px;
+  display: flex; align-items: center; justify-content: center; margin-top: 2px;
+}
+.pi-main { flex: 1; min-width: 0; }
+.pi-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 3px; }
+.pi-src { font-size: 12px; color: var(--ink-3); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; max-width: 190px; }
+.pi-stem {
+  display: block; font-size: 13.5px; line-height: 1.7; color: var(--ink-2);
+  text-decoration: none; cursor: pointer; border-radius: 4px;
+}
+.pi-stem:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.pi-stem .katex { color: inherit; }   /* hover 变色连公式一起 */
+.pi-ops { flex: none; display: flex; gap: 4px; align-items: center; }
+.pi-add { flex: none; }
+.ico {
+  width: 28px; height: 28px; border: 1px solid var(--line); background: #fff;
+  border-radius: 6px; cursor: pointer; font-size: 12px; color: var(--ink-2); line-height: 1;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.ico:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.ico:disabled { opacity: .35; cursor: default; }
+.ico.del { color: var(--bad); }
+.ico.del:hover { border-color: var(--bad); background: var(--bad-soft); }
+.cops { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+
+@media (max-width: 900px) {
+  .studio { grid-template-columns: 1fr; }
+  .studio .bank { position: static; }
+  .studio .bank .pool { max-height: 46vh; }
+  .studio.bank-hide .bank { display: none; }
+  .btn-bank { display: inline-flex; }
+}
+
+/* ---------------------------------------------------------------- 上传 */
+.drop {
+  border: 2px dashed #cbd5e1; border-radius: var(--radius); background: #fff;
+  padding: 30px 20px; text-align: center; color: var(--ink-2); cursor: pointer;
+}
+.drop:hover, .drop.over { border-color: var(--accent); background: #f8fbff; }
+.drop .big { font-size: 28px; margin-bottom: 6px; transition: transform .18s, color .18s; color: var(--ink-2); }
+.drop .big svg { display: inline-block; vertical-align: middle; }
+.drop:hover .big, .drop.over .big { transform: translateY(-2px); color: var(--accent); }
+.picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 14px; }
+.pick { position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+.pick img { width: 100%; height: 158px; object-fit: cover; object-position: top; display: block; }
+.pick .idx { position: absolute; left: 6px; top: 6px; background: rgba(31,41,55,.82); color: #fff;
+  font-size: 11.5px; padding: 1px 7px; border-radius: 999px; }
+.pick .del { position: absolute; right: 6px; top: 6px; background: rgba(255,255,255,.94); border: 1px solid var(--line);
+  width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 13px; line-height: 1; color: var(--bad); }
+.pick .nm { font-size: 11px; color: var(--ink-3); padding: 4px 6px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; }
+
+.progress { height: 7px; background: #e5e9f0; border-radius: 999px; overflow: hidden; margin: 12px 0 6px; }
+.progress > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s; }
+
+/* ---------------------------------------------------------------- 灯箱 */
+.lightbox {
+  position: fixed; inset: 0; background: rgba(15,23,42,.92); z-index: 100; display: none;
+  align-items: center; justify-content: center; padding: 24px;
+}
+.lightbox.show { display: flex; }
+.lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.lightbox .close { position: absolute; right: 20px; top: 16px; color: #fff; font-size: 28px;
+  cursor: pointer; line-height: 1; }
+
+/* ---------------------------------------------------------------- 自绘下拉（UI.select）
+   替代原生 <select>：弹出层是系统控件改不了样式。 */
+.dd { position: relative; width: 100%; }
+.dd-btn {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: #fff; font: inherit; color: var(--ink); cursor: pointer; text-align: left;
+}
+.dd.sm .dd-btn { padding: 6px 10px; font-size: 13px; border-radius: 8px; }
+.dd-btn:hover { border-color: #c7d2fe; }
+.dd.open .dd-btn { border-color: var(--accent); outline: 2px solid var(--accent-soft); }
+.dd-ic { flex: 0 0 auto; width: 16px; height: 16px; color: var(--ink-3); transition: transform .15s; }
+.dd-ic svg { display: block; width: 100%; height: 100%; }
+.dd.open .dd-ic { transform: rotate(180deg); }
+.dd-pop {
+  position: absolute; top: calc(100% + 6px); left: 0; width: 280px; z-index: 60;
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, .08), 0 12px 32px rgba(15, 23, 42, .12);
+  padding: 5px; max-height: 320px; overflow-y: auto;
+}
+.dd-pop.flip { left: auto; right: 0; }
+.dd-it {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 8px 10px; border: 0; border-radius: 7px; background: transparent;
+  font: inherit; text-align: left; cursor: pointer; color: var(--ink);
+}
+.dd-it:hover { background: #f4f6fb; }
+.dd-txt { min-width: 0; }
+.dd-name { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.dd-tag {
+  flex: 0 0 auto; font-style: normal; font-size: 11px; line-height: 1;
+  background: var(--accent-soft); color: #3730a3; padding: 3px 7px; border-radius: 999px;
+}
+.dd-txt small { display: block; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.dd-ck { flex: 0 0 auto; width: 16px; height: 16px; color: var(--accent); opacity: 0; }
+.dd-ck svg { display: block; width: 100%; height: 100%; }
+.dd-it.on .dd-ck { opacity: 1; }
+.dd-it.on .dd-name { color: var(--accent); }
+
+/* ---------------------------------------------------------------- 确认框（UI.confirm）
+   替代 window.confirm：样式统一、能写清"后果说明"。 */
+.modal-mask {
+  position: fixed; inset: 0; z-index: 150; background: rgba(15, 23, 42, .45);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.modal {
+  background: #fff; border-radius: 14px; box-shadow: 0 24px 60px rgba(15, 23, 42, .25);
+  width: 100%; max-width: 380px; padding: 20px 20px 16px;
+  animation: modal-in .16s ease-out;
+}
+@keyframes modal-in { from { opacity: 0; transform: translateY(10px) scale(.97); } }
+.modal .m-t { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.modal .m-b { font-size: 14px; color: var(--ink-2); line-height: 1.8; }
+.modal .m-f { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.btn.danger-solid { background: var(--bad); color: #fff; border: 0; }
+.btn.danger-solid:hover { filter: brightness(1.08); }
+/* 备份管理弹层（paper.html）：列出本卷全部识别备份，逐份「恢复 / 删除」+ 一次清空。
+   列表可能有多份，所以卡片要能定高滚动、按钮不跟着列表滚。 */
+.modal.bkm { max-width: 560px; max-height: calc(100vh - 44px); display: flex; flex-direction: column; }
+.bkm-list { margin-top: 12px; overflow: auto; min-height: 0; border-top: 1px solid var(--line); }
+.bkm-it { display: flex; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 1px solid var(--line); }
+.bkm-it .t { flex: 1 1 auto; min-width: 0; }
+.bkm-it .t b { font-size: 13.5px; font-weight: 600; }
+.bkm-it .t .hint { margin-top: 3px; }
+.bkm-it .acts { display: flex; gap: 6px; flex: 0 0 auto; }
+.bkm-empty { padding: 20px 0; text-align: center; color: var(--ink-3); font-size: 13.5px; }
+
+/* ---------------------------------------------------------------- 日历（UI.datePicker）
+   替代 <input type="date">：弹层是系统控件、各端长相不一。 */
+.date-input { cursor: pointer; }
+.date-input:hover { border-color: #c7d2fe; }
+.cal {
+  position: fixed; z-index: 60; width: 272px; background: #fff;
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, .08), 0 12px 32px rgba(15, 23, 42, .12);
+}
+.cal-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.cal-h b { font-size: 14px; font-weight: 600; }
+.cal-h button {
+  width: 28px; height: 28px; border: 0; background: transparent; border-radius: 7px;
+  cursor: pointer; color: var(--ink-2); padding: 4px;
+}
+.cal-h button:hover { background: #f4f6fb; color: var(--ink); }
+.cal-h button svg { display: block; width: 100%; height: 100%; }
+.cal-w { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 2px; }
+.cal-w span { font-size: 11.5px; color: var(--ink-3); text-align: center; padding: 3px 0; }
+.cal-g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-g i { visibility: hidden; }
+.cal-g button {
+  height: 32px; border: 0; background: transparent; border-radius: 7px;
+  font: inherit; font-size: 13.5px; color: var(--ink); cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.cal-g button:hover { background: #eef2fe; }
+.cal-g button.sel { background: var(--accent); color: #fff; font-weight: 600; }
+.cal-g button[data-today]:not(.sel) { box-shadow: inset 0 0 0 1px var(--accent); }
+
+
+/* ---------------------------------------------------------------- 滚动条
+   原生滚动条在 Windows 上又宽又灰，统一成细圆条（Firefox 走 scrollbar-* 标准属性）。 */
+* { scrollbar-width: thin; scrollbar-color: #cdd4e0 transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #cdd4e0; border-radius: 999px; border: 2px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: #b6c0d2; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------------------------------------------------------------- 窄屏
+   题目行在手机上改成上图下文；缩略图与留白同步收紧。 */
+@media (max-width: 640px) {
+  .wrap { padding: 16px 14px 48px; }
+  .qrow { flex-direction: column; }
+  .qrow .crop { flex: none; width: 100%; max-width: 300px; }
+  .pcard .thumb, .pcard .thumb img { height: 120px; }
+  .phead { padding: 14px 14px 10px; }
+  .phead .title { font-size: 17px; }
+  .toolbar .btn, .toolbar .dd { flex: 0 0 auto; }
+  /* 顶栏：窄屏不换行（原来品牌字和导航会被挤成两行），导航改为可横滑 */
+  .topbar { gap: 10px; padding: 0 12px; }
+  .topbar .brand { flex: none; font-size: 15px; }
+  .topbar nav { min-width: 0; margin-left: 0; overflow-x: auto; scrollbar-width: none; }
+  .topbar nav::-webkit-scrollbar { display: none; }
+  .topbar nav a { flex: none; padding: 6px 9px; font-size: 13.5px; white-space: nowrap; }
+  .topbar .right { flex: none; }
+  .topbar .who { display: none; }
+}
+
+/* ---------------------------------------------------------------- 提示条 */
+#toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+  background: #1f2937; color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 13.5px;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 200;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------------------------------------------------------------- 打印卷面
+   分页是真的：Sheet.paginate() 按 A4 内容高度把块装箱，**一页一个 .sheet**，
+   所以屏幕上看到的页边就是打印出来的页边（打印时 .sheet + .sheet 之间强制换页）。 */
+body.print { background: #fff; }
+.sheet {
+  width: 210mm; min-height: 297mm; margin: 0 auto 10mm; background: #fff;
+  padding: var(--pg-t) var(--pg-r) var(--pg-b) var(--pg-l);
+  box-shadow: 0 0 0 1px var(--line); position: relative;
+}
+.sheet + .sheet { page-break-before: always; }
+/* 页码：只在屏幕上显示，提醒"这一页印出来到这儿" */
+.pgno {
+  position: absolute; left: 0; right: 0; bottom: 4mm; text-align: center;
+  font-size: 10px; color: var(--ink-3); letter-spacing: .5px; user-select: none;
+}
+/* 起页那块不要带上边距，否则每页第一行都会往下沉一截 */
+.sheet > .sec-title:first-child, .sheet > .sec-edit:first-child { margin-top: 0; }
+.paper-head { text-align: center; margin-bottom: 6mm; }
+.paper-head .t { font-size: 17pt; font-weight: 700; letter-spacing: 1px; }
+.sec-title { font-size: 12pt; font-weight: 700; margin: 4mm 0 2mm; }
+/* 题与题之间的行距（用户要求加大：原来 3mm 挤在一起，看不清一道题到哪儿结束）。
+   行间距 = 6mm，列间距仍 4mm —— 多列板块里加得太大会把题推到折行。 */
+.grid-sec { display: grid; gap: 6mm 4mm; }
+.gline { font-size: 12pt; line-height: 1.6; white-space: pre-wrap; }
+.gline .qn { color: #333; }
+.gitem { font-size: 12pt; line-height: 1.6; }
+/* 带插图的题**跨整行** —— 多列板块里一张竖式图被挤进 1/3 列根本看不清 */
+.gitem.wide { grid-column: 1 / -1; }
+.gitem .qn { margin-right: 2mm; }
+.judge-mark { float: right; white-space: nowrap; }
+/* 题内插图：独占一行、限宽，不跟文字抢地方（原来 inline-block 会挤在句子末尾、
+   多列板块里还会被压扁）。
+   宽度可调（排版态拖右边缘那条手柄）：--figw 由 itemHtml 按 layout.figs 写在 .gitem 上，
+   没写过就是这里的默认（普通题 68mm）。 */
+.gitem .figbox { display: block; max-width: var(--figw, 68mm); margin: 1.5mm 0; }
+.gitem .figbox .cropbox { width: 100%; }
+.gitem .figcap { font-size: 10.5px; }
+/* 应用题的插图**靠右**：左边整块留给学生写算式（与本地成卷 engine/paper.py 的
+   .figwrap-right 同一条规矩，两边看着才一致）。其他题型的插图仍靠左。 */
+.gitem.figright .figbox { margin-left: auto; margin-right: 0; }
+/* 带图的选择题：**选项在左、插图在右**（一道题一行读完）。
+   右栏宽 = --figw（默认 62mm，可拖），左栏吃掉剩下的宽度；插图不再各自成行。 */
+.gitem .figduo { display: grid; grid-template-columns: minmax(0, 1fr) var(--figw, 62mm); gap: 4mm; align-items: start; margin-top: 1mm; }
+.gitem .figcol-opts .opts-inline { margin-top: 0; }
+.gitem .figcol-fig .figbox { display: block; max-width: 100%; margin: 0; }
+.gitem .figcol-fig .figbox .cropbox { width: 100%; }
+.gitem .figcol-fig .figcap { font-size: 10.5px; }
+
+/* ---- 插图大小手柄（只在排版态出现；带 .no-print，打印不会印到纸上）
+   位置贴图右缘中线：.figbox 是块级、宽度就是图宽，所以 right 边就是图的右边缘。 */
+.gitem .figh { display: none; }
+#sheets.editing .gitem .figbox { position: relative; }
+#sheets.editing .gitem .figh {
+  display: block; position: absolute; right: -12px; top: 50%; width: 10px; height: 34px;
+  margin-top: -17px; border-radius: 6px; background: var(--accent); opacity: .62;
+  box-shadow: 0 0 0 1.5px #fff;              /* 压在插图边框/文字上也能看清 */
+  cursor: ew-resize; z-index: 5; touch-action: none;
+}
+#sheets.editing .gitem .figh::before {
+  content: ""; position: absolute; left: 3px; top: 8px; width: 3px; height: 18px;
+  border-left: 1px solid #fff; border-right: 1px solid #fff;
+}
+/* 应用题那张图是**右对齐**的（margin-left:auto）：右边缘钉在题格右边不动，
+   宽度一变是左边在动 —— 所以手柄挂左边缘（自由的那条边），拖起来才跟手。
+   非右对齐的图正相反，手柄挂右边缘。见 sheet-edit.js 的 FIG.dir。 */
+#sheets.editing .gitem.figright .figh { right: auto; left: -12px; }
+#sheets.editing .gitem.figright .figh .fighw { right: auto; left: 15px; }
+#sheets.editing .gitem .figh:hover, #sheets.editing .gitem .figh.on { opacity: 1; }
+.figh .fighw {
+  display: none; position: absolute; right: 15px; top: 50%; margin-top: -11px;
+  background: var(--accent); color: #fff; font-size: 11px; line-height: 1; padding: 5px 7px;
+  border-radius: 6px; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.figh.on .fighw { display: block; }
+/* ---- 图下说明文字（figure.caption）的开关：也只出现在排版态、也带 .no-print。
+   贴插图右下角（.figbox 内绝对定位，压在图上不影响排版）：有这行说明时显示「说明 ✕」，
+   点掉后显示「说明 ↺」。图小的时候按钮也照样放得下（10.5px 小字 + 贴角）。 */
+.gitem .figcapbtn { display: none; }
+#sheets.editing .gitem .figcapbtn {
+  display: block; position: absolute; right: 3px; bottom: 3px; z-index: 6;
+  font-size: 10.5px; line-height: 1; padding: 3px 6px 4px; font-family: inherit;
+  border: 1px solid var(--line); border-radius: 4px; white-space: nowrap;
+  background: rgba(255, 255, 255, .92); color: var(--ink-3);
+  box-shadow: 0 0 0 1.5px #fff;          /* 压在插图边框/线条上也看得清 */
+  cursor: pointer; opacity: .72;
+}
+#sheets.editing .gitem .figbox:hover .figcapbtn,
+#sheets.editing .gitem .figcapbtn:hover { opacity: 1; color: var(--accent); border-color: var(--accent); }
+/* 说明还在的时候，按钮跟它挤在同一行末尾 —— 给说明留出按钮的位置，别互相压住。
+   （说明被移掉后按钮就贴在图右下角，图小也不会溢出去，所以只留这一条即可。） */
+#sheets.editing .gitem .figcap { padding-right: 60px; }
+.opts-inline { margin-top: 0.5mm; }
+.optrow { display: grid; column-gap: 2.2mm; align-items: start; }
+.optrow + .optrow { margin-top: 0.6mm; }
+.optrow .opt { white-space: nowrap; }
+.box-after { margin-top: 1mm; }   /* 答题区 = 纯留白，不画框 */
+.pscore { color: #555; font-size: 10.5pt; }
+
+/* ---- 题内插图的「显示大小 / 显示位置」（2026-10-11 用户要求：编辑时要能调大小、调位置）----
+   figure 片段上的 dw / pos / wrap（见 render.js figView，全站一套口径）。
+
+   大小：--fdw 是 30~100 的百分数，zoom 整块等比缩。**不能用 max-width** —— .figbox 是
+   inline-block 收缩包装（宽 203px 那种），百分比 max-width 是相对题栏（572px）算的，
+   50% = 286px 根本碰不到它，图纹丝不动；只有 zoom 才真的变小（实测 50% 时渲染宽 101px）。
+   卷面（.gitem）那套不用 zoom：那边图的宽是 --figw（mm、有定值），已按 dw 折算过（见 sheet.js）。
+
+   位置：外层 .figwrap 是块级、靠 text-align 摆 —— 图自身还是 inline-block，尺寸一点不变。
+   ⚠️ 别改成给 .figbox 加 display:block + margin auto：那样 .figbox 会撑满整栏（图变通栏大）。 */
+.figwrap { display: block; margin: 2px 0; }
+.figwrap.fp-l { text-align: left; }
+.figwrap.fp-c { text-align: center; }
+.figwrap.fp-r { text-align: right; }
+/* 环绕：图浮起来，题干文字绕到另一侧（只有左右位置成立，居中不环绕） */
+.figbox.fw-l, .gitem .figbox.fw-l { float: left; margin: 1mm 4mm 1.5mm 0; }
+.figbox.fw-r, .gitem .figbox.fw-r { float: right; margin: 1mm 0 1.5mm 4mm; }
+/* 大小：zoom 整块等比缩（题目页 / 卷页；卷面另走 --figw，见上）。
+   缩略图那一栏不吃 zoom —— 它是 width:100% 撑满的，百分比会把 zoom 抵消掉（渲染宽还是 180），
+   所以缩略图直接用 --fdw 当宽度百分比，看得见大小变化（见 .fthumb .figbox）。 */
+.stem .figbox, .opts .figbox { zoom: calc(var(--fdw, 100) * 1%); }
+/* 烤过的成品图（.figbox.fixed）是块级且有 440px 上限（宽有定值）：这种靠 margin auto 摆位置，
+   inline-block 那种则由上面的 .figwrap 管（auto 边距对 inline-block 本来就是 0，不冲突） */
+.stem .figbox.fp-l, .opts .figbox.fp-l { margin-left: 0; margin-right: auto; }
+.stem .figbox.fp-c, .opts .figbox.fp-c { margin-left: auto; margin-right: auto; }
+.stem .figbox.fp-r, .opts .figbox.fp-r { margin-left: auto; margin-right: 0; }
+/* 卷面：那边 .figbox 是块级、宽有定值（--figw），用 margin auto 摆位置（同 .gitem.figright） */
+.gitem .figbox.fp-l { margin-left: 0; margin-right: auto; }
+.gitem .figbox.fp-c { margin-left: auto; margin-right: auto; }
+.gitem .figbox.fp-r { margin-left: auto; margin-right: 0; }
+
+/* ---- 打印预览（排版工具条「打印预览」）：全屏遮罩里放一份按打印态重画的干净卷面
+   （js/sheet-edit.js 的 buildPreview）。从预览里点「打印」时 body 带 .pv-open：
+   把 body 下除了遮罩以外的全部孩子藏掉、遮罩转为静态流 —— 打出来的就只有预览里这份卷面。 */
+.lay-pv { position: fixed; inset: 0; z-index: 120; display: none; flex-direction: column; background: var(--bg); }
+.lay-pv.on { display: flex; }
+body.pv-open { overflow: hidden; }
+.pv-bar { display: flex; align-items: center; gap: 10px; padding: 9px 16px; background: #fff; border-bottom: 1px solid var(--line); }
+.pv-bar b { font-size: 14px; }
+.pv-pages { color: var(--ink-3); font-size: 12.5px; }
+.pv-bar .spacer { flex: 1; }
+.pv-body { flex: 1; overflow: auto; padding: 16px 0 48px; }
+
+/* ---- 页边距选择器（打印工具条 / 打印预览工具条，都是 .no-print）
+   改的是 :root 的 --pg-*，三处（屏幕卷面 / 打印卷面 / A4 分页口径）一起变。
+   紧凑=省纸，标准=默认，宽松=给孩子留涂改空间。 */
+.mgctl { display: inline-flex; align-items: center; gap: 4px; }
+.mgctl .lbl { font-size: 12.5px; color: var(--ink-3); margin-right: 2px; white-space: nowrap; }
+.mgctl .mgo { padding: 3px 9px; font-size: 12.5px; line-height: 1.5; border-radius: 7px; }
+.mgctl .mgo.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+@media print {
+  body.pv-open > :not(#lay-pv) { display: none !important; }
+  body.pv-open { overflow: visible; }
+  body.pv-open .lay-pv { position: static; display: block; }
+  body.pv-open .pv-body { overflow: visible; padding: 0; }
+}
+
+@media print {
+  .topbar, .no-print { display: none !important; }
+  body.print { background: #fff; }
+  /* 打印时外面的包装必须让开：.wrap 有 22px 上 / 60px 下内边距，会把卷面整体往下推 5.8mm、
+     末尾再留 15.9mm，还横向缩窄 40px；而分页是按「纸高 - 页边距」算的（默认 18mm 边距 →
+     256mm 内容高）—— 卷面一旦被推出去一点，就会多印一张空白页，横向也会折行不一致。
+     .msg 是错误提示条（自带 12px 下边距），打印时同样不该占位。 */
+  .wrap { padding: 0 !important; max-width: none !important; margin: 0 !important; }
+  .msg { display: none !important; }
+  /* 组卷台：左栏（题库/筛选）不印；卷面在屏幕上是等比缩小的（fitSheet 给 #sheets 加 transform、
+     给 #canvas 裁高），打印时还原原大，否则印出来是被缩掉的一截。 */
+  .studio { display: block !important; }
+  .bank { display: none !important; }
+  .phead { display: none !important; }   /* 页面抬头（标题/按钮/提示）是应用自己的壳，不印 */
+  /* 排版态的大题标题是一行就地控件（≡ 拖拽 / 序号 / 改名框 / 1-4 列 / # / ↑↓ / ×），
+     整行挂着 .no-print —— 直接打印的话卷面上会**一道大题标题都没有**。
+     打印时把控件收起来，只留「序号 + 标题文字」当纯标题。 */
+  .sec-edit {
+    display: flex !important; align-items: baseline; gap: .25em;
+    border: 0 !important; background: none !important;
+    padding: 0 !important; margin: 4mm 0 2mm !important;
+  }
+  .sec-edit .sec-grip, .sec-edit .sec-colsw, .sec-edit .ico { display: none !important; }
+  .sec-edit .sec-no { font-weight: 700; font-size: 12pt; color: #000; }
+  .sec-edit .sec-tinp {
+    flex: 0 1 auto; width: auto; border: 0 !important; background: none !important; padding: 0 !important;
+    font-weight: 700; font-size: 12pt; color: #000; -webkit-appearance: none;
+  }
+  .canvas { width: auto !important; height: auto !important; overflow: visible !important; }
+  .canvas #sheets { width: auto !important; }
+  #sheets { width: auto !important; transform: none !important; }
+  /* 卷面自己带页边距（见 :root 的 --pg-*）：打印时**不要**把内边距清掉，
+     配合下面 @page margin: 0，边距才不会受打印对话框设置影响。 */
+  .sheet {
+    box-shadow: none; margin: 0; width: auto; min-height: 0;
+    padding: var(--pg-t) var(--pg-r) var(--pg-b) var(--pg-l);
+  }
+  .sheet + .sheet { page-break-before: always; }
+  /* ⚠️ 必须是 0：边距全在卷面的内边距里。写非 0 会跟内边距叠加，
+     而且打印对话框一改就把边距吃掉（贴纸角就是这么来的）。 */
+  @page { size: A4; margin: 0; }
+}
+
+/* ---------------------------------------------------------------- 只允许微信登录（生产）
+   2026-10-26：生产环境关掉手机号 / 短信登录，登录卡只留一个整行微信按钮。
+   本地（127.0.0.1 / localhost）不加 .wxonly，仍是原来的「手机号 + 圆形微信图标」。 */
+.auth-card.wxonly #lg-form { display: none; }
+.wx-txt { display: none; }
+.auth-fine { display: none; }
+.auth-card.wxonly .auth-fine {
+  display: block; margin-top: 18px; font-size: 12px; color: var(--ink-3); line-height: 1.7;
+}
+.auth-card.wxonly .auth-fine a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; }
+.auth-card.wxonly .auth-alt { margin-top: 4px; }
+.auth-card.wxonly .auth-wx,
+body.gate-mode .auth-card.wxonly .auth-wx {
+  width: 100%; height: 52px; border-radius: 12px; gap: 9px;
+  background: #07c160; border-color: #07c160; color: #fff;
+  font: inherit; font-size: 15px; font-weight: 500;
+}
+.auth-card.wxonly .auth-wx:hover { background: #06ad56; border-color: #06ad56; box-shadow: 0 6px 18px rgba(7, 193, 96, .25); }
+.auth-card.wxonly .auth-wx svg { width: 22px; height: 22px; }
+.auth-card.wxonly .wx-txt { display: inline; }
+
+/* 开源地址：登录卡与首页页脚共用同一套排版 */
+.repo-line {
+  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line-2);
+  font-size: 12px; color: var(--ink-3); line-height: 1.8; text-align: center;
+}
+/* 仓库入口只用 GitHub mark 图标 —— 页面上不出现 URL 文本，地址在 title / aria-label 里 */
+.repo-gh {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  color: var(--ink-2); background: var(--panel); border: 1px solid var(--line);
+  text-decoration: none; transition: color .15s, border-color .15s, background .15s;
+}
+.repo-gh:hover { color: var(--ink); border-color: var(--ink-3); background: var(--bg); }
+.repo-gh:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.repo-gh svg { width: 18px; height: 18px; display: block; }
+.repo-tip { margin-top: 8px; }
+
+/* 顶栏「还可识别 N 次」 */
+.topbar .who.quota {
+  background: var(--accent-soft); color: #3730a3; border-radius: 999px;
+  padding: 2px 10px; font-size: 12px; max-width: none; white-space: nowrap;
+}
+.topbar .who.quota.free { background: #f2f5fa; color: var(--ink-2); }
+.topbar .who.quota.out { background: var(--bad-soft); color: var(--bad); }
+@media (max-width: 640px) {
+  .topbar .who.quota { font-size: 11.5px; padding: 2px 8px; }
+}
+
+/* 上传页的「还可识别 N 次」提示 */
+.quota-note {
+  margin-top: 14px; padding: 10px 12px; border-radius: 10px;
+  background: var(--accent-soft); color: #3730a3; font-size: 12.5px; line-height: 1.7;
+}
+.quota-note b { font-weight: 600; }
+.quota-note.out { background: var(--bad-soft); color: var(--bad); }
+.quota-note a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
